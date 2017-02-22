@@ -1,24 +1,26 @@
 require 'marcel/definitions'
 
 class Marcel::ContentType
+  include
+
   BINARY = "application/octet-stream"
 
-  ZIP_TYPES = %w(
-    application/zip
-
-    application/vnd.openxmlformats-officedocument.wordprocessingml.document
+  SUBTYPES = Hash.new([])
+  SUBTYPES["application/vnd.openxmlformats-officedocument.wordprocessingml.document"] = %w(
     application/vnd.openxmlformats-officedocument.wordprocessingml.template
     application/vnd.ms-word.document.macroenabled.12
     application/vnd.ms-word.template.macroenabled.12
+  )
 
-    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  SUBTYPES["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] = %w(
     application/vnd.openxmlformats-officedocument.spreadsheetml.template
     application/vnd.ms-excel.sheet.macroenabled.12
     application/vnd.ms-excel.template.macroenabled.12
     application/vnd.ms-excel.addin.macroenabled.12
     application/vnd.ms-excel.sheet.binary.macroenabled.12
+  )
 
-    application/vnd.openxmlformats-officedocument.presentationml.presentation
+  SUBTYPES["application/vnd.openxmlformats-officedocument.presentationml.presentation"] = %w(
     application/vnd.openxmlformats-officedocument.presentationml.template
     application/vnd.openxmlformats-officedocument.presentationml.slideshow
     application/vnd.ms-powerpoint.addin.macroenabled.12
@@ -29,12 +31,13 @@ class Marcel::ContentType
 
   class << self
     def for(io, name: nil, declared_type: nil)
-      by_magic_type = by_magic(io)
+      from_magic_type = by_magic(io)
+      fallback_type = by_declared_type(declared_type) || by_name(name) || BINARY
 
-      if by_magic_type.in?(ZIP_TYPES)
-        zip_subtype by_magic_type, (by_declared_type(declared_type) || by_name(name))
+      if from_magic_type
+        most_specific_type from_magic_type, fallback_type
       else
-        by_magic_type || by_declared_type(declared_type) || by_name(name) || BINARY
+        fallback_type
       end
     end
 
@@ -73,11 +76,14 @@ class Marcel::ContentType
         end
       end
 
-      def zip_subtype(type, subtype)
-        if subtype&.downcase&.in?(ZIP_TYPES)
-          subtype
+      # For some document types (most notably Microsoft Office) we can recognise the main content
+      # type with magic, but not the specific subtype. In this situation, if we can get a more
+      # specific type using either the name or declared_type, we should use that in preference
+      def most_specific_type(from_magic_type, fallback_type)
+        if fallback_type.in? SUBTYPES[from_magic_type]
+          fallback_type
         else
-          type
+          from_magic_type
         end
       end
   end
