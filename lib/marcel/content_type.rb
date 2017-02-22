@@ -1,4 +1,4 @@
-require 'mimemagic'
+require 'marcel/definitions'
 
 class Marcel::ContentType
   BINARY = "application/octet-stream"
