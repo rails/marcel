@@ -27,6 +27,10 @@ class Marcel::ContentType
     application/vnd.ms-powerpoint.slideshow.macroenabled.12
   )
 
+  SUBTYPES["application/x-ole-storage"] = %w(
+    application/vnd.ms-excel
+  )
+
   class << self
     def for(io, name: nil, declared_type: nil)
       from_magic_type = by_magic(io)
