@@ -1,4 +1,4 @@
 module Marcel
   autoload :VERSION, 'marcel/version'
-  autoload :ContentType, 'marcel/content_type'
+  autoload :MimeType, 'marcel/mime_type'
 end

@@ -8,5 +8,5 @@ to determine the type.
 
 Usage:
 
-    Marcel::ContentType.for File.open("example.gif"), name: "example.gif", declared_type: "application/octet-stream"
+    Marcel::MimeType.for File.open("example.gif"), name: "example.gif", declared_type: "application/octet-stream"
 

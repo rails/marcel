@@ -1,6 +1,6 @@
 require 'marcel/definitions'
 
-class Marcel::ContentType
+class Marcel::MimeType
   BINARY = "application/octet-stream"
 
   SUBTYPES = Hash.new([])
