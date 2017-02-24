@@ -36,4 +36,10 @@ class Marcel::MimeType::Subclasses
   subclasses["application/x-ole-storage"] = %w(
     application/vnd.ms-excel
   )
+
+  subclasses["application/zip"] = %w(
+    application/vnd.apple.pages
+    application/vnd.apple.keynote
+    application/vnd.apple.numbers
+  )
 end
