@@ -42,4 +42,10 @@ class Marcel::MimeType::Subclasses
     application/vnd.apple.keynote
     application/vnd.apple.numbers
   )
+
+  # Adobe Illustrator files have a PDF compatibility layer, which means they
+  # are not only seen as PDFs, but can usually be previewed as if PDFs too
+  subclasses["application/pdf"] = %w(
+    application/illustrator
+  )
 end
