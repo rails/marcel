@@ -6,7 +6,7 @@ class Marcel::MimeType::Subclasses
 
     private
       def subclasses
-        @subclasses ||= Hash.new([])
+        @subclasses ||= Hash.new { |hash, key| hash[key] = [] }
       end
   end
 

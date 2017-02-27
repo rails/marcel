@@ -17,6 +17,12 @@ class Marcel::MimeType
       end
     end
 
+    def for_extension(extension)
+      if extension
+        MimeMagic.by_extension(extension)&.type&.downcase
+      end
+    end
+
     private
       def by_magic(io)
         io = coerce_to_io(io)
