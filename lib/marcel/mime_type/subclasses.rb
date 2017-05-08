@@ -41,6 +41,7 @@ class Marcel::MimeType::Subclasses
     application/vnd.apple.pages
     application/vnd.apple.keynote
     application/vnd.apple.numbers
+    application/vnd.android.package-archive
   )
 
   # Adobe Illustrator files have a PDF compatibility layer, which means they
