@@ -6,36 +6,38 @@ class Marcel::MimeType
   BINARY = "application/octet-stream"
 
   class << self
-    def for(io, name: nil, declared_type: nil)
-      from_magic_type = by_magic(io)
-      fallback_type = by_declared_type(declared_type) || by_name(name) || BINARY
+    def for(io = nil, name: nil, extension: nil, declared_type: nil)
+      type_from_data = for_data(io)
+      fallback_type = for_declared_type(declared_type) || for_name(name) || for_extension(extension) || BINARY
 
-      if from_magic_type
-        most_specific_type from_magic_type, fallback_type
+      if type_from_data
+        most_specific_type type_from_data, fallback_type
       else
         fallback_type
       end
     end
 
-    def for_extension(extension)
-      if extension
-        MimeMagic.by_extension(extension)&.type&.downcase
-      end
-    end
-
     private
-      def by_magic(io)
-        io = coerce_to_io(io)
-        MimeMagic.by_magic(io)&.type&.downcase
+      def for_data(io)
+        if io
+          io = coerce_to_io(io)
+          MimeMagic.by_magic(io)&.type&.downcase
+        end
       end
 
-      def by_name(name)
+      def for_name(name)
         if name
           MimeMagic.by_path(name)&.type&.downcase
         end
       end
 
-      def by_declared_type(declared_type)
+      def for_extension(extension)
+        if extension
+          MimeMagic.by_extension(extension)&.type&.downcase
+        end
+      end
+
+      def for_declared_type(declared_type)
         type = parse_media_type(declared_type)
 
         if type != BINARY
@@ -58,7 +60,7 @@ class Marcel::MimeType
         end
       end
 
-      # For some document types (most notably Microsoft Office) we can recognise the main content
+      # For some document types (most notably Microsoft Office) we recognise the main content
       # type with magic, but not the specific subclass. In this situation, if we can get a more
       # specific class using either the name or declared_type, we should use that in preference
       def most_specific_type(from_magic_type, fallback_type)
