@@ -60,7 +60,7 @@ class Marcel::MimeType
         end
       end
 
-      # For some document types (most notably Microsoft Office) we recognise the main content
+      # For some document types (notably Microsoft Office) we recognise the main content
       # type with magic, but not the specific subclass. In this situation, if we can get a more
       # specific class using either the name or declared_type, we should use that in preference
       def most_specific_type(from_magic_type, fallback_type)
