@@ -44,6 +44,15 @@ class Marcel::MimeType::Subclasses
     application/vnd.android.package-archive
   )
 
+  [
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  ].each do |type|
+    subclasses["application/zip"] << type
+    subclasses["application/zip"].concat subclasses[type]
+  end
+
   # Adobe Illustrator files have a PDF compatibility layer, which means they
   # are not only seen as PDFs, but can usually be previewed as if PDFs too
   subclasses["application/pdf"] = %w(

@@ -14,9 +14,10 @@ class ActiveSupport::TestCase
 
     def each_content_type_fixture(folder)
       FileUtils.chdir fixture_path(folder) do
-        Dir["**/*.*"].each do |name|
+        Dir["**/*.*"].each.map do |name|
           if File.file?(name)
             _, content_type, extra, extension = *name.match(/\A([^\/]+\/[^\/]*)\/?(.*)\.(\w+)\Z/)
+            extra = nil if content_type.ends_with?(extra)
             yield files("#{folder}/#{name}"), name, content_type
           end
         end

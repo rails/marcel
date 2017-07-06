@@ -9,11 +9,17 @@ class Marcel::MimeType::ExtensionTest < ActiveSupport::TestCase
     assert_equal "application/pdf", Marcel::MimeType.for(extension: ".pdf")
   end
 
+  extensions = []
+
   each_content_type_fixture('name') do |file, name, content_type|
     extension = File.extname(name)
 
-    test "gets type for #{content_type} given file extension #{extension}" do
-      assert_equal content_type, Marcel::MimeType.for(extension: extension)
+    unless extensions.include?(extension)
+      test "gets type for #{content_type} given file extension #{extension}" do
+        assert_equal content_type, Marcel::MimeType.for(extension: extension)
+      end
+
+      extensions << extension
     end
   end
 end
