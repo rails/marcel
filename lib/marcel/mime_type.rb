@@ -1,14 +1,12 @@
 class Marcel::MimeType
-  autoload :Subclasses, 'marcel/mime_type/subclasses'
-
   BINARY = "application/octet-stream"
 
   class << self
     def add(type, extensions: [], parents: [], magic: nil)
       existing = MimeMagic::TYPES[type] || [[], [], ""]
 
-      extensions = extensions + existing[0]
-      parents = parents + existing[1]
+      extensions = Array(extensions) + existing[0]
+      parents = Array(parents) + existing[1]
       comment = existing[2]
 
       MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
@@ -72,7 +70,7 @@ class Marcel::MimeType
       # type with magic, but not the specific subclass. In this situation, if we can get a more
       # specific class using either the name or declared_type, we should use that in preference
       def most_specific_type(from_magic_type, fallback_type)
-        if fallback_type.in? Subclasses.for(from_magic_type)
+        if MimeMagic.child?(fallback_type, from_magic_type)
           fallback_type
         else
           from_magic_type
