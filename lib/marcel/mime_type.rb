@@ -1,11 +1,19 @@
-require 'marcel/mime_type/definitions'
-
 class Marcel::MimeType
   autoload :Subclasses, 'marcel/mime_type/subclasses'
 
   BINARY = "application/octet-stream"
 
   class << self
+    def add(type, extensions: [], parents: [], magic: nil)
+      existing = MimeMagic::TYPES[type] || [[], [], ""]
+
+      extensions = extensions + existing[0]
+      parents = parents + existing[1]
+      comment = existing[2]
+
+      MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
+    end
+
     def for(io = nil, name: nil, extension: nil, declared_type: nil)
       type_from_data = for_data(io)
       fallback_type = for_declared_type(declared_type) || for_name(name) || for_extension(extension) || BINARY
@@ -72,3 +80,6 @@ class Marcel::MimeType
       end
   end
 end
+
+require 'marcel/mime_type/definitions'
+
