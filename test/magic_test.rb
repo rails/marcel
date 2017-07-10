@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'rack'
 
-class Marcel::MimeType::MagicTest < ActiveSupport::TestCase
+class Marcel::MimeType::MagicTest < Marcel::TestCase
   # These fixtures should be recognisable given only their contents. Where a generic type
   # has more specific subclasses (such as application/zip), these subclasses cannot usually
   # be recognised by magic alone; their name is also needed to correctly identify them.

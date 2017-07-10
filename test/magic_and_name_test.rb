@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'rack'
 
-class Marcel::MimeType::MagicAndNameTest < ActiveSupport::TestCase
+class Marcel::MimeType::MagicAndNameTest < Marcel::TestCase
   # All fixtures that can be recognised by name should also be recognisable when given
   # the file contents and the name. In some cases, the file contents will point to a
   # generic type, while the name will choose a more specific subclass

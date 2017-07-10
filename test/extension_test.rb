@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'rack'
 
-class Marcel::MimeType::ExtensionTest < ActiveSupport::TestCase
+class Marcel::MimeType::ExtensionTest < Marcel::TestCase
   test "ignores case and any preceding dot" do
     assert_equal "application/pdf", Marcel::MimeType.for(extension: "PDF")
     assert_equal "application/pdf", Marcel::MimeType.for(extension: ".PDF")

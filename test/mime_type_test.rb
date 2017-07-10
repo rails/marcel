@@ -1,8 +1,8 @@
 require 'test_helper'
 require 'rack'
 
-class Marcel::MimeTypeTest < ActiveSupport::TestCase
-  setup do
+class Marcel::MimeTypeTest < Marcel::TestCase
+  def setup
     @path = files("image.gif").to_s
   end
 
@@ -21,7 +21,7 @@ class Marcel::MimeTypeTest < ActiveSupport::TestCase
   test "closes Pathname files after use" do
     content_type = Marcel::MimeType.for Pathname.new(@path)
     open_files = ObjectSpace.each_object(File).reject(&:closed?)
-    assert_not open_files.detect { |f| f.path == @path }
+    assert open_files.none? { |f| f.path == @path }
   end
 
   test "gets content type from Tempfiles" do

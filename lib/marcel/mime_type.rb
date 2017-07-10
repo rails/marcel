@@ -63,7 +63,8 @@ class Marcel::MimeType
 
       def parse_media_type(content_type)
         if content_type
-          content_type.downcase.split(/[;,\s]/, 2).first.presence
+          result = content_type.downcase.split(/[;,\s]/, 2).first
+          result if result && result.index("/")
         end
       end
 
