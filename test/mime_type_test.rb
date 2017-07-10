@@ -7,13 +7,21 @@ class Marcel::MimeTypeTest < ActiveSupport::TestCase
   end
 
   test "gets content type from Files" do
-    content_type = Marcel::MimeType.for File.new(@path)
+    content_type = File.open @path do |file|
+      Marcel::MimeType.for file
+    end
     assert_equal "image/gif", content_type
   end
 
   test "gets content type from Pathnames" do
     content_type = Marcel::MimeType.for Pathname.new(@path)
     assert_equal "image/gif", content_type
+  end
+
+  test "closes Pathname files after use" do
+    content_type = Marcel::MimeType.for Pathname.new(@path)
+    open_files = ObjectSpace.each_object(File).reject(&:closed?)
+    assert_not open_files.detect { |f| f.path == @path }
   end
 
   test "gets content type from Tempfiles" do

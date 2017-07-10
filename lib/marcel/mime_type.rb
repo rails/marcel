@@ -26,8 +26,9 @@ class Marcel::MimeType
     private
       def for_data(io)
         if io
-          io = coerce_to_io(io)
-          MimeMagic.by_magic(io)&.type&.downcase
+          coerce_to_io(io) do |io|
+            MimeMagic.by_magic(io)&.type&.downcase
+          end
         end
       end
 
@@ -51,12 +52,12 @@ class Marcel::MimeType
         end
       end
 
-      def coerce_to_io(io)
+      def coerce_to_io(io, &block)
         case io
         when Pathname
-          io.open
+          io.open &block
         else
-          io
+          yield io
         end
       end
 
