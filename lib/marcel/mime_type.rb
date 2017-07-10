@@ -5,8 +5,8 @@ class Marcel::MimeType
     def extend(type, extensions: [], parents: [], magic: nil)
       existing = MimeMagic::TYPES[type] || [[], [], ""]
 
-      extensions = Array(extensions) + existing[0]
-      parents = Array(parents) + existing[1]
+      extensions = (Array(extensions) + existing[0]).uniq
+      parents = (Array(parents) + existing[1]).uniq
       comment = existing[2]
 
       MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
