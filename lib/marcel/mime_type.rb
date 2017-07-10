@@ -2,7 +2,7 @@ class Marcel::MimeType
   BINARY = "application/octet-stream"
 
   class << self
-    def add(type, extensions: [], parents: [], magic: nil)
+    def extend(type, extensions: [], parents: [], magic: nil)
       existing = MimeMagic::TYPES[type] || [[], [], ""]
 
       extensions = Array(extensions) + existing[0]
