@@ -12,8 +12,8 @@ class Marcel::MimeType
       MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
     end
 
-    def for(io = nil, name: nil, extension: nil, declared_type: nil)
-      type_from_data = for_data(io)
+    def for(pathname_or_io = nil, name: nil, extension: nil, declared_type: nil)
+      type_from_data = for_data(pathname_or_io)
       fallback_type = for_declared_type(declared_type) || for_name(name) || for_extension(extension) || BINARY
 
       if type_from_data
@@ -24,9 +24,9 @@ class Marcel::MimeType
     end
 
     private
-      def for_data(io)
-        if io
-          coerce_to_io(io) do |io|
+      def for_data(pathname_or_io)
+        if pathname_or_io
+          with_io(pathname_or_io) do |io|
             MimeMagic.by_magic(io)&.type&.downcase
           end
         end
@@ -52,12 +52,12 @@ class Marcel::MimeType
         end
       end
 
-      def coerce_to_io(io, &block)
-        case io
+      def with_io(pathname_or_io, &block)
+        case pathname_or_io
         when Pathname
-          io.open &block
+          pathname_or_io.open &block
         else
-          yield io
+          yield pathname_or_io
         end
       end
 
