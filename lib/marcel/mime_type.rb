@@ -12,12 +12,6 @@ class Marcel::MimeType
       MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
     end
 
-    def remove_magic(type)
-      existing = MimeMagic::TYPES[type] || [[], [], ""]
-      MimeMagic.remove(type)
-      MimeMagic.add type, extensions: existing[0], parents: existing[1], comment: existing[2]
-    end
-
     def for(pathname_or_io = nil, name: nil, extension: nil, declared_type: nil)
       type_from_data = for_data(pathname_or_io)
       fallback_type = for_declared_type(declared_type) || for_name(name) || for_extension(extension) || BINARY
@@ -78,10 +72,18 @@ class Marcel::MimeType
       # type with magic, but not the specific subclass. In this situation, if we can get a more
       # specific class using either the name or declared_type, we should use that in preference
       def most_specific_type(from_magic_type, fallback_type)
-        if MimeMagic.child?(fallback_type, from_magic_type)
+        if (root_types(from_magic_type) & root_types(fallback_type)).any?
           fallback_type
         else
           from_magic_type
+        end
+      end
+
+      def root_types(type)
+        if MimeMagic::TYPES[type].nil? || MimeMagic::TYPES[type][1].empty?
+          [ type ]
+        else
+          MimeMagic::TYPES[type][1].map {|t| root_types t }.flatten
         end
       end
   end

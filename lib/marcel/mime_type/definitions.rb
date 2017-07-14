@@ -33,11 +33,3 @@ Marcel::MimeType.extend "application/vnd.apple.numbers", extensions: %w( numbers
 Marcel::MimeType.extend "application/vnd.apple.keynote", extensions: %w( key ), parents: "application/zip"
 
 Marcel::MimeType.extend "image/vnd.dwg", magic: [[0, "AC10"]]
-
-# Some magic definitions are too broad, capturing files starting with words like 'function', 'class', or common comment formats like '//'. So we remove the magic but keep the rest of the definition.
-
-Marcel::MimeType.remove_magic "text/x-matlab"
-Marcel::MimeType.remove_magic "text/x-modelica"
-Marcel::MimeType.remove_magic "text/x-csrc"
-Marcel::MimeType.remove_magic "text/x-objcsrc"
-
