@@ -1,0 +1,34 @@
+User-Agent: Microsoft-MacOutlook/0.0.0.151105
+Date: Wed, 12 Jul 2017 15:25:43 +0100
+Subject: Example email
+From: Tom Ward <tom@popdog.net>
+To: <tom@example.com>
+Message-ID: <D7B2F82B-4176-475B-BA89-4356D7AA2DF6@popdog.net>
+Thread-Topic: Example email
+Mime-version: 1.0
+Content-type: multipart/alternative;
+	boundary="B_3582727856_2021010881"
+
+> This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+--B_3582727856_2021010881
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: 7bit
+
+Hello
+
+
+--B_3582727856_2021010881
+Content-type: text/html;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+<html><head></head><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: s=
+pace; -webkit-line-break: after-white-space; color: rgb(0, 0, 0); font-size:=
+ 14px; font-family: Calibri, sans-serif;"><div><div><div>Hello</div><div><di=
+v id=3D"MAC_OUTLOOK_SIGNATURE"></div></div></div></div></body></html>
+
+--B_3582727856_2021010881--
+

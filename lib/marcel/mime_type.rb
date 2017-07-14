@@ -12,6 +12,12 @@ class Marcel::MimeType
       MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
     end
 
+    def remove_magic(type)
+      existing = MimeMagic::TYPES[type] || [[], [], ""]
+      MimeMagic.remove(type)
+      MimeMagic.add type, extensions: existing[0], parents: existing[1], comment: existing[2]
+    end
+
     def for(pathname_or_io = nil, name: nil, extension: nil, declared_type: nil)
       type_from_data = for_data(pathname_or_io)
       fallback_type = for_declared_type(declared_type) || for_name(name) || for_extension(extension) || BINARY
