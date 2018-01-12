@@ -27,28 +27,34 @@ class Marcel::MimeType
       def for_data(pathname_or_io)
         if pathname_or_io
           with_io(pathname_or_io) do |io|
-            MimeMagic.by_magic(io)&.type&.downcase
+            if magic = MimeMagic.by_magic(io)
+              magic.type.downcase
+            end
           end
         end
       end
 
       def for_name(name)
         if name
-          MimeMagic.by_path(name)&.type&.downcase
+          if magic = MimeMagic.by_path(name)
+            magic.type.downcase
+          end
         end
       end
 
       def for_extension(extension)
         if extension
-          MimeMagic.by_extension(extension)&.type&.downcase
+          if magic = MimeMagic.by_extension(extension)
+            magic.type.downcase
+          end
         end
       end
 
       def for_declared_type(declared_type)
         type = parse_media_type(declared_type)
 
-        if type != BINARY
-          type&.downcase
+        if type != BINARY && !type.nil?
+          type.downcase
         end
       end
 
@@ -90,4 +96,3 @@ class Marcel::MimeType
 end
 
 require 'marcel/mime_type/definitions'
-

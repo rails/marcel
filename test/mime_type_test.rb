@@ -25,7 +25,7 @@ class Marcel::MimeTypeTest < Marcel::TestCase
   end
 
   test "gets content type from Tempfiles" do
-    Tempfile.open do |tempfile|
+    Tempfile.open("Marcel") do |tempfile|
       tempfile.write(File.read(@path))
       content_type = Marcel::MimeType.for tempfile
       assert_equal "image/gif", content_type
