@@ -7,6 +7,7 @@ Marcel::MimeType.extend "application/illustrator", parents: "application/pdf"
 Marcel::MimeType.extend "image/vnd.adobe.photoshop", magic: [[0, "8BPS"]], extensions: %w( psd psb )
 
 Marcel::MimeType.extend "application/vnd.ms-excel", parents: "application/x-ole-storage"
+Marcel::MimeType.extend "application/vnd.ms-powerpoint", parents: "application/x-ole-storage"
 
 Marcel::MimeType.extend "application/vnd.openxmlformats-officedocument.wordprocessingml.document", parents: "application/zip"
 Marcel::MimeType.extend "application/vnd.openxmlformats-officedocument.wordprocessingml.template", parents: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
