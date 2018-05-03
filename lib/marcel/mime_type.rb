@@ -61,7 +61,7 @@ class Marcel::MimeType
       def with_io(pathname_or_io, &block)
         case pathname_or_io
         when Pathname
-          pathname_or_io.open &block
+          pathname_or_io.open(&block)
         else
           yield pathname_or_io
         end
