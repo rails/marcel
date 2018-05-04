@@ -8,7 +8,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     mimemagic (0.3.2)
-    minitest (5.10.2)
+    minitest (5.11.3)
     rack (2.0.3)
     rake (10.5.0)
 
@@ -18,8 +18,8 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.7)
   marcel!
-  minitest
-  rack (~> 2.0.1)
+  minitest (~> 5.11)
+  rack (~> 2.0)
   rake (~> 10.0)
 
 BUNDLED WITH
