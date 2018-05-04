@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require 'marcel'
+require 'pathname'
 
 class Marcel::TestCase < MiniTest::Test
   class << self
