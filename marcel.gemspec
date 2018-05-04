@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Marcel::VERSION
   spec.authors       = ['Tom Ward']
   spec.email         = ['tom@basecamp.com']
-  spec.summary       = %q{Simple mime type detection using magic numbers, filenames, and extensions}
+  spec.summary       = %q{Simple mime type detection using magic numbers, file names, and extensions}
   spec.homepage      = 'https://github.com/basecamp/marcel'
   spec.license       = 'MIT'
 
