@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    marcel (0.3.2)
+    marcel (0.3.3)
       mimemagic (~> 0.3.2)
 
 GEM
@@ -23,4 +23,4 @@ DEPENDENCIES
   rake (~> 10.0)
 
 BUNDLED WITH
-   1.16.1
+   1.16.4
