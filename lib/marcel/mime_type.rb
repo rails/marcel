@@ -59,8 +59,7 @@ class Marcel::MimeType
       end
 
       def with_io(pathname_or_io, &block)
-        case pathname_or_io
-        when Pathname
+        if defined?(Pathname) && pathname_or_io.is_a?(Pathname)
           pathname_or_io.open(&block)
         else
           yield pathname_or_io
