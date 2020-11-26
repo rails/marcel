@@ -43,8 +43,15 @@ Marcel was extracted from Basecamp 3, in order to make our file detection logic 
 
 ## Implementation
 
-At present, marcel is mainly a thin wrapper around the mimemagic gem. It adds priority logic (preferring magic over name when given both), some extra type definitions, and common type subclasses (including Keynote, Pages, etc).
+At present, marcel is mainly a thin wrapper around the [mimemagic gem][mime-magic-gem-url]. It adds priority logic (preferring magic over name when given both), some extra type definitions, and common type subclasses (including Keynote, Pages, etc).
 
 ## Testing
 
 The main test fixture files are split into two folders, those that can be recognised by magic numbers, and those that can only be recognised by name. Even though strictly unnecessary, the fixtures in both folders should all be valid files of the type they represent.
+
+## References
+
+* [Mimemagic gem][mime-magic-gem-url]
+* [Shared MIME-info Database Specification](https://specifications.freedesktop.org/shared-mime-info-spec/latest/)
+
+[mime-magic-gem-url]: https://github.com/minad/mimemagic
