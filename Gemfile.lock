@@ -10,17 +10,17 @@ GEM
     mimemagic (0.3.2)
     minitest (5.11.3)
     rack (2.1.4)
-    rake (10.5.0)
+    rake (13.0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.7)
+  bundler (>= 1.7)
   marcel!
   minitest (~> 5.11)
   rack (~> 2.0)
-  rake (~> 10.0)
+  rake (~> 13.0)
 
 BUNDLED WITH
    1.16.4
