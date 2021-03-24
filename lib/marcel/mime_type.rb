@@ -3,7 +3,13 @@ require "mini_mime"
 class Marcel::MimeType
   BINARY = "application/octet-stream"
 
+  @ext_overrides = {}
+
+  OverrideInfo = Struct.new(:content_type)
+
   class << self
+    attr_reader :ext_overrides
+
     def extend(type, extensions: [], parents: [], magic: nil)
       existing = MimeMagic::TYPES[type] || [[], [], ""]
 
@@ -12,6 +18,12 @@ class Marcel::MimeType
       comment = existing[2]
 
       MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
+
+      info = MiniMime.lookup_by_content_type(type)
+      info ||= OverrideInfo.new(type)
+      extensions.each do |ext|
+        @ext_overrides[ext] = info
+      end
     end
 
     def for(pathname_or_io = nil, name: nil, extension: nil, declared_type: nil)
@@ -38,15 +50,16 @@ class Marcel::MimeType
 
       def for_name(name)
         if name
-          if info = MiniMime.lookup_by_filename(name)
-            info.content_type.downcase
-          end
+          extension = File.extname(name)
+          return if extension.empty?
+          for_extension(extension)
         end
       end
 
       def for_extension(extension)
         if extension
-          if info = MiniMime.lookup_by_extension(extension.gsub(/^\./, ""))
+          extension = extension.gsub(/\A\./, "")
+          if info = (Marcel::MimeType.ext_overrides[extension] || MiniMime.lookup_by_extension(extension))
             info.content_type.downcase
           end
         end
