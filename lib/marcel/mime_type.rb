@@ -1,3 +1,5 @@
+require "mini_mime"
+
 class Marcel::MimeType
   BINARY = "application/octet-stream"
 
@@ -36,16 +38,16 @@ class Marcel::MimeType
 
       def for_name(name)
         if name
-          if magic = MimeMagic.by_path(name)
-            magic.type.downcase
+          if info = MiniMime.lookup_by_filename(name)
+            info.content_type.downcase
           end
         end
       end
 
       def for_extension(extension)
         if extension
-          if magic = MimeMagic.by_extension(extension)
-            magic.type.downcase
+          if info = MiniMime.lookup_by_extension(extension.gsub(/^\./, ""))
+            info.content_type.downcase
           end
         end
       end
