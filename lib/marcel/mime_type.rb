@@ -58,7 +58,8 @@ class Marcel::MimeType
 
       def for_extension(extension)
         if extension
-          extension = extension.gsub(/\A\./, "")
+          extension = extension.gsub(/\A\./, "").downcase
+
           if info = (Marcel::MimeType.ext_overrides[extension] || MiniMime.lookup_by_extension(extension))
             info.content_type.downcase
           end
