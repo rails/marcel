@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.2'
 
   spec.add_dependency 'mimemagic', '~> 0.3.2'
+  spec.add_dependency 'mini_mime', '~> 1.0.2'
 
   spec.add_development_dependency 'minitest', '~> 5.11'
   spec.add_development_dependency 'bundler', '>= 1.7'

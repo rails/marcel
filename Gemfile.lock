@@ -3,11 +3,13 @@ PATH
   specs:
     marcel (0.3.3)
       mimemagic (~> 0.3.2)
+      mini_mime (~> 1.0.2)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    mimemagic (0.3.2)
+    mimemagic (0.3.6)
+    mini_mime (1.0.2)
     minitest (5.11.3)
     rack (2.1.4)
     rake (13.0.1)
@@ -23,4 +25,4 @@ DEPENDENCIES
   rake (~> 13.0)
 
 BUNDLED WITH
-   1.16.4
+   1.17.2
