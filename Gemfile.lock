@@ -1,14 +1,20 @@
+GIT
+  remote: git://github.com/kwilczynski/ruby-magic.git
+  revision: 3355199c5dce18e596a21f545e3141a07aa4d9c8
+  branch: main
+  specs:
+    ruby-magic (0.2.0)
+
 PATH
   remote: .
   specs:
     marcel (0.3.3)
-      mimemagic (~> 0.3.2)
       mini_mime (~> 1.0.2)
+      ruby-magic (~> 0.2.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    mimemagic (0.3.6)
     mini_mime (1.0.2)
     minitest (5.11.3)
     rack (2.1.4)
@@ -23,6 +29,7 @@ DEPENDENCIES
   minitest (~> 5.11)
   rack (~> 2.0)
   rake (~> 13.0)
+  ruby-magic!
 
 BUNDLED WITH
    1.17.2

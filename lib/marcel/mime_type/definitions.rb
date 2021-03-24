@@ -1,6 +1,3 @@
-require 'mimemagic'
-require 'mimemagic/overlay'
-
 Marcel::MimeType.extend "text/plain", extensions: %w( txt asc )
 
 Marcel::MimeType.extend "application/illustrator", parents: "application/pdf"

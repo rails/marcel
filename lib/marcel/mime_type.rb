@@ -1,28 +1,38 @@
 require "mini_mime"
+require "magic"
 
 class Marcel::MimeType
   BINARY = "application/octet-stream"
 
-  @ext_overrides = {}
-
   OverrideInfo = Struct.new(:content_type)
 
+  @magic = Magic.new
+  @magic.flags = Magic::MIME_TYPE
+
+  @ext_overrides = {}
+
+  @parents = {}
+
   class << self
-    attr_reader :ext_overrides
+    attr_reader :magic, :ext_overrides, :parents
 
     def extend(type, extensions: [], parents: [], magic: nil)
-      existing = MimeMagic::TYPES[type] || [[], [], ""]
-
-      extensions = (Array(extensions) + existing[0]).uniq
-      parents = (Array(parents) + existing[1]).uniq
-      comment = existing[2]
-
-      MimeMagic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
-
       info = MiniMime.lookup_by_content_type(type)
+
+      extensions = Array(extensions)
+      extensions << info.extension unless info.nil?
+
       info ||= OverrideInfo.new(type)
+
       extensions.each do |ext|
         @ext_overrides[ext] = info
+      end
+
+      parents = Array(parents)
+
+      if parents.any?
+        @parents[type] ||= []
+        @parents[type] |= parents
       end
     end
 
@@ -39,13 +49,19 @@ class Marcel::MimeType
 
     private
       def for_data(pathname_or_io)
-        if pathname_or_io
-          with_io(pathname_or_io) do |io|
-            if magic = MimeMagic.by_magic(io)
-              magic.type.downcase
-            end
+        mime_type =
+          case
+          when defined?(Pathname) && pathname_or_io.is_a?(Pathname)
+            pathname_or_io.open { |io| for_data(io) }
+
+          when pathname_or_io.is_a?(String)
+            magic.buffer(pathname_or_io)
+
+          when io = IO.try_convert(pathname_or_io)
+            magic.file(io)
           end
-        end
+
+        mime_type unless mime_type == "application/x-empty"
       end
 
       def for_name(name)
@@ -74,14 +90,6 @@ class Marcel::MimeType
         end
       end
 
-      def with_io(pathname_or_io, &block)
-        if defined?(Pathname) && pathname_or_io.is_a?(Pathname)
-          pathname_or_io.open(&block)
-        else
-          yield pathname_or_io
-        end
-      end
-
       def parse_media_type(content_type)
         if content_type
           result = content_type.downcase.split(/[;,\s]/, 2).first
@@ -89,9 +97,6 @@ class Marcel::MimeType
         end
       end
 
-      # For some document types (notably Microsoft Office) we recognise the main content
-      # type with magic, but not the specific subclass. In this situation, if we can get a more
-      # specific class using either the name or declared_type, we should use that in preference
       def most_specific_type(from_magic_type, fallback_type)
         if (root_types(from_magic_type) & root_types(fallback_type)).any?
           fallback_type
@@ -101,10 +106,10 @@ class Marcel::MimeType
       end
 
       def root_types(type)
-        if MimeMagic::TYPES[type].nil? || MimeMagic::TYPES[type][1].empty?
-          [ type ]
+        if parents.include?(type) && parents[type].any?
+          parents[type].flat_map { |parent| root_types parent }.uniq
         else
-          MimeMagic::TYPES[type][1].map {|t| root_types t }.flatten
+          [ type ]
         end
       end
   end
