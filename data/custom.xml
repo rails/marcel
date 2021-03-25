@@ -1,4 +1,12 @@
 <mime-info>
+  <mime-type type="image/svg+xml">
+    <sub-class-of type="text/xml" />
+
+    <magic priority="50">
+      <match value="&lt;svg " type="string" offset="0" />
+    </magic>
+  </mime-type>
+
   <mime-type type="application/msword">
     <sub-class-of type="application/x-tika-msoffice" />
 
