@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    marcel (0.3.3)
-      mimemagic (~> 0.3.2)
+    marcel (0.3.4)
+      mimemagic (~> 0.3.7)
       mini_mime (~> 1.0.2)
 
 GEM
