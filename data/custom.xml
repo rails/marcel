@@ -65,4 +65,16 @@
       </match>
     </magic>
   </mime-type>
+
+  <mime-type type="video/webm">
+    <sub-class-of="application/x-matroska" />
+
+    <magic priority="50">
+      <match value="0x1a45dfa3" type="string" offset="0">
+        <match value="\x42\x82" type="string" offset="4:4096">
+          <match value="webm" type="string" offset="4:4096" />
+        </match>
+      </match>
+    </magic>
+  </mime-type>
 </mime-info>
