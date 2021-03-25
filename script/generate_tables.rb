@@ -36,7 +36,7 @@ def get_matches(parent)
 
     offset = offset.size == 2 ? offset[0]..offset[1] : offset[0]
     case type
-    when 'string'
+    when 'string', 'stringignorecase'
       value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
       value.gsub!(/\\(x[\dA-Fa-f]{1,2}|0\d{1,3}|\d{1,3}|.)/) { eval("\"\\#{$1}\"") }
 
