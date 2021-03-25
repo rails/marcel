@@ -1,4 +1,6 @@
 require 'minitest/autorun'
+require 'byebug'
+
 require 'marcel'
 require 'pathname'
 
