@@ -86,71 +86,75 @@ def get_matches(parent)
   }.compact
 end
 
-if ARGV.size != 1
+if ARGV.size == 0
   puts "Usage: #{$0} path/to/data.xml"
   exit 1
 end
 
-FILE = ARGV[0]
-file = File.new(FILE)
-doc = Nokogiri::XML(file)
 extensions = {}
 types = {}
 magics = []
-(doc/'mime-info/mime-type').each do |mime|
-  comments = Hash[*(mime/'_comment').map {|comment| [comment['xml:lang'], comment.inner_text] }.flatten]
-  type = mime['type']
-  subclass = (mime/'sub-class-of').map{|x| x['type']}
-  exts = (mime/'glob').map{|x| x['pattern'] =~ /^\*\.([^\[\]]+)$/ ? $1.downcase : nil }.compact
-  (mime/'magic').each do |magic|
-    priority = magic['priority'].to_i
-    matches = get_matches(magic)
-    magics << [priority, type, matches]
-  end
-  if !exts.empty?
-    exts.each{|x|
-      extensions[x] = type if !extensions.include?(x)
-    }
-    types[type] = [exts,subclass,comments[nil]]
+
+ARGV.each do |path|
+  file = File.new(path)
+  doc = Nokogiri::XML(file)
+
+  (doc/'mime-info/mime-type').each do |mime|
+    comments = Hash[*(mime/'_comment').map {|comment| [comment['xml:lang'], comment.inner_text] }.flatten]
+    type = mime['type']
+    subclass = (mime/'sub-class-of').map{|x| x['type']}
+    exts = (mime/'glob').map{|x| x['pattern'] =~ /^\*\.([^\[\]]+)$/ ? $1.downcase : nil }.compact
+    (mime/'magic').each do |magic|
+      priority = magic['priority'].to_i
+      matches = get_matches(magic)
+      magics << [priority, type, matches]
+    end
+    if !exts.empty?
+      exts.each{|x|
+        extensions[x] = type if !extensions.include?(x)
+      }
+      types[type] = [exts,subclass,comments[nil]]
+    end
   end
 end
 
 magics = magics.sort {|a,b| [-a[0],a[1]] <=> [-b[0],b[1]] }
 
 common_types = [
-  "image/jpeg",                                                              # .jpg
-  "image/png",                                                               # .png
-  "image/gif",                                                               # .gif
-  "image/tiff",                                                              # .tiff
-  "image/bmp",                                                               # .bmp
-  "image/vnd.adobe.photoshop",                                               # .psd
-  "image/webp",                                                              # .webp
-  "image/svg+xml",                                                           # .svg
+  "image/jpeg",                                                                # .jpg
+  "image/png",                                                                 # .png
+  "image/gif",                                                                 # .gif
+  "image/tiff",                                                                # .tiff
+  "image/bmp",                                                                 # .bmp
+  "image/vnd.adobe.photoshop",                                                 # .psd
+  "image/webp",                                                                # .webp
+  "image/svg+xml",                                                             # .svg
 
-  "video/x-msvideo",                                                         # .avi
-  "video/x-ms-wmv",                                                          # .wmv
-  "video/mp4",                                                               # .mp4, .m4v
-  "audio/mp4",                                                               # .m4a
-  "video/quicktime",                                                         # .mov
-  "video/mpeg",                                                              # .mpeg
-  "video/ogg",                                                               # .ogv
-  "video/webm",                                                              # .webm
-  "video/x-matroska",                                                        # .mkv
-  "video/x-flv",                                                             # .flv
+  "video/x-msvideo",                                                           # .avi
+  "video/x-ms-wmv",                                                            # .wmv
+  "video/mp4",                                                                 # .mp4, .m4v
+  "audio/mp4",                                                                 # .m4a
+  "video/quicktime",                                                           # .mov
+  "video/mpeg",                                                                # .mpeg
+  "video/ogg",                                                                 # .ogv
+  "video/webm",                                                                # .webm
+  "video/x-matroska",                                                          # .mkv
+  "video/x-flv",                                                               # .flv
 
-  "audio/mpeg",                                                              # .mp3
-  "audio/x-wav",                                                             # .wav
-  "audio/aac",                                                               # .aac
-  "audio/flac",                                                              # .flac
-  "audio/ogg",                                                               # .ogg
+  "audio/mpeg",                                                                # .mp3
+  "audio/x-wav",                                                               # .wav
+  "audio/aac",                                                                 # .aac
+  "audio/flac",                                                                # .flac
+  "audio/ogg",                                                                 # .ogg
 
-  "application/pdf",                                                         # .pdf
-  "application/msword",                                                      # .doc
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", # .docx
-  "application/vnd.ms-powerpoint",                                           # .pps
-  "application/vnd.openxmlformats-officedocument.presentationml.slideshow",  # .ppsx
-  "application/vnd.ms-excel",                                                # .pps
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",       # .ppsx
+  "application/pdf",                                                           # .pdf
+  "application/msword",                                                        # .doc
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",   # .docx
+  "application/vnd.ms-powerpoint",                                             # .pps
+  "application/vnd.openxmlformats-officedocument.presentationml.slideshow",    # .ppsx
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation", # .pptx
+  "application/vnd.ms-excel",                                                  # .xls
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",         # .xlsx
 ]
 
 common_magics = common_types.map do |common_type|
@@ -161,7 +165,6 @@ magics = (common_magics.compact + magics).uniq
 
 puts "# -*- coding: binary -*-"
 puts "# frozen_string_literal: true"
-puts "# Generated from #{FILE}"
 puts "module Marcel"
 puts "  # @private"
 puts "  # :nodoc:"
