@@ -45,7 +45,7 @@ module Marcel
 
         def for_extension(extension)
           if extension
-            if magic = Marcel::Magic.by_extension(name)
+            if magic = Marcel::Magic.by_extension(extension)
               magic.type.downcase
             end
           end
