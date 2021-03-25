@@ -21,43 +21,68 @@ end
 
 def get_matches(parent)
   parent.elements.map {|match|
-    if match['mask']
-      nil
-    else
-      type = match['type']
-      value = match['value']
-      offset = match['offset'] || '0'
-      offset = offset.split(':').map {|x| x.to_i }
-      offset = offset.size == 2 ? offset[0]..offset[1] : offset[0]
-      case type
-      when 'string'
-        value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
-        value.gsub!(/\\(x[\dA-Fa-f]{1,2}|0\d{1,3}|\d{1,3}|.)/) { eval("\"\\#{$1}\"") }
-      when 'big16'
-        value = str2int(value)
-        value = ((value >> 8).chr + (value & 0xFF).chr)
-      when 'big32'
-        value = str2int(value)
-        value = (((value >> 24) & 0xFF).chr + ((value >> 16) & 0xFF).chr + ((value >> 8) & 0xFF).chr + (value & 0xFF).chr)
-      when 'little16'
-        value = str2int(value)
-        value = ((value & 0xFF).chr + (value >> 8).chr)
-      when 'little32'
-        value = str2int(value)
-        value = ((value & 0xFF).chr + ((value >> 8) & 0xFF).chr + ((value >> 16) & 0xFF).chr + ((value >> 24) & 0xFF).chr)
-      when 'host16' # use little endian
-        value = str2int(value)
-        value = ((value & 0xFF).chr + (value >> 8).chr)
-      when 'host32' # use little endian
-        value = str2int(value)
-        value = ((value & 0xFF).chr + ((value >> 8) & 0xFF).chr + ((value >> 16) & 0xFF).chr + ((value >> 24) & 0xFF).chr)
-      when 'byte'
-        value = str2int(value)
-        value = value.chr
-      end
-      children = get_matches(match)
-      children.empty? ? [offset, value] : [offset, value, children]
+    children = get_matches(match)
+
+    type = match['type']
+    value = match['value']
+    offset = match['offset'] || '0'
+    offset = offset.split(':').map {|x| x.to_i }
+
+    mask = match['mask']
+    if mask && (!mask.match?(/\A0x(FF|00)*\z/) || type != 'string')
+      # We only support masks of whole bytes against a string type
+      next nil
     end
+
+    offset = offset.size == 2 ? offset[0]..offset[1] : offset[0]
+    case type
+    when 'string'
+      value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
+      value.gsub!(/\\(x[\dA-Fa-f]{1,2}|0\d{1,3}|\d{1,3}|.)/) { eval("\"\\#{$1}\"") }
+
+      if mask
+        segments = []
+        mask.scan(/(?:FF)+/) do
+          match = $~
+          match_offset = match.offset(0)
+          mask_offset = (match_offset[0] - 2) / 2
+          mask_length = (match_offset[1] - match_offset[0]) / 2
+          segments << [mask_offset, mask_length]
+        end
+        chain = children
+        segments.reverse_each do |(mask_offset, mask_length)|
+          masked_value = value[mask_offset, mask_length]
+          if chain.empty?
+            chain = [[mask_offset, masked_value]]
+          else
+            chain = [[mask_offset, masked_value, chain]]
+          end
+        end
+        next chain[0]
+      end
+    when 'big16'
+      value = str2int(value)
+      value = ((value >> 8).chr + (value & 0xFF).chr)
+    when 'big32'
+      value = str2int(value)
+      value = (((value >> 24) & 0xFF).chr + ((value >> 16) & 0xFF).chr + ((value >> 8) & 0xFF).chr + (value & 0xFF).chr)
+    when 'little16'
+      value = str2int(value)
+      value = ((value & 0xFF).chr + (value >> 8).chr)
+    when 'little32'
+      value = str2int(value)
+      value = ((value & 0xFF).chr + ((value >> 8) & 0xFF).chr + ((value >> 16) & 0xFF).chr + ((value >> 24) & 0xFF).chr)
+    when 'host16' # use little endian
+      value = str2int(value)
+      value = ((value & 0xFF).chr + (value >> 8).chr)
+    when 'host32' # use little endian
+      value = str2int(value)
+      value = ((value & 0xFF).chr + ((value >> 8) & 0xFF).chr + ((value >> 16) & 0xFF).chr + ((value >> 24) & 0xFF).chr)
+    when 'byte'
+      value = str2int(value)
+      value = value.chr
+    end
+    children.empty? ? [offset, value] : [offset, value, children]
   }.compact
 end
 
