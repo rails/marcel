@@ -105,6 +105,7 @@ common_types = [
   "video/x-msvideo",                                                         # .avi
   "video/x-ms-wmv",                                                          # .wmv
   "video/mp4",                                                               # .mp4, .m4v
+  "audio/mp4",                                                               # .m4a
   "video/quicktime",                                                         # .mov
   "video/mpeg",                                                              # .mpeg
   "video/ogg",                                                               # .ogv
@@ -116,7 +117,6 @@ common_types = [
   "audio/x-wav",                                                             # .wav
   "audio/aac",                                                               # .aac
   "audio/flac",                                                              # .flac
-  "audio/mp4",                                                               # .m4a
   "audio/ogg",                                                               # .ogg
 
   "application/pdf",                                                         # .pdf
