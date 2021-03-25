@@ -1,6 +1,3 @@
-require 'mimemagic'
-require 'mimemagic/overlay'
-
 Marcel::MimeType.extend "text/plain", extensions: %w( txt asc )
 
 Marcel::MimeType.extend "application/illustrator", parents: "application/pdf"
@@ -37,12 +34,3 @@ Marcel::MimeType.extend "image/vnd.dwg", magic: [[0, "AC10"]]
 
 Marcel::MimeType.extend "image/heif", magic: [[4, "ftypmif1"]], extensions: %w( heif )
 Marcel::MimeType.extend "image/heic", magic: [[4, "ftypheic"]], extensions: %w( heic )
-
-# Backwards compat overrides from MiniMime migration
-Marcel::MimeType.extend "text/x-log", extensions: %w( log )
-Marcel::MimeType.extend "application/sql", extensions: %w( sql )
-Marcel::MimeType.extend "audio/flac", extensions: %w( flac )
-Marcel::MimeType.extend "image/x-eps", extensions: %w( eps )
-Marcel::MimeType.extend "video/mp4", extensions: %w( mp4 )
-Marcel::MimeType.extend "image/bmp", extensions: %w( bmp )
-Marcel::MimeType.extend "application/vnd.adobe.flash.movie", extensions: %w( swf )

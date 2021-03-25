@@ -31,3 +31,9 @@ task :types do
     end
   end
 end
+
+desc "Generate data tables"
+task tables: "lib/marcel/tables.rb"
+file "lib/marcel/tables.rb" => FileList["data/tika.xml"] do |target|
+  exec "script/generate_tables.rb", *target.prerequisites, out: target.name
+end
