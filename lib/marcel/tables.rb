@@ -2147,7 +2147,7 @@ module Marcel
     ['image/bmp', [[0, 'BM', [[26, "\001\000", [[28, "\000\000"], [28, "\001\000"], [28, "\004\000"], [28, "\b\000"], [28, "\020\000"], [28, "\030\000"], [28, " \000"]]]]]]],
     ['image/vnd.adobe.photoshop', [[0, "8BPS\000\001"], [0, "8BPS\000\002"]]],
     ['image/webp', [[0, 'RIFF', [[8, 'WEBP']]]]],
-    ['image/svg+xml', [[0..4096, '<?xml ', [[0..4096, '<svg ']]], [0..4096, '<svg ']]],
+    ['image/svg+xml', [[0..4096, '<svg']]],
     ['video/x-msvideo', [[0, 'RIFF', [[8, 'AVI ']]], [8, 'AVI ']]],
     ['video/x-ms-wmv', [[0..8192, 'Windows Media Video'], [0..8192, 'VC-1 Advanced Profile'], [0..8192, 'wmv2']]],
     ['video/mp4', [[4, 'ftypmp41'], [4, 'ftypmp42']]],
