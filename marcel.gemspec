@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Tom Ward']
   spec.email         = ['tom@basecamp.com']
   spec.summary       = %q{Simple mime type detection using magic numbers, filenames, and extensions}
-  spec.homepage      = 'https://github.com/basecamp/marcel'
+  spec.homepage      = 'https://github.com/rails/marcel'
   spec.licenses      = %w[ MIT Apache-2.0 ]
 
   spec.files         = Dir['lib/**/*', 'MIT-LICENSE', 'APACHE-LICENSE' 'README.md']
