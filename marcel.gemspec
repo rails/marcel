@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['tom@basecamp.com']
   spec.summary       = %q{Simple mime type detection using magic numbers, filenames, and extensions}
   spec.homepage      = 'https://github.com/basecamp/marcel'
-  spec.license       = 'MIT'
+  spec.licenses      = %w[ MIT Apache-2.0 ]
 
   spec.files         = Dir['lib/**/*', 'MIT-LICENSE', 'APACHE-LICENSE' 'README.md']
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
