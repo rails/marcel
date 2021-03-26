@@ -1,4 +1,5 @@
 module Marcel
-  autoload :VERSION, 'marcel/version'
-  autoload :MimeType, 'marcel/mime_type'
+  require "marcel/version"
+  require "marcel/magic"
+  require "marcel/mime_type"
 end

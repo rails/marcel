@@ -1,0 +1,80 @@
+<mime-info>
+  <mime-type type="image/svg+xml">
+    <sub-class-of type="application/xml" />
+
+    <magic priority="50">
+      <match value="&lt;svg" type="string" offset="0:4096" />
+    </magic>
+  </mime-type>
+
+  <mime-type type="application/msword">
+    <sub-class-of type="application/x-tika-msoffice" />
+
+    <magic priority="50">
+      <match value="0xd0cf11e0a1b11ae1" type="string" offset="0:8">
+        <match value="jbjb" type="string" offset="546" />
+        <match value="bjbj" type="string" offset="546" />
+      </match>
+    </magic>
+  </mime-type>
+
+  <mime-type type="application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+    <sub-class-of type="application/x-tika-ooxml" />
+
+    <magic priority="50">
+      <match value="PK\003\004" type="string" offset="0">
+        <match value="[Content_Types].xml" type="string" offset="30">
+          <match value="word/" type="string" offset="0:4096" />
+        </match>
+
+        <match value="_rels/.rels" type="string" offset="30">
+          <match value="word/" type="string" offset="0:4096" />
+        </match>
+      </match>
+    </magic>
+  </mime-type>
+
+  <mime-type type="application/vnd.openxmlformats-officedocument.presentationml.presentation">
+    <sub-class-of type="application/x-tika-ooxml" />
+
+    <magic priority="50">
+      <match value="PK\003\004" type="string" offset="0">
+        <match value="[Content_Types].xml" type="string" offset="30">
+          <match value="ppt/" type="string" offset="0:4096" />
+        </match>
+
+        <match value="_rels/.rels" type="string" offset="30">
+          <match value="ppt/" type="string" offset="0:4096" />
+        </match>
+      </match>
+    </magic>
+  </mime-type>
+
+  <mime-type type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+    <sub-class-of type="application/x-tika-ooxml" />
+
+    <magic priority="50">
+      <match value="PK\003\004" type="string" offset="0">
+        <match value="[Content_Types].xml" type="string" offset="30">
+          <match value="xl/" type="string" offset="0:4096" />
+        </match>
+
+        <match value="_rels/.rels" type="string" offset="30">
+          <match value="xl/" type="string" offset="0:4096" />
+        </match>
+      </match>
+    </magic>
+  </mime-type>
+
+  <mime-type type="video/webm">
+    <sub-class-of="application/x-matroska" />
+
+    <magic priority="50">
+      <match value="0x1a45dfa3" type="string" offset="0">
+        <match value="\x42\x82" type="string" offset="4:4096">
+          <match value="webm" type="string" offset="4:4096" />
+        </match>
+      </match>
+    </magic>
+  </mime-type>
+</mime-info>
