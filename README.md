@@ -49,7 +49,7 @@ Marcel was extracted from Basecamp 3, in order to make our file detection logic 
 
 ## Implementation
 
-At present, marcel is mainly a thin wrapper around the [mimemagic gem][mime-magic-gem-url]. It adds priority logic (preferring magic over name when given both), some extra type definitions, and common type subclasses (including Keynote, Pages, etc).
+At present, marcel is mainly a thin wrapper around the [mimemagic gem][mimemagic]. It adds priority logic (preferring magic over name when given both), some extra type definitions, and common type subclasses (including Keynote, Pages, etc).
 
 ## Testing
 
@@ -59,6 +59,8 @@ The main test fixture files are split into two folders, those that can be recogn
 
 Marcel itself is released under the terms of the MIT License. See the MIT-LICENSE file for details.
 
+Portions of Marcel are adapted from the [mimemagic] gem, released under the terms of the MIT License.
+
 Marcel's magic signature data is adapted from [Apache Tika](https://tika.apache.org), released under the terms of the Apache License. See the APACHE-LICENSE file for details.
 
-[mime-magic-gem-url]: https://github.com/minad/mimemagic
+[mimemagic]: https://github.com/mimemagicrb/mimemagic

@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+# Code in this file adapted from the mimemagic gem, released under the MIT License.
+# Copyright (c) 2011 Daniel Mendler. Available at https://github.com/mimemagicrb/mimemagic.
+
 require 'marcel/tables'
 
 require 'stringio'
 
-# Mime type detection
 module Marcel
+  # Mime type detection
   class Magic
     attr_reader :type, :mediatype, :subtype
 

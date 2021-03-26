@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# Code in this file adapted from the mimemagic gem, released under the MIT License.
+# Copyright (c) 2011 Daniel Mendler. Available at https://github.com/mimemagicrb/mimemagic.
+
 require 'nokogiri'
 
 class String
