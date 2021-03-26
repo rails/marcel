@@ -55,9 +55,10 @@ At present, marcel is mainly a thin wrapper around the [mimemagic gem][mime-magi
 
 The main test fixture files are split into two folders, those that can be recognised by magic numbers, and those that can only be recognised by name. Even though strictly unnecessary, the fixtures in both folders should all be valid files of the type they represent.
 
-## References
+## License
 
-* [Mimemagic gem][mime-magic-gem-url]
-* [Shared MIME-info Database Specification](https://specifications.freedesktop.org/shared-mime-info-spec/latest/)
+Marcel itself is released under the terms of the MIT License. See the MIT-LICENSE file for details.
+
+Marcel's magic signature data is adapted from [Apache Tika](https://tika.apache.org), released under the terms of the Apache License. See the APACHE-LICENSE file for details.
 
 [mime-magic-gem-url]: https://github.com/minad/mimemagic
