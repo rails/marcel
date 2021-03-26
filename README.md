@@ -47,10 +47,6 @@ Marcel::MimeType.for Pathname.new("example.png"), name: "example.ai"
 
 Marcel was extracted from Basecamp 3, in order to make our file detection logic both easily reusable but more importantly, easily testable. Test fixtures have been added for all of the most common file types uploaded to Basecamp, and other common file types too. We hope to expand this test coverage with other file types as and when problems are identified.
 
-## Implementation
-
-At present, marcel is mainly a thin wrapper around the [mimemagic gem][mimemagic]. It adds priority logic (preferring magic over name when given both), some extra type definitions, and common type subclasses (including Keynote, Pages, etc).
-
 ## Testing
 
 The main test fixture files are split into two folders, those that can be recognised by magic numbers, and those that can only be recognised by name. Even though strictly unnecessary, the fixtures in both folders should all be valid files of the type they represent.
