@@ -108,7 +108,7 @@ ARGV.each do |path|
     subclass = (mime/'sub-class-of').map{|x| x['type']}
     exts = (mime/'glob').map{|x| x['pattern'] =~ /^\*\.([^\[\]]+)$/ ? $1.downcase : nil }.compact
     (mime/'magic').each do |magic|
-      priority = magic['priority'].to_i
+      priority = (magic['priority'] || '50').to_i
       matches = get_matches(magic)
       magics << [priority, type, matches]
     end
@@ -121,7 +121,7 @@ ARGV.each do |path|
   end
 end
 
-magics = magics.sort {|a,b| [-a[0],a[1]] <=> [-b[0],b[1]] }
+magics = magics.sort_by { |priority, type| [-priority, type] }
 
 common_types = [
   "image/jpeg",                                                                # .jpg

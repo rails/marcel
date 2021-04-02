@@ -41,3 +41,4 @@ Marcel::MimeType.extend "font/ttf", magic: [[0, "\x00\x01\x00\x00"]], extensions
 Marcel::MimeType.extend "font/otf", magic: [[0, "OTTO"]], extensions: %w( otf ), parents: "font/ttf"
 Marcel::MimeType.extend "application/vnd.adobe.flash.movie", magic: [[0, "FWS"], [0, "CWS"]], extensions: %w( swf )
 Marcel::MimeType.extend "application/sql", extensions: %w( sql )
+Marcel::MimeType.extend "text/vcard", magic: [[0, "BEGIN:VCARD"]], extensions: %w( vcf ), parents: "text/plain"
