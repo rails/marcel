@@ -67,7 +67,7 @@
   </mime-type>
 
   <mime-type type="video/webm">
-    <sub-class-of="application/x-matroska" />
+    <sub-class-of type="application/x-matroska" />
 
     <magic priority="50">
       <match value="0x1a45dfa3" type="string" offset="0">
@@ -76,5 +76,27 @@
         </match>
       </match>
     </magic>
+  </mime-type>
+
+  <mime-type type="font/woff">
+    <alias type="application/font-woff"/>
+
+    <magic priority="50">
+      <!-- Source: https://www.w3.org/TR/WOFF/#WOFFHeader -->
+      <match value="0x774F4646" type="string" offset="0" />
+    </magic>
+
+    <glob pattern="*.woff" />
+  </mime-type>
+
+  <mime-type type="font/woff2">
+    <alias type="application/font-woff2" />
+
+    <magic priority="50">
+      <!-- Source https://www.w3.org/TR/WOFF2/#woff20Header -->
+      <match value="0x774F4632" type="string" offset="0" />
+    </magic>
+
+    <glob pattern="*.woff2" />
   </mime-type>
 </mime-info>

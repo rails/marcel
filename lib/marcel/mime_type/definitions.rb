@@ -38,6 +38,7 @@ Marcel::MimeType.extend "image/heic", magic: [[4, "ftypheic"]], extensions: %w( 
 Marcel::MimeType.extend "video/mp4", magic: [[4, "ftypisom"], [4, "ftypM4V "]], extensions: %w( mp4 m4v )
 
 Marcel::MimeType.extend "font/ttf", magic: [[0, "\x00\x01\x00\x00"]], extensions: %w( ttf ttc )
+Marcel::MimeType.extend "font/otf", magic: [[0, "OTTO"]], extensions: %w( otf ), parents: "font/ttf"
 Marcel::MimeType.extend "application/vnd.adobe.flash.movie", magic: [[0, "FWS"], [0, "CWS"]], extensions: %w( swf )
 Marcel::MimeType.extend "application/sql", extensions: %w( sql )
 Marcel::MimeType.extend "text/vcard", magic: [[0, "BEGIN:VCARD"]], extensions: %w( vcf ), parents: "text/plain"
