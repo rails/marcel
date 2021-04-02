@@ -78,32 +78,25 @@
     </magic>
   </mime-type>
 
-  <mime-type type="font/otf">
-    <alias type="application/x-font-otf" />
-    <alias type="application/x-font-opentype" />
-    <sub-class-of type="font/ttf" />
-    <magic priority="99">
-      <match value="OTTO" type="string" offset="0" />
-      <match value="0x00010000" type="string" offset="0" />
-    </magic>
-    <glob pattern="*.otf" />
-  </mime-type>
-
   <mime-type type="font/woff">
     <alias type="application/font-woff"/>
-    <!-- Source https://www.w3.org/TR/WOFF/#WOFFHeader -->
+
     <magic priority="50">
+      <!-- Source: https://www.w3.org/TR/WOFF/#WOFFHeader -->
       <match value="0x774F4646" type="string" offset="0" />
     </magic>
+
     <glob pattern="*.woff" />
   </mime-type>
 
   <mime-type type="font/woff2">
     <alias type="application/font-woff2" />
-    <!-- Source https://www.w3.org/TR/WOFF2/#woff20Header -->
+
     <magic priority="50">
+      <!-- Source https://www.w3.org/TR/WOFF2/#woff20Header -->
       <match value="0x774F4632" type="string" offset="0" />
     </magic>
+
     <glob pattern="*.woff2" />
   </mime-type>
 </mime-info>
