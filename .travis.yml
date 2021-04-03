@@ -13,8 +13,10 @@ rvm:
   - 2.7
   - 3.0
   - ruby-head
+  - truffleruby-head
 
 matrix:
   allow_failures:
     - rvm: ruby-head
+    - rvm: truffleruby-head
   fast_finish: true
