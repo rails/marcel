@@ -2065,7 +2065,7 @@ module Marcel
     'text/x-haml' => [%w(haml), %w(text/plain), 'HAML source code'],
     'text/x-haskell' => [%w(hs lhs), %w(text/plain), 'Haskell source code'],
     'text/x-haxe' => [%w(hx), %w(text/plain), 'Haxe source code'],
-    'text/x-idl' => [%w(idl), %w(text/plain), 'Inteface Definition Language'],
+    'text/x-idl' => [%w(idl), %w(text/plain), 'Interface Definition Language'],
     'text/x-ini' => [%w(ini), %w(text/plain), 'Configuration file'],
     'text/x-java-properties' => [%w(properties), %w(text/plain), 'Java Properties'],
     'text/x-java-source' => [%w(java), %w(text/plain), 'Java source code'],
