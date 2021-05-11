@@ -32,6 +32,8 @@ Marcel::MimeType.extend "application/vnd.apple.keynote", extensions: %w( key ), 
 
 Marcel::MimeType.extend "image/vnd.dwg", magic: [[0, "AC10"]]
 
+Marcel::MimeType.extend "application/x-x509-ca-cert", magic: [[0, '-----BEGIN CERTIFICATE-----']], extensions: %w( pem ), parents: "application/x-x509-cert;format=pem"
+
 Marcel::MimeType.extend "image/heif", magic: [[4, "ftypmif1"]], extensions: %w( heif )
 Marcel::MimeType.extend "image/heic", magic: [[4, "ftypheic"]], extensions: %w( heic )
 
