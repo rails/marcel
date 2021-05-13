@@ -30,6 +30,9 @@ Marcel::MimeType.extend "application/vnd.apple.pages", extensions: %w( pages ), 
 Marcel::MimeType.extend "application/vnd.apple.numbers", extensions: %w( numbers ), parents: "application/zip"
 Marcel::MimeType.extend "application/vnd.apple.keynote", extensions: %w( key ), parents: "application/zip"
 
+Marcel::MimeType.extend "audio/aac", extensions: %w( aac ), parents: "audio/x-aac"
+
+
 Marcel::MimeType.extend "image/vnd.dwg", magic: [[0, "AC10"]]
 
 Marcel::MimeType.extend "image/heif", magic: [[4, "ftypmif1"]], extensions: %w( heif )
