@@ -42,3 +42,13 @@ Marcel::MimeType.extend "font/otf", magic: [[0, "OTTO"]], extensions: %w( otf ),
 Marcel::MimeType.extend "application/vnd.adobe.flash.movie", magic: [[0, "FWS"], [0, "CWS"]], extensions: %w( swf )
 Marcel::MimeType.extend "application/sql", extensions: %w( sql )
 Marcel::MimeType.extend "text/vcard", magic: [[0, "BEGIN:VCARD"]], extensions: %w( vcf ), parents: "text/plain"
+
+Marcel::MimeType.extend(
+  "application/vnd.ms-access",
+  extensions: %w( mdb accdb ),
+  magic: [
+    [0, "\x00\x01\x00\x00\x53\x74\x61\x6e\x64\x61\x72\x64\x20\x4a\x65\x74\x20\x44\x42"], # \x00\x01\x00\xStandard Jet DB
+    [0, "\x00\x01\x00\x00\x53\x74\x61\x6e\x64\x61\x72\x64\x20\x41\x43\x45\x20\x44\x42"], # \x00\x01\x00\xStandard ACE DB
+  ],
+  parents: "application/x-msaccess"
+)
