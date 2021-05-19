@@ -18,6 +18,14 @@
     </magic>
   </mime-type>
 
+  <mime-type type="application/x-ole-storage">
+    <sub-class-of type="application/x-tika-msoffice" />
+
+    <magic priority="50">
+      <match value="0xd0cf11e0a1b11ae1" type="string" offset="0:8" />
+    </magic>
+  </mime-type>
+
   <mime-type type="application/vnd.openxmlformats-officedocument.wordprocessingml.document">
     <sub-class-of type="application/x-tika-ooxml" />
 
