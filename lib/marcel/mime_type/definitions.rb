@@ -60,3 +60,5 @@ Marcel::MimeType.extend(
   ],
   parents: "application/x-msaccess"
 )
+
+Marcel::MimeType.extend "text/markdown", extensions: %w(md mdtext markdown mkd), parents: "text/x-web-markdown"
