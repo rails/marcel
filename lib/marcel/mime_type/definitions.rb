@@ -44,6 +44,7 @@ Marcel::MimeType.extend "video/mp4", magic: [[4, "ftypisom"], [4, "ftypM4V "]], 
 
 Marcel::MimeType.extend "audio/flac", magic: [[0, 'fLaC']], extensions: %w( flac ), parents: "audio/x-flac"
 Marcel::MimeType.extend "audio/x-wav", magic: [[0, 'RIFF', [[8, 'WAVE']]]], extensions: %w( wav ), parents: "audio/vnd.wav"
+Marcel::MimeType.extend "audio/mpc", magic: [[0, "MPCKSH"]], extensions: %w( mpc )
 
 Marcel::MimeType.extend "font/ttf", magic: [[0, "\x00\x01\x00\x00"]], extensions: %w( ttf ttc )
 Marcel::MimeType.extend "font/otf", magic: [[0, "OTTO"]], extensions: %w( otf ), parents: "font/ttf"
