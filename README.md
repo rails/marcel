@@ -47,6 +47,12 @@ Marcel::MimeType.for Pathname.new("example.png"), name: "example.ai"
 
 Marcel was extracted from Basecamp 3, in order to make our file detection logic both easily reusable but more importantly, easily testable. Test fixtures have been added for all of the most common file types uploaded to Basecamp, and other common file types too. We hope to expand this test coverage with other file types as and when problems are identified.
 
+## Contributing
+
+Marcel generates MIME lookup tables with `bundle exec rake tables`. MIME types are seeded from data found in `data/*.xml`. Custom MIMEs may be added to `data/custom.xml`, while overrides to the standard MIME database may be added to `lib/marcel/mime_type/definitions.rb`.
+
+Marcel follows the same contributing guidelines as [rails/rails](https://github.com/rails/rails#contributing).
+
 ## Testing
 
 The main test fixture files are split into two folders, those that can be recognised by magic numbers, and those that can only be recognised by name. Even though strictly unnecessary, the fixtures in both folders should all be valid files of the type they represent.
