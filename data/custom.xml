@@ -80,7 +80,25 @@
     <magic priority="50">
       <match value="0x1a45dfa3" type="string" offset="0">
         <match value="\x42\x82" type="string" offset="4:4096">
-          <match value="webm" type="string" offset="4:4096" />
+          <match value="webm" type="string" offset="4:4096">
+            <match value="V_VP8" type="string" offset="4:4096" />
+            <match value="V_VP9" type="string" offset="4:4096" />
+          </match>
+        </match>
+      </match>
+    </magic>
+  </mime-type>
+
+  <mime-type type="audio/webm">
+    <sub-class-of type="application/x-matroska" />
+
+    <magic priority="50">
+      <match value="0x1a45dfa3" type="string" offset="0">
+        <match value="\x42\x82" type="string" offset="4:4096">
+          <match value="webm" type="string" offset="4:4096">
+            <match value="A_VORBIS" type="string" offset="4:4096" />
+            <match value="A_OPUS" type="string" offset="4:4096" />
+          </match>
         </match>
       </match>
     </magic>
