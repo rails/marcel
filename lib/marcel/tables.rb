@@ -1,5 +1,9 @@
 # -*- coding: binary -*-
 # frozen_string_literal: true
+
+# This file is auto-generated. Instead of editing this file, please
+# add MIMEs to data/custom.xml or lib/marcel/mime_type/definitions.rb.
+
 module Marcel
   # @private
   # :nodoc:

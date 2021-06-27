@@ -168,6 +168,10 @@ magics = (common_magics.compact + magics).uniq
 
 puts "# -*- coding: binary -*-"
 puts "# frozen_string_literal: true"
+puts ""
+puts "# This file is auto-generated. Instead of editing this file, please"
+puts "# add MIMEs to data/custom.xml or lib/marcel/mime_type/definitions.rb."
+puts ""
 puts "module Marcel"
 puts "  # @private"
 puts "  # :nodoc:"
