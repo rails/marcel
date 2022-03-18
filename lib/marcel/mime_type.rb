@@ -13,6 +13,21 @@ module Marcel
         Magic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
       end
 
+      # Returns the most appropriate content type for the given file.
+      #
+      # The first argument should be a +Pathname+ or an +IO+. If it is a +Pathname+, the specified
+      # file will be opened first.
+      #
+      # Optional parameters:
+      # * +name+: file name, if known
+      # * +extension+: file extension, if known
+      # * +declared_type+: MIME type, if known
+      #
+      # The most appropriate type is determined by the following:
+      # * type declared by binary magic number data
+      # * type declared by the first of file name, file extension, or declared MIME type
+      #
+      # If no type can be determined, then +application/octet-stream+ is returned.
       def for(pathname_or_io = nil, name: nil, extension: nil, declared_type: nil)
         type_from_data = for_data(pathname_or_io)
         fallback_type = for_declared_type(declared_type) || for_name(name) || for_extension(extension) || BINARY
