@@ -19,7 +19,6 @@ class Marcel::MimeTypeTest < Marcel::TestCase
   end
 
   test "closes Pathname files after use" do
-    content_type = Marcel::MimeType.for Pathname.new(@path)
     open_files = ObjectSpace.each_object(File).reject(&:closed?)
     assert open_files.none? { |f| f.path == @path }
   end
