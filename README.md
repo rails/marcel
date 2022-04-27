@@ -1,8 +1,6 @@
 # Marcel
 
-Marcel attempts to choose the most appropriate content type for a given file by looking at the binary data, the filename, and any declared type (perhaps passed as a request header):
-
-It's used like this:
+Marcel attempts to choose the most appropriate content type for a given file by looking at the binary data, the filename, and any declared type (perhaps passed as a request header). This is done via the `Marcel::MimeType.for` method, and is used like this:
 
 ```ruby
 Marcel::MimeType.for Pathname.new("example.gif")
