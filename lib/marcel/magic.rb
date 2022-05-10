@@ -29,9 +29,9 @@ module Marcel
     # * <i>:comment</i>: Comment string
     def self.add(type, options)
       extensions = [options[:extensions]].flatten.compact
-      TYPES[type] = [extensions,
-                    [options[:parents]].flatten.compact,
-                    options[:comment]]
+      TYPE_EXTS[type] = extensions
+      parents = [options[:parents]].flatten.compact
+      TYPE_PARENTS[type] = parents unless parents.empty?
       extensions.each {|ext| EXTENSIONS[ext] = type }
       MAGIC.unshift [type, options[:magic]] if options[:magic]
     end
@@ -42,7 +42,8 @@ module Marcel
     def self.remove(type)
       EXTENSIONS.delete_if {|ext, t| t == type }
       MAGIC.delete_if {|t, m| t == type }
-      TYPES.delete(type)
+      TYPE_EXTS.delete(type)
+      TYPE_PARENTS.delete(type)
     end
 
     # Returns true if type is a text format
@@ -60,12 +61,12 @@ module Marcel
 
     # Get string list of file extensions
     def extensions
-      TYPES.key?(type) ? TYPES[type][0] : []
+      TYPE_EXTS[type] || []
     end
 
     # Get mime comment
     def comment
-      (TYPES.key?(type) ? TYPES[type][2] : nil).to_s
+      nil # deprecated
     end
 
     # Lookup mime type by file extension
@@ -110,7 +111,7 @@ module Marcel
     alias == eql?
 
     def self.child?(child, parent)
-      child == parent || TYPES.key?(child) && TYPES[child][1].any? {|p| child?(p, parent) }
+      child == parent || TYPE_PARENTS[child]&.any? {|p| child?(p, parent) }
     end
 
     def self.magic_match(io, method)

@@ -6,13 +6,9 @@ module Marcel
 
     class << self
       def extend(type, extensions: [], parents: [], magic: nil)
-        existing = Marcel::TYPES[type] || [[], [], ""]
-
-        extensions = (Array(extensions) + existing[0]).uniq
-        parents = (Array(parents) + existing[1]).uniq
-        comment = existing[2]
-
-        Magic.add(type, extensions: extensions, magic: magic, parents: parents, comment: comment)
+        extensions = (Array(extensions) + Array(Marcel::TYPE_EXTS[type])).uniq
+        parents = (Array(parents) + Array(Marcel::TYPE_PARENTS[type])).uniq
+        Magic.add(type, extensions: extensions, magic: magic, parents: parents)
       end
 
       # Returns the most appropriate content type for the given file.
@@ -42,6 +38,7 @@ module Marcel
       end
 
       private
+
         def for_data(pathname_or_io)
           if pathname_or_io
             with_io(pathname_or_io) do |io|
@@ -103,10 +100,10 @@ module Marcel
         end
 
         def root_types(type)
-          if TYPES[type].nil? || TYPES[type][1].empty?
+          if TYPE_EXTS[type].nil? || TYPE_PARENTS[type].nil?
             [ type ]
           else
-            TYPES[type][1].map {|t| root_types t }.flatten
+            TYPE_PARENTS[type].map {|t| root_types t }.flatten
           end
         end
     end
