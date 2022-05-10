@@ -205,13 +205,20 @@ end
 puts "  }"
 puts "  # @private"
 puts "  # :nodoc:"
-puts "  TYPES = {"
+puts "  TYPE_EXTS = {"
 types.keys.sort.each do |key|
   exts = types[key][0].join(' ')
-  parents = types[key][1].sort.join(' ')
   comment = types[key][2]
   comment = " # #{comment.tr("\n", " ")}" if comment
-  puts "    '#{key}' => [%w(#{exts}), %w(#{parents})],#{comment}"
+  puts "    '#{key}' => %w(#{exts}),#{comment}"
+end
+puts "  }"
+puts "  TYPE_PARENTS = {"
+types.keys.sort.each do |key|
+  parents = types[key][1].sort.join(' ')
+  unless parents.empty?
+    puts "    '#{key}' => %w(#{parents}),"
+  end
 end
 puts "  }"
 puts "  # @private"
