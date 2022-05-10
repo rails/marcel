@@ -9,10 +9,21 @@ class String
   alias inspect_old inspect
 
   def inspect
-    x = b.inspect_old.gsub(/\\x([0-9a-f]{2})/i) do
+    str = b.inspect_old.gsub(/\\x([0-9a-f]{2})/i) do
       '\\%03o' % $1.to_i(16)
     end
-    x =~ /[\\']/ ? x : x.gsub('"', '\'')
+    str.gsub!('"', '\'') unless str.match?(/[\\']/)
+    str
+  end
+end
+
+class BinaryString
+  def initialize(string)
+    @string = string
+  end
+
+  def inspect
+    "#{@string.inspect}.b.freeze"
   end
 end
 
@@ -20,6 +31,19 @@ def str2int(s)
   return s.to_i(16) if s[0..1].downcase == '0x'
   return s.to_i(8) if s[0..0].downcase == '0'
   s.to_i(10)
+end
+
+def binary_strings(object)
+  case object
+  when Array
+    object.map { |o| binary_strings(o) }
+  when String
+    BinaryString.new(object)
+  when Numeric, Range, nil
+    object
+  else
+    raise TypeError, "unexpected #{object.class}"
+  end
 end
 
 def get_matches(parent)
@@ -166,7 +190,6 @@ end
 
 magics = (common_magics.compact + magics).uniq
 
-puts "# -*- coding: binary -*-"
 puts "# frozen_string_literal: true"
 puts ""
 puts "# This file is auto-generated. Instead of editing this file, please"
@@ -194,7 +217,7 @@ puts "  # @private"
 puts "  # :nodoc:"
 puts "  MAGIC = ["
 magics.each do |priority, type, matches|
-  puts "    ['#{type}', #{matches.inspect}],"
+  puts "    ['#{type}', #{binary_strings(matches).inspect}],"
 end
 puts "  ]"
 puts "end"
