@@ -23,7 +23,7 @@ class BinaryString
   end
 
   def inspect
-    "#{@string.inspect}.b.freeze"
+    "b[#{@string.inspect}]"
   end
 end
 
@@ -221,6 +221,7 @@ types.keys.sort.each do |key|
   end
 end
 puts "  }"
+puts "  b = Hash.new { |h, k| h[k] = k.b.freeze }"
 puts "  # @private"
 puts "  # :nodoc:"
 puts "  MAGIC = ["
