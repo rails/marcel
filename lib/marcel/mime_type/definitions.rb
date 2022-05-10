@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Marcel::MimeType.extend "text/plain", extensions: %w( txt asc )
 
 Marcel::MimeType.extend "application/illustrator", parents: "application/pdf"

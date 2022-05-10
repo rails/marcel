@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Marcel
   class MimeType
     BINARY = "application/octet-stream"
