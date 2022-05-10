@@ -209,8 +209,9 @@ puts "  TYPES = {"
 types.keys.sort.each do |key|
   exts = types[key][0].join(' ')
   parents = types[key][1].sort.join(' ')
-  comment = types[key][2].inspect
-  puts "    '#{key}' => [%w(#{exts}), %w(#{parents}), #{comment}],"
+  comment = types[key][2]
+  comment = " # #{comment.tr("\n", " ")}" if comment
+  puts "    '#{key}' => [%w(#{exts}), %w(#{parents})],#{comment}"
 end
 puts "  }"
 puts "  # @private"
