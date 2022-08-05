@@ -155,6 +155,7 @@ common_types = [
   "image/bmp",                                                                 # .bmp
   "image/vnd.adobe.photoshop",                                                 # .psd
   "image/webp",                                                                # .webp
+  "text/html",                                                                 # .html
   "image/svg+xml",                                                             # .svg
 
   "video/x-msvideo",                                                           # .avi
