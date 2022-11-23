@@ -66,3 +66,5 @@ Marcel::MimeType.extend(
 )
 
 Marcel::MimeType.extend "text/markdown", extensions: %w(md mdtext markdown mkd), parents: "text/x-web-markdown"
+Marcel::MimeType.extend "application/x-xliff+xml", extensions: %w(mxliff),  parents: "application/xml"
+
