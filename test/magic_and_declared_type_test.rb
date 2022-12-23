@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'rack'
 
 class Marcel::MimeType::MagicAndDeclaredTypeTest < Marcel::TestCase
   each_content_type_fixture('name') do |file, name, content_type|

@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'rack'
 
 class Marcel::MimeType::ExtensionTest < Marcel::TestCase
   test "ignores case and any preceding dot" do

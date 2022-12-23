@@ -121,6 +121,10 @@ module Marcel
       io.set_encoding(Encoding::BINARY) if io.respond_to?(:set_encoding)
       buffer = "".encode(Encoding::BINARY)
 
+      unless io.respond_to?(:rewind)
+        io = StringIO.new(io.read)
+      end
+
       MAGIC.send(method) { |type, matches| magic_match_io(io, matches, buffer) }
     end
 

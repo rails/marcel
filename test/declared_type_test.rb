@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'rack'
 
 class Marcel::MimeType::DeclaredTypeTest < Marcel::TestCase
   test "returns declared type as last resort" do
