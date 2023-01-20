@@ -27,6 +27,11 @@ module Marcel
       #
       # If no type can be determined, then +application/octet-stream+ is returned.
       def for(pathname_or_io = nil, name: nil, extension: nil, declared_type: nil)
+        if defined?(Pathname) && pathname_or_io.is_a?(Pathname)
+          name ||= pathname_or_io.basename.to_s
+          extension ||= pathname_or_io.extname[1..-1]
+        end
+
         type_from_data = for_data(pathname_or_io)
         fallback_type = for_declared_type(declared_type) || for_name(name) || for_extension(extension) || BINARY
 

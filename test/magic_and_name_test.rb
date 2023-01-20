@@ -9,5 +9,9 @@ class Marcel::MimeType::MagicAndNameTest < Marcel::TestCase
     test "correctly returns #{content_type} for #{name} given both file and name" do
       assert_equal content_type, Marcel::MimeType.for(file, name: name)
     end
+
+    test "correctly returns #{content_type} for #{name} given Pathname without explicit name" do
+      assert_equal content_type, Marcel::MimeType.for(file)
+    end
   end
 end
