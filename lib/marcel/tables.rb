@@ -137,6 +137,7 @@ module Marcel
     'cdx' => 'chemical/x-cdx',
     'cdxml' => 'application/vnd.chemdraw+xml',
     'cdy' => 'application/vnd.cinderella',
+    'cel' => 'image/vnd.dgn',
     'cer' => 'application/pkix-cert',
     'cfc' => 'text/x-coldfusion',
     'cfg' => 'text/x-config',
@@ -219,6 +220,8 @@ module Marcel
     'der' => 'application/x-x509-cert;format=der',
     'dex' => 'application/x-dex',
     'dfac' => 'application/vnd.dreamfactory',
+    'dgn' => 'image/vnd.dgn',
+    'dgnlib' => 'image/vnd.dgn',
     'dib' => 'image/bmp',
     'dif' => 'application/dif+xml',
     'diff' => 'text/x-diff',
@@ -268,6 +271,7 @@ module Marcel
     'dxp' => 'application/vnd.spotfire.dxp',
     'dxr' => 'application/x-director',
     'e' => 'text/x-eiffel',
+    'e57' => 'model/e57',
     'ear' => 'application/x-tika-java-enterprise-archive',
     'ecelp4800' => 'audio/vnd.nuera.ecelp4800',
     'ecelp7470' => 'audio/vnd.nuera.ecelp7470',
@@ -446,6 +450,7 @@ module Marcel
     'ico' => 'image/vnd.microsoft.icon',
     'ics' => 'text/calendar',
     'idl' => 'text/x-idl',
+    'idml' => 'application/vnd.adobe.indesign-idml-package',
     'ief' => 'image/ief',
     'ifb' => 'text/calendar',
     'ifm' => 'application/vnd.shana.informed.formdata',
@@ -504,6 +509,7 @@ module Marcel
     'jsp' => 'text/x-jsp',
     'junit' => 'text/plain',
     'jx' => 'text/plain',
+    'jxl' => 'image/jxl',
     'k25' => 'image/x-raw-kodak',
     'kar' => 'audio/midi',
     'karbon' => 'application/vnd.kde.karbon',
@@ -546,6 +552,7 @@ module Marcel
     'lua' => 'text/x-lua',
     'lvp' => 'audio/vnd.lucent.voice',
     'lwp' => 'application/vnd.lotus-wordpro',
+    'lyr' => 'application/x-esri-layer',
     'lz' => 'application/x-lzip',
     'lz4' => 'application/x-lz4',
     'lzh' => 'application/octet-stream',
@@ -679,6 +686,7 @@ module Marcel
     'nc' => 'application/x-netcdf',
     'ncx' => 'application/x-dtbncx+xml',
     'nef' => 'image/x-raw-nikon',
+    'nes' => 'application/x-nesrom',
     'ngdat' => 'application/vnd.nokia.n-gage.data',
     'nitf' => 'image/nitf',
     'nlu' => 'application/vnd.neurolanguage.nlu',
@@ -1043,6 +1051,7 @@ module Marcel
     'tk' => 'text/x-tcl',
     'tld' => 'text/plain',
     'tmo' => 'application/vnd.tmobile-livetv',
+    'tmx' => 'application/x-tmx',
     'toast' => 'application/x-roxio-toast',
     'torrent' => 'application/x-bittorrent',
     'tpl' => 'application/vnd.groove-tool-template',
@@ -1125,6 +1134,7 @@ module Marcel
     'wdb' => 'application/vnd.ms-works',
     'webarchive' => 'application/x-webarchive',
     'webm' => 'video/webm',
+    'webmanifest' => 'application/manifest+json',
     'webp' => 'image/webp',
     'wk1' => 'application/vnd.lotus-1-2-3',
     'wk2' => 'application/vnd.lotus-1-2-3',
@@ -1246,6 +1256,7 @@ module Marcel
     'xz' => 'application/x-xz',
     'y' => 'text/x-yacc',
     'yaml' => 'text/x-yaml',
+    'yml' => 'text/x-yaml',
     'z' => 'application/x-compress',
     'zaz' => 'application/vnd.zzazz.deck+xml',
     'zip' => 'application/zip',
@@ -1253,7 +1264,7 @@ module Marcel
     'zirz' => 'application/vnd.zul',
     'zmm' => 'application/vnd.handheld-entertainment+xml',
     'zoo' => 'application/x-zoo',
-    'zstd' => 'application/zstd',
+    'zst' => 'application/zstd',
   }
   # @private
   # :nodoc:
@@ -1291,6 +1302,7 @@ module Marcel
     'application/lost+xml' => %w(lostxml),
     'application/mac-binhex40' => %w(hqx),
     'application/mac-compactpro' => %w(cpt),
+    'application/manifest+json' => %w(webmanifest), # Web Application Manifest file
     'application/marc' => %w(mrc),
     'application/mathematica' => %w(ma nb mb), # Wolfram Mathematica
     'application/mathml+xml' => %w(mathml),
@@ -1361,6 +1373,7 @@ module Marcel
     'application/vnd.adobe.aftereffects.project' => %w(aep),
     'application/vnd.adobe.aftereffects.template' => %w(aet),
     'application/vnd.adobe.air-application-installer-package+zip' => %w(air),
+    'application/vnd.adobe.indesign-idml-package' => %w(idml), # IDML
     'application/vnd.adobe.xdp+xml' => %w(xdp),
     'application/vnd.adobe.xfdf' => %w(xfdf),
     'application/vnd.airzip.filesecure.azf' => %w(azf),
@@ -1743,6 +1756,7 @@ module Marcel
     'application/x-elc' => %w(elc), # Emacs Lisp bytecode
     'application/x-endnote-refer' => %w(enw enr),
     'application/x-erdas-hfa' => %w(hfa),
+    'application/x-esri-layer' => %w(lyr), # ESRI Layer file
     'application/x-fictionbook+xml' => %w(fb2), # FictionBook document
     'application/x-filemaker' => %w(fp7), # FileMaker Pro 7
     'application/x-font-adobe-metric' => %w(afm acfm amfm), # Adobe Font Metric
@@ -1795,6 +1809,7 @@ module Marcel
     'application/x-mswrite' => %w(wri),
     'application/x-mysql-misam-compressed-index' => %w(myi), # MySQL MISAM Compressed Index
     'application/x-mysql-misam-data' => %w(myd), # MySQL MISAM Data
+    'application/x-nesrom' => %w(nes), # Nintendo Entertainment System ROM
     'application/x-netcdf' => %w(nc cdf),
     'application/x-parquet' => %w(parquet),
     'application/x-pkcs12' => %w(p12 pfx),
@@ -1849,6 +1864,7 @@ module Marcel
     'application/x-tika-java-enterprise-archive' => %w(ear),
     'application/x-tika-java-web-archive' => %w(war),
     'application/x-tika-msworks-spreadsheet' => %w(xlr),
+    'application/x-tmx' => %w(tmx), # TMX Translation Memory
     'application/x-uc2-compressed' => %w(uc2),
     'application/x-ustar' => %w(ustar),
     'application/x-vmdk' => %w(vmdk), # Virtual Disk Format
@@ -1875,7 +1891,7 @@ module Marcel
     'application/xspf+xml' => %w(xspf), # XML Shareable Playlist Format
     'application/xv+xml' => %w(mxml xhvml xvml xvm),
     'application/zip' => %w(zip), # Compressed Archive File
-    'application/zstd' => %w(zstd), # https://tools.ietf.org/id/draft-kucherawy-dispatch-zstd-01.html
+    'application/zstd' => %w(zst), # https://tools.ietf.org/id/draft-kucherawy-dispatch-zstd-01.html
     'audio/ac3' => %w(ac3), # Dolby Digital Audio Compression File
     'audio/adpcm' => %w(adp),
     'audio/amr' => %w(amr),
@@ -1932,6 +1948,7 @@ module Marcel
     'image/jpeg' => %w(jpg jpeg jpe jif jfif jfi), # Joint Photographic Experts Group
     'image/jpm' => %w(jpm jpgm), # JPEG 2000 Part 6 (JPM)
     'image/jpx' => %w(jpf), # JPEG 2000 Part 2 (JPX)
+    'image/jxl' => %w(jxl), # JPEG XL
     'image/nitf' => %w(ntf nitf),
     'image/png' => %w(png), # Portable Network Graphics
     'image/prs.btif' => %w(btif),
@@ -1939,6 +1956,7 @@ module Marcel
     'image/tiff' => %w(tiff tif), # Tagged Image File Format
     'image/vnd.adobe.photoshop' => %w(psd), # Photoshop Image
     'image/vnd.adobe.premiere' => %w(ppj),
+    'image/vnd.dgn' => %w(dgn dgnlib cel),
     'image/vnd.djvu' => %w(djvu djv),
     'image/vnd.dwg' => %w(dwg), # AutoCad Drawing
     'image/vnd.dxb' => %w(dxb), # AutoCAD DXF simplified Binary
@@ -1999,6 +2017,7 @@ module Marcel
     'image/x-xwindowdump' => %w(xwd), # X Windows Dump
     'message/rfc822' => %w(eml mime),
     'message/x-emlx' => %w(emlx),
+    'model/e57' => %w(e57), # 3d imaging data exchange
     'model/iges' => %w(igs iges), # Initial Graphics Exchange Specification Format
     'model/mesh' => %w(msh mesh silo),
     'model/vnd.dwf' => %w(dwf), # AutoCAD Design Web Format
@@ -2111,7 +2130,7 @@ module Marcel
     'text/x-vhdl' => %w(vhd vhdl), # VHDL source code
     'text/x-web-markdown' => %w(md mdtext mkd markdown), # Markdown source code
     'text/x-yacc' => %w(y), # Yacc/Bison source code
-    'text/x-yaml' => %w(yaml), # YAML source code
+    'text/x-yaml' => %w(yaml yml), # YAML source code
     'video/3gpp' => %w(3gp),
     'video/3gpp2' => %w(3g2),
     'video/h261' => %w(h261),
@@ -2159,6 +2178,7 @@ module Marcel
     'application/java-archive' => %w(application/zip),
     'application/javascript' => %w(text/plain),
     'application/json' => %w(application/javascript),
+    'application/manifest+json' => %w(application/json),
     'application/mathematica' => %w(text/plain),
     'application/mbox' => %w(text/x-tika-text-based-message),
     'application/mp4' => %w(application/quicktime),
@@ -2171,6 +2191,7 @@ module Marcel
     'application/rtf' => %w(text/plain),
     'application/sldworks' => %w(application/x-tika-msoffice),
     'application/smil+xml' => %w(application/xml),
+    'application/vnd.adobe.indesign-idml-package' => %w(application/zip),
     'application/vnd.adobe.xdp+xml' => %w(application/xml),
     'application/vnd.adobe.xfdf' => %w(application/xml),
     'application/vnd.android.package-archive' => %w(application/java-archive),
@@ -2211,11 +2232,27 @@ module Marcel
     'application/vnd.ms-word.template.macroenabled.12' => %w(application/x-tika-ooxml),
     'application/vnd.ms-works' => %w(application/x-tika-msoffice),
     'application/vnd.ms-xpsdocument' => %w(application/x-tika-ooxml),
+    'application/vnd.oasis.opendocument.chart' => %w(application/zip),
+    'application/vnd.oasis.opendocument.chart-template' => %w(application/zip),
     'application/vnd.oasis.opendocument.flat.presentation' => %w(application/vnd.oasis.opendocument.tika.flat.document),
     'application/vnd.oasis.opendocument.flat.spreadsheet' => %w(application/vnd.oasis.opendocument.tika.flat.document),
     'application/vnd.oasis.opendocument.flat.text' => %w(application/vnd.oasis.opendocument.tika.flat.document),
     'application/vnd.oasis.opendocument.formula' => %w(application/zip),
+    'application/vnd.oasis.opendocument.formula-template' => %w(application/zip),
+    'application/vnd.oasis.opendocument.graphics' => %w(application/zip),
+    'application/vnd.oasis.opendocument.graphics-template' => %w(application/zip),
+    'application/vnd.oasis.opendocument.image' => %w(application/zip),
+    'application/vnd.oasis.opendocument.image-template' => %w(application/zip),
+    'application/vnd.oasis.opendocument.presentation' => %w(application/zip),
+    'application/vnd.oasis.opendocument.presentation-template' => %w(application/zip),
+    'application/vnd.oasis.opendocument.spreadsheet' => %w(application/zip),
+    'application/vnd.oasis.opendocument.spreadsheet-template' => %w(application/zip),
+    'application/vnd.oasis.opendocument.text' => %w(application/zip),
+    'application/vnd.oasis.opendocument.text-master' => %w(application/zip),
+    'application/vnd.oasis.opendocument.text-template' => %w(application/zip),
+    'application/vnd.oasis.opendocument.text-web' => %w(application/zip),
     'application/vnd.openofficeorg.autotext' => %w(application/zip),
+    'application/vnd.openofficeorg.extension' => %w(application/zip),
     'application/vnd.openxmlformats-officedocument.presentationml.presentation' => %w(application/x-tika-ooxml),
     'application/vnd.openxmlformats-officedocument.presentationml.slide' => %w(application/x-tika-ooxml),
     'application/vnd.openxmlformats-officedocument.presentationml.slideshow' => %w(application/x-tika-ooxml),
@@ -2237,6 +2274,7 @@ module Marcel
     'application/x-corelpresentations' => %w(application/x-tika-msoffice),
     'application/x-debian-package' => %w(application/x-archive),
     'application/x-dosexec' => %w(application/x-msdownload),
+    'application/x-esri-layer' => %w(application/x-tika-msoffice),
     'application/x-fictionbook+xml' => %w(application/xml),
     'application/x-gtar' => %w(application/x-tar),
     'application/x-ibooks+zip' => %w(application/epub+zip),
@@ -2264,6 +2302,7 @@ module Marcel
     'application/x-tika-java-enterprise-archive' => %w(application/java-archive),
     'application/x-tika-java-web-archive' => %w(application/java-archive),
     'application/x-tika-msworks-spreadsheet' => %w(application/vnd.ms-excel),
+    'application/x-tmx' => %w(application/xml),
     'application/x-webarchive' => %w(application/x-bplist),
     'application/x-x509-cert;format=der' => %w(application/x-x509-cert),
     'application/x-x509-cert;format=pem' => %w(application/x-x509-cert),
@@ -2399,8 +2438,8 @@ module Marcel
     ['image/bmp', [[0, b['BM'], [[26, b["\001\000"], [[28, b["\000\000"]], [28, b["\001\000"]], [28, b["\004\000"]], [28, b["\b\000"]], [28, b["\020\000"]], [28, b["\030\000"]], [28, b[" \000"]]]]]]]],
     ['image/vnd.adobe.photoshop', [[0, b["8BPS\000\001"]], [0, b["8BPS\000\002"]]]],
     ['image/webp', [[0, b['RIFF'], [[8, b['WEBP']]]]]],
-    ['text/html', [[0..64, b['<!DOCTYPE HTML']], [0..64, b['<!DOCTYPE html']], [0..64, b['<!doctype HTML']], [0..64, b['<!doctype html']], [0..64, b['<HEAD']], [0..64, b['<head']], [0..64, b['<TITLE']], [0..64, b['<title']], [0..64, b['<HTML']], [0, b['<BODY']], [0, b['<body']], [0, b['<DIV']], [0, b['<div']], [0, b['<TITLE']], [0, b['<title']], [0, b['<h1']], [0, b['<H1']], [0..128, b['<html']]]],
-    ['image/svg+xml', [[0..4096, b['<svg']]]],
+    ['text/html', [[0, b['(?i)<(html|head|body|title|div)[ >]']], [0, b['(?i)<h[123][ >]']]]],
+    ['image/svg+xml', [[0, b['<svg'], [[5..256, b['http://www.w3.org/2000/svg']]]]]],
     ['video/x-msvideo', [[0, b['RIFF'], [[8, b['AVI ']]]], [8, b['AVI ']]]],
     ['video/x-ms-wmv', [[0..8192, b['Windows Media Video']], [0..8192, b['VC-1 Advanced Profile']], [0..8192, b['wmv2']]]],
     ['video/mp4', [[4, b['ftypmp41']], [4, b['ftypmp42']]]],
@@ -2422,6 +2461,7 @@ module Marcel
     ['image/x-tga', [[1, b["\001\001\000\000"], [[8, b[".*[\\\\124\\\\122\\\\125\\\\105\\\\126\\\\111\\\\123\\\\111\\\\117\\\\116\\\\055\\\\130\\\\106\\\\111\\\\114\\\\105\\\\056\\\\000]"]]]], [1, b["\000\002\000\000"], [[8, b[".*[\\\\124\\\\122\\\\125\\\\105\\\\126\\\\111\\\\123\\\\111\\\\117\\\\116\\\\055\\\\130\\\\106\\\\111\\\\114\\\\105\\\\056\\\\000]"]]]], [1, b["\000\003\000\000"], [[8, b[".*[\\\\124\\\\122\\\\125\\\\105\\\\126\\\\111\\\\123\\\\111\\\\117\\\\116\\\\055\\\\130\\\\106\\\\111\\\\114\\\\105\\\\056\\\\000]"]]]]]],
     ['application/x-endnote-refer', [[0..50, b['%A '], [[0..1000, b["\n%D "], [[0..1000, b["\n%T "]]]]]]]],
     ['application/x-ms-owner', [[0, b["(?s)^([\\\\005-\\\\017])[\\\\000\\\\040-\\\\176]{10}.{43}\\\\1\\000"]]]],
+    ['application/x-tmx', [[0..256, b['<tmx']]]],
     ['application/mbox', [[0, b['From '], [[32..256, b["\nFrom: "]], [32..256, b["\nDate: "]], [32..256, b["\nSubject: "]], [32..256, b["\nDelivered-To: "]], [32..256, b["\nReceived: by "]], [32..256, b["\nReceived: via "]], [32..256, b["\nReceived: from "]], [32..256, b["\nMime-Version: "]], [32..256, b["\nX-"], [[32..8192, b["\nFrom: "]], [32..8192, b["\nDate: "]], [32..8192, b["\nSubject: "]], [32..8192, b["\nDelivered-To: "]], [32..8192, b["\nReceived: by "]], [32..8192, b["\nReceived: via "]], [32..8192, b["\nReceived: from "]], [32..8192, b["\nMime-Version: "]]]]]]]],
     ['application/x-bplist', [[0, b["bplist\000\000"]], [0, b["bplist\000\001"]], [0, b["bplist@\000"]], [0, b['bplist00']], [0, b['bplist01']], [0, b['bplist10']], [0, b['bplist15']], [0, b['bplist16']]]],
     ['application/x-ms-nls', [[0, b["(?s)^\\\\015.{51}\\\\014\\\\000\\\\015\\\\000\\\\016"]], [0, b["(?s)^\\\\104\\\\103.\\\\001"]]]],
@@ -2435,6 +2475,7 @@ module Marcel
     ['application/vnd.ms-excel.sheet.4', [[0, b["\t\004\006\000"], [[4, b["\000\000\020\000"]], [4, b["\000\000 \000"]], [4, b["\000\000@\000"]]]]]],
     ['application/vnd.ms-excel.workspace.3', [[0, b["\t\002\006\000"], [[4, b["\000\000\000\001"]]]]]],
     ['application/vnd.ms-excel.workspace.4', [[0, b["\t\004\006\000"], [[4, b["\000\000\000\001"]]]]]],
+    ['application/warc', [[0, b['WARC/']]]],
     ['application/x-axcrypt', [[0, b["\300\271\a.O\223\361F\240\025y,\241\331\350!"], [[17, b["\000\000\000\002"]]]]]],
     ['application/x-berkeley-db;format=btree;version=2', [[12, b["b1\005\000"], [[16, b["\006\000\000\000"]]]], [12, b["\000\0051b"], [[16, b["\000\000\000\006"]]]], [12, b["b1\005\000"], [[16, b["\006\000\000\000"]]]]]],
     ['application/x-berkeley-db;format=btree;version=3', [[12, b["b1\005\000"], [[16, b["\b\000\000\000"]]]], [12, b["\000\0051b"], [[16, b["\000\000\000\b"]]]], [12, b["b1\005\000"], [[16, b["\b\000\000\000"]]]]]],
@@ -2446,6 +2487,7 @@ module Marcel
     ['application/x-bplist', [[0, b['bplist']]]],
     ['application/x-debian-package', [[0, b["!<arch>\ndebian-binary"]], [0, b["!<arch>\ndebian-split"]]]],
     ['application/x-font-type1', [[0, b["\200\001"], [[4, b["\000\000%!PS-AdobeFont"]]]], [0, b['%!PS-AdobeFont-1.0']]]],
+    ['application/x-httpresponse', [[0, b['HTTP/'], [[0..1000, b["\nCache-Control:"]], [0..1000, b["\nContent-Type:"]], [0..1000, b["\nContent-Length:"]], [0..1000, b["\nContent-Disposition:"]], [0..1000, b["\nDate:"]], [0..1000, b["\nServer:"]]]], [0, nil]]],
     ['application/x-internet-archive', [[0, b['filedesc://']]]],
     ['application/x-lz4', [[0, b["\004\"M\030"]], [0, b["\002!L\030"]]]],
     ['application/x-mobipocket-ebook', [[0..60, b['BOOKMOBI']]]],
@@ -2477,6 +2519,7 @@ module Marcel
     ['image/heif', [[4, b['ftypmif1']]]],
     ['image/heif-sequence', [[4, b['ftypmsf1']]]],
     ['message/news', [[0, b['Path:']], [0, b['Xref:']]]],
+    ['model/e57', [[0, b['ASTM-E57']]]],
     ['model/vnd.dwf;version=2', [[0, b['(DWF V00.22)']]]],
     ['model/vnd.dwf;version=5', [[0, b['(DWF V00.55)']]]],
     ['model/vnd.dwf;version=6', [[0, b['(DWF V06.'], [[11, b[')PK']]]]]],
@@ -2492,6 +2535,7 @@ module Marcel
     ['video/x-oggyuv', [[0, b['OggS'], [[29, b['YUV']]]]]],
     ['video/x-ogm', [[0, b['OggS'], [[29, b['ideo']]]]]],
     ['application/x-msdownload;format=pe', [[0, b['MZ'], [[128, b["PE\000\000"]], [176, b["PE\000\000"]], [208, b["PE\000\000"]], [240, b["PE\000\000"]]]]]],
+    ['text/x-robots', [[0, nil, [[0, b['user-agent:']], [0, b['sitemap:']], [0..1000, b["\nuser-agent:"]], [0..1000, b["\nallow:"]], [0..1000, b["\ndisallow:"]], [0..1000, b["\nsitemap:"]]]]]],
     ['application/applefile', [[0, b["\000\005\026\000"]]]],
     ['application/dash+xml', [[0, b['<MPD']]]],
     ['application/dicom', [[128, b['DICM']]]],
@@ -2499,6 +2543,7 @@ module Marcel
     ['application/fits', [[0, b['SIMPLE  =                    T']], [0, b['SIMPLE  =                T']]]],
     ['application/javascript', [[0, b['/* jQuery ']], [0, b['/*! jQuery ']], [0, b['/*!'], [[4..8, b['* jQuery ']]]], [0, b['(function(e,undefined){']], [0, b['!function(window,undefined){']], [0, b['/*  Prototype JavaScript ']], [0, b['var Prototype={']], [0, b['function $w(t){']], [0, b['/** @license React']], [0, b['/**'], [[4..8, b['* React ']]]]]],
     ['application/mac-binhex40', [[11, b['must be converted with BinHex']]]],
+    ['application/marc', [[0, b['[0-9]{5,5}'], [[20, b['45'], [[5, b['[acdnp][acdefgijkmoprt][abcdims]']], [5, b['[acdnosx]z']], [5, b['[cdn][uvxy]']], [5, b['[acdn]w']], [5, b['[cdn]q']]]]]]]],
     ['application/mathematica', [[0, b['(**']], [0, b['(* ']]]],
     ['application/msword', [[0..8, b["\320\317\021\340\241\261\032\341"], [[546, b['jbjb']], [546, b['bjbj']]]]]],
     ['application/msword2', [[0, b["\233\245"]], [0, b["\333\245"]]]],
@@ -2517,6 +2562,7 @@ module Marcel
     ['application/vnd.apple.mpegurl', [[0, b['#EXTM3U']]]],
     ['application/vnd.digilite.prolights', [[0, b["\177\fD+"]]]],
     ['application/vnd.fdf', [[0, b['%FDF-']]]],
+    ['application/vnd.iccprofile', [[36, b['acsp']]]],
     ['application/vnd.java.hprof ', [[0, b["JAVA PROFILE \\\\d\\\\.\\\\d\\\\.\\\\d\\\\u0000"]]]],
     ['application/vnd.java.hprof.text', [[0, b["JAVA PROFILE \\\\d\\\\.\\\\d\\\\.\\\\d,"]]]],
     ['application/vnd.lotus-1-2-3;version=1', [[0, b["\000\000\002\000\004\004"]]]],
@@ -2526,8 +2572,8 @@ module Marcel
     ['application/vnd.lotus-1-2-3;version=97+9.x', [[0, b["\000\000\032\000\003\020\004\000"]]]],
     ['application/vnd.lotus-wordpro', [[0, b["WordPro\000"]], [0, b["WordPro\r\373"]]]],
     ['application/vnd.mif', [[0, b['<MakerFile']], [0, b['<MIFFile']], [0, b['<MakerDictionary']], [0, b['<MakerScreenFont']], [0, b['<MML']], [0, b['<Book']], [0, b['<Maker']]]],
-    ['application/vnd.ms-cab-compressed', [[0, b["MSCF\000\000\000\000"]]]],
     ['application/vnd.ms-cab-compressed', [[0, b['MSCF']]]],
+    ['application/vnd.ms-cab-compressed', [[0, b["MSCF\000\000\000\000"]]]],
     ['application/vnd.ms-htmlhelp', [[0, b['ITSF']]]],
     ['application/vnd.ms-outlook-pst', [[0, b['!BDN'], [[8, b['SM']]]]]],
     ['application/vnd.ms-tnef', [[0, b["x\237>\""]]]],
@@ -2563,7 +2609,6 @@ module Marcel
     ['application/vnd.wordperfect;version=5.1', [[0, b["\377WPC"], [[10, b["\000\001"]]]]]],
     ['application/vnd.wordperfect;version=6.x', [[0, b["\377WPC"], [[10, b["\002\001"]]]]]],
     ['application/vnd.xara', [[0, b['xar!']]]],
-    ['application/warc', [[0, b['WARC/']]]],
     ['application/wasm', [[0, b["\000asm"]], [0, b["msa\000"]]]],
     ['application/x-7z-compressed', [[0..1, b['7z'], [[2..5, b["\274\257'\034"]]]]]],
     ['application/x-adobe-indesign', [[0, b["\006\006\355\365\330\035F\345\2751\357\347\376t\267\035"]]]],
@@ -2608,6 +2653,7 @@ module Marcel
     ['application/x-matlab-data', [[0, b['MATLAB']]]],
     ['application/x-msdownload', [[0, b['MZ']]]],
     ['application/x-mswrite', [[0, b["1\276\000\000"]], [0, b["2\276\000\000"]]]],
+    ['application/x-nesrom', [[0, b["NES\032"]]]],
     ['application/x-netcdf', [[0, b["CDF\001"]], [0, b["CDF\002"]], [0, b["CDF\001"]]]],
     ['application/x-object', [[0, b["\177ELF"], [[16, b["\001\000"]], [16, b["\000\001"]]]]]],
     ['application/x-ole-storage', [[0..8, b["\320\317\021\340\241\261\032\341"]]]],
@@ -2668,11 +2714,14 @@ module Marcel
     ['image/jp2', [[0, b["\000\000\000\fjP  \r\n\207\n"], [[20, b['jp2 ']]]]]],
     ['image/jpm', [[0, b["\000\000\000\fjP  \r\n\207\n"], [[20, b['jpm ']]]]]],
     ['image/jpx', [[0, b["\000\000\000\fjP  \r\n\207\n"], [[20, b['jpx ']]]]]],
+    ['image/jxl', [[0, b["\377\n"]], [0, b["\000\000\000\fJXL \r\n\207\n"]]]],
     ['image/nitf', [[0, b['NITF01.10']], [0, b['NITF02.000']], [0, b['NITF02.100']]]],
+    ['image/svg+xml', [[0..4096, b['<svg']]]],
+    ['image/vnd.dgn;version=7', []],
     ['image/vnd.djvu', [[0, b['AT&TFORM']]]],
     ['image/vnd.dwg', [[0, b['MC0.0']], [0, b['AC1.2']], [0, b['AC1.40']], [0, b['AC1.50']], [0, b['AC2.10']], [0, b['AC2.21']], [0, b['AC2.22']]]],
     ['image/vnd.dxb', [[0, b["AutoCAD DXB 1.0\r\n0x1A00"]]]],
-    ['image/vnd.dxf;format=ascii', [[0..3, b["0\\r\\nSECTION\\r\\n"], [[12..18, b["2\\r\\nHEADER\\r\\n"]]]]]],
+    ['image/vnd.dxf;format=ascii', [[0..32, b["(999\\r?\\n[^\\r\\n]{0,64}\\\\s+)?0\\r?\\nSECTION\\r?\\n"], [[12..60, b["2\\r?\\n(?:HEADER|ENTITIES)\\r?\\n"]]]]]],
     ['image/vnd.dxf;format=binary', [[0, b["AutoCAD Binary DXF\r\n0x1A00"]]]],
     ['image/vnd.microsoft.icon', [[0, b["BA(\000\000\000.\000\000\000\000\000\000\000"]], [0, b["\000\000\001\000"]]]],
     ['image/vnd.ms-modi', [[0, b["EP*\000"]]]],
@@ -2693,7 +2742,7 @@ module Marcel
     ['image/x-xbitmap', [[0, b['/* XPM']]]],
     ['image/x-xcf', [[0, b['gimp xcf ']]]],
     ['message/news', [[0, b['Article']]]],
-    ['message/rfc822', [[0, b['Relay-Version:']], [0, b['#! rnews']], [0, b['N#! rnews']], [0, b['Forward to']], [0, b['Pipe to']], [0, b['Return-Path:']], [0, b['Message-ID:']], [0, b['X-Mailer:']], [0, b['X-Notes-Item:'], [[0..8192, b['Message-ID:']]]], [0, nil, [[0, b['Date:']], [0, b['Delivered-To:']], [0, b['From:']], [0, b['Message-ID:']], [0, b['MIME-Version:']], [0, b['Received:']], [0, b['Relay-Version:']], [0, b['Return-Path:']], [0, b['Sent:']], [0, b['Status:']], [0, b['User-Agent:']], [0, b['X-Mailer:']], [0, b['X-Originating-IP:']], [0..1024, b["\nDate:"]], [0..1024, b["\nDelivered-To:"]], [0..1024, b["\nFrom:"]], [0..1024, b["\nMIME-Version:"]], [0..1024, b["\nReceived:"]], [0..1024, b["\nRelay-Version:"]], [0..1024, b["\nReturn-Path:"]], [0..1024, b["\nSent:"]], [0..1024, b["\nStatus:"]], [0..1024, b["\nSubject:"]], [0..1024, b["\nTo:"]], [0..1024, b["\nUser-Agent:"]], [0..1024, b["\nX-Mailer:"]], [0..1024, b["\nX-Originating-IP:"]]]], [0, b['(X|DKIM|ARC)-'], [[0..8192, b["\nDate:"]], [0..8192, b["\nDelivered-To:"]], [0..8192, b["\nFrom:"]], [0..8192, b["\nMessage-ID:"]], [0..8192, b["\nMIME-Version:"]], [0..8192, b["\nReceived:"]], [0..8192, b["\nRelay-Version:"]], [0..8192, b["\nReturn-Path:"]], [0..8192, b["\nStatus:"]], [0..8192, b["\nUser-Agent:"]], [0..8192, b["\nX-Mailer:"]], [0..8192, b["\nX-Originating-IP:"]]]]]],
+    ['message/rfc822', [[0, b['Relay-Version:']], [0, b['#! rnews']], [0, b['N#! rnews']], [0, b['Forward to']], [0, b['Pipe to']], [0, b['Return-Path:']], [0, b['Message-ID:']], [0, b['X-Mailer:']], [0, b['X-Notes-Item:'], [[0..8192, b['Message-ID:']]]], [0, nil, [[0, b['Date:']], [0, b['Delivered-To:']], [0, b['From:']], [0, b['Message-ID:']], [0, b['MIME-Version:']], [0, b['Received:']], [0, b['Relay-Version:']], [0, b['Return-Path:']], [0, b['Sent:']], [0, b['Status:']], [0, b['User-Agent:']], [0, b['X-Mailer:']], [0, b['X-Originating-IP:']], [0..1024, b["\nDate:"]], [0..1024, b["\nDelivered-To:"]], [0..1024, b["\nFrom:"]], [0..1024, b["\nMIME-Version:"]], [0..1024, b["\nReceived:"]], [0..1024, b["\nRelay-Version:"]], [0..1024, b["\nReturn-Path:"]], [0..1024, b["\nSent:"]], [0..1024, b["\nStatus:"]], [0..1024, b["\nSubject:"]], [0..1024, b["\nTo:"]], [0..1024, b["\nUser-Agent:"]], [0..1024, b["\nX-Mailer:"]], [0..1024, b["\nX-Originating-IP:"]], [0..1024, b["\nDKIM-"]], [0..1024, b["\nARC-"]]]], [0, b['(X|DKIM|ARC)-'], [[0..8192, b["\nDate:"]], [0..8192, b["\nDelivered-To:"]], [0..8192, b["\nFrom:"]], [0..8192, b["\nMessage-ID:"]], [0..8192, b["\nMIME-Version:"]], [0..8192, b["\nReceived:"]], [0..8192, b["\nRelay-Version:"]], [0..8192, b["\nReturn-Path:"]], [0..8192, b["\nStatus:"]], [0..8192, b["\nUser-Agent:"]], [0..8192, b["\nX-Mailer:"]], [0..8192, b["\nX-Originating-IP:"]]]]]],
     ['model/vnd.dwf', [[0, b['(DWF V'], [[8, b['.'], [[11, b[')']]]]]]]],
     ['multipart/appledouble', [[0, b["\000\005\026\a"]]]],
     ['text/calendar', [[0, b['BEGIN:VCALENDAR'], [[15..30, b['VERSION:2.0']]]]]],
@@ -2717,9 +2766,10 @@ module Marcel
     ['application/gzip', [[0, b["\037\213"]], [0, b["\037\213"]]]],
     ['application/zlib', [[0, b["x\001"]], [0, b['x^']], [0, b["x\234"]], [0, b["x\332"]]]],
     ['application/java-vm', [[0, b["\312\376\272\276"]]]],
+    ['application/pdf', [[0..128, b['%%'], [[1..512, b['%PDF-1.']]]], [0..128, b['%%'], [[1..512, b['%PDF-2.']]]]]],
     ['application/vnd.wordperfect', [[0, b["\377WPC"]]]],
-    ['application/x-bzip', [[0, b['BZh']]]],
-    ['application/x-bzip2', [[0, b['BZh91']]]],
+    ['application/x-bzip', [[0, b['BZ0']]]],
+    ['application/x-bzip2', [[0, b['BZh[1-9]']]]],
     ['application/x-font-adobe-metric', [[0, b['StartFontMetrics']]]],
     ['application/x-font-printer-metric', [[0, b["\000\001"], [[4, b["\000\000Copyr"]]]]]],
     ['application/x-font-ttf', [[0, b["\000\001\000\000"]]]],
@@ -2739,7 +2789,8 @@ module Marcel
     ['audio/amr', [[0, b["#!AMR\n"]], [0, b['#!AMR']]]],
     ['image/vnd.zbrush.pcx', [[0, b["\n"], [[1, b["\000"]], [1, b["\002"]], [1, b["\003"]], [1, b["\004"]], [1, b["\005"]]]]]],
     ['message/rfc822', [[0..1000, b["\nMessage-ID:"]]]],
-    ['text/vtt', [[0, b["WEBVTT\r"]], [0, b["WEBVTT\n"]], [0, b['0xfeff'], [[2, b["WEBVTT\r"]]]], [0, b['0xfeff'], [[2, b["WEBVTT\n"]]]], [0, b["WEBVTT FILE\r"]], [0, b["WEBVTT FILE\n"]]]],
+    ['text/html', [[0..64, b['<!DOCTYPE HTML']], [0..64, b['<!DOCTYPE html']], [0..64, b['<!doctype HTML']], [0..64, b['<!doctype html']], [0..64, b['<HEAD']], [0..64, b['<head']], [0..64, b['<TITLE']], [0..64, b['<title']], [0..64, b['<HTML']], [0..128, b['<html']]]],
+    ['text/vtt', [[0, b["WEBVTT\r"]], [0, b["WEBVTT\n"]], [0, b['0xfeff'], [[2, b["WEBVTT\r"]], [2, b["WEBVTT\n"]]]], [0, b['0xfeff'], [[2, b["WEBVTT\r"]], [2, b["WEBVTT\n"]]]], [0, b['0xefbbbf'], [[3, b["WEBVTT\r"]], [3, b["WEBVTT\n"]]]], [0, b["WEBVTT FILE\r"]], [0, b["WEBVTT FILE\n"]]]],
     ['text/x-matlab', [[0, b["function [a-zA-Z][A-Za-z0-9_]{0,62}\\\\s*="]]]],
     ['text/x-matlab', [[0, b["function [a-zA-Z][A-Za-z0-9_]{0,62}[\\\\r\\\\n]"]]]],
     ['application/inf', [[0, b['[version]']], [0, b['[strings]']]]],
