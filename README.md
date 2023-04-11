@@ -41,6 +41,14 @@ Marcel::MimeType.for Pathname.new("example.png"), name: "example.ai"
 # As "application/illustrator" is not a more specific type of "image/png", the filename is ignored
 ```
 
+Custom file types not supported by Marcel can be added using `Marcel::MimeType.extend`. 
+
+```ruby
+Marcel::MimeType.extend "text/custom", extensions: %w( customtxt )
+Marcel::MimeType.for name: "file.customtxt"
+#  => "text/custom"
+```
+
 ## Motivation
 
 Marcel was extracted from Basecamp 3, in order to make our file detection logic both easily reusable but more importantly, easily testable. Test fixtures have been added for all of the most common file types uploaded to Basecamp, and other common file types too. We hope to expand this test coverage with other file types as and when problems are identified.
