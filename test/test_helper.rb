@@ -1,10 +1,8 @@
 require 'minitest/autorun'
-require 'byebug'
-
 require 'marcel'
 require 'pathname'
 
-class Marcel::TestCase < MiniTest::Test
+class Marcel::TestCase < Minitest::Test
   class << self
     def setup(&block)
       define_method(:setup, &block)
