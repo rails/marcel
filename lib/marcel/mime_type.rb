@@ -60,7 +60,12 @@ module Marcel
         end
 
         def for_declared_type(declared_type)
-          parse_media_type(declared_type)
+          type = parse_media_type(declared_type)
+
+          # application/octet-stream is treated as an undeclared/missing type,
+          # allowing the type to be inferred from the filename. If there's no
+          # filename extension, then the type falls back to binary anyway.
+          type unless type == BINARY
         end
 
         def with_io(pathname_or_io, &block)
