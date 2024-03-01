@@ -38,10 +38,19 @@ class Marcel::MimeTypeTest < Marcel::TestCase
     assert_equal "image/gif", content_type
   end
 
-  test "gets content type from sources that conform to Rack::Lint::InputWrapper" do
+  test "gets content type from sources that conform to Rack RewindableInput" do
     io = StringIO.new(File.read(@path))
-    wrapper = Rack::Lint::InputWrapper.new(io)
+    wrapper = Rack::RewindableInput.new(io)
     content_type = Marcel::MimeType.for wrapper
     assert_equal "image/gif", content_type
+  end
+
+  if Rack::Lint.const_defined?(:InputWrapper)
+    test "gets content type from sources that conform to Rack 2's Rack::Lint::InputWrapper" do
+      io = StringIO.new(File.read(@path))
+      wrapper = Rack::Lint::InputWrapper.new(io)
+      content_type = Marcel::MimeType.for wrapper
+      assert_equal "image/gif", content_type
+    end
   end
 end
