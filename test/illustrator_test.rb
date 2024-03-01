@@ -6,4 +6,14 @@ class Marcel::MimeType::IllustratorTest < Marcel::TestCase
     file = files("name/application/illustrator/illustrator.ai")
     assert_equal "application/illustrator", Marcel::MimeType.for(file, name: "illustrator.ai", declared_type: "application/postscript")
   end
+
+  test ".ai uploaded as application/pdf" do
+    file = files("name/application/illustrator/illustrator.ai")
+    assert_equal "application/illustrator", Marcel::MimeType.for(file, name: "illustrator.ai", declared_type: "application/pdf")
+  end
+
+  test ".ai uploaded as binary" do
+    file = files("name/application/illustrator/illustrator.ai")
+    assert_equal "application/illustrator", Marcel::MimeType.for(file, name: "illustrator.ai", declared_type: "application/octet-stream")
+  end
 end
