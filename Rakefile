@@ -32,8 +32,18 @@ task :types do
   end
 end
 
+desc "Download latest Tika data and update data tables"
+task update: [ "tika:download", "tables" ]
+
 desc "Generate data tables"
 task tables: "lib/marcel/tables.rb"
 file "lib/marcel/tables.rb" => %w[ data/tika.xml data/custom.xml ] do |target|
   exec "script/generate_tables.rb", *target.prerequisites, out: target.name
+end
+
+namespace :tika do
+  desc "Download latest data/tika.xml"
+  task :download do
+    exec "script/download_tika_data.rb", out: "data/tika.xml"
+  end
 end

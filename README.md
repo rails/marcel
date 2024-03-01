@@ -57,7 +57,7 @@ Marcel was extracted from Basecamp's file detection heuristics. The aim is provi
 
 ## Contributing
 
-Marcel generates MIME lookup tables with `bundle exec rake tables`. MIME types are seeded from data found in `data/*.xml`. Custom MIMEs may be added to `data/custom.xml`, while overrides to the standard MIME database may be added to `lib/marcel/mime_type/definitions.rb`.
+Marcel generates MIME lookup tables with `bundle exec rake update`. MIME types are seeded from data found in `data/*.xml`. Custom MIMEs may be added to `data/custom.xml`, while overrides to the standard MIME database may be added to `lib/marcel/mime_type/definitions.rb`.
 
 Marcel follows the same contributing guidelines as [rails/rails](https://github.com/rails/rails#contributing).
 
