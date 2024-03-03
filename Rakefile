@@ -1,12 +1,18 @@
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 
-Rake::TestTask.new do |t|
+task default: :test
+
+Rake::TestTask.new :test do |t|
   t.libs << "test"
   t.test_files = FileList['test/**/*_test.rb']
 end
 
-task default: :test
+namespace :test do
+  task tables: [ :tables, :test ]
+  task update: [ :update, :test ]
+end
+
 
 task :types do
   fixture_path = File.expand_path("../test/fixtures", __FILE__)
@@ -38,12 +44,12 @@ task update: [ "tika:download", "tables" ]
 desc "Generate data tables"
 task tables: "lib/marcel/tables.rb"
 file "lib/marcel/tables.rb" => %w[ data/tika.xml data/custom.xml ] do |target|
-  exec "script/generate_tables.rb", *target.prerequisites, out: target.name
+  sh "script/generate_tables.rb", *target.prerequisites, out: target.name
 end
 
 namespace :tika do
   desc "Download latest data/tika.xml"
   task :download do
-    exec "script/download_tika_data.rb", out: "data/tika.xml"
+    sh "script/download_tika_data.rb", out: "data/tika.xml"
   end
 end
