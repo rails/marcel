@@ -46,9 +46,9 @@ def binary_strings(object)
   end
 end
 
-def get_matches(parent)
+def get_matches(mime, parent)
   parent.elements.map {|match|
-    children = get_matches(match)
+    children = get_matches(mime, match)
 
     type = match['type']
     value = match['value']
@@ -56,8 +56,10 @@ def get_matches(parent)
     offset = offset.split(':').map {|x| x.to_i }
 
     mask = match['mask']
+
+    # We only support masks of whole bytes against a string type
     if mask && (!mask.match?(/\A0x(FF|00)*\z/) || type != 'string')
-      # We only support masks of whole bytes against a string type
+      warn "#{mime['type']}: unsupported mask #{match.to_s}"
       next nil
     end
 
@@ -76,6 +78,7 @@ def get_matches(parent)
           mask_length = (match_offset[1] - match_offset[0]) / 2
           segments << [mask_offset, mask_length]
         end
+
         chain = children
         segments.reverse_each do |(mask_offset, mask_length)|
           masked_value = value[mask_offset, mask_length]
@@ -108,7 +111,12 @@ def get_matches(parent)
     when 'byte'
       value = str2int(value)
       value = value.chr
+    when nil
+      nil
+    else
+      warn "#{mime['type']}: unsupported #{type} match: #{match.to_s}"
     end
+
     children.empty? ? [offset, value] : [offset, value, children]
   }.compact
 end
@@ -133,7 +141,7 @@ ARGV.each do |path|
     exts = (mime/'glob').map{|x| x['pattern'] =~ /^\*\.([^\[\]]+)$/ ? $1.downcase : nil }.compact
     (mime/'magic').each do |magic|
       priority = (magic['priority'] || '50').to_i
-      matches = get_matches(magic)
+      matches = get_matches(mime, magic)
       magics << [priority, type, matches]
     end
     if !exts.empty?
