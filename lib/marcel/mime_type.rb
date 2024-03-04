@@ -5,10 +5,37 @@ module Marcel
     BINARY = "application/octet-stream"
 
     class << self
-      def extend(type, extensions: [], parents: [], magic: nil)
-        extensions = (Array(extensions) + Array(Marcel::TYPE_EXTS[type])).uniq
-        parents = (Array(parents) + Array(Marcel::TYPE_PARENTS[type])).uniq
-        Magic.add(type, extensions: extensions, magic: magic, parents: parents)
+      def canonicalize(type, instead_of:)
+        Magic.canonicalize type, instead_of: instead_of
+      end
+
+      def extend(type, extensions: nil, aliases: nil, parents: nil, magic: nil)
+        extensions = Array(extensions)
+        if extensions.any? && extensions.sort == Array(Marcel::TYPE_EXTS[type]).sort
+          warn "#{type} already has extensions #{extensions.inspect}"
+        end
+        extensions |= Array(Marcel::TYPE_EXTS[type])
+
+        aliases = Array(aliases)
+        existing_aliases = Marcel::TYPE_ALIASES.select { |_, t| t == type }.keys
+        if aliases.any? && aliases.sort == existing_aliases.sort
+          warn "#{type} already has aliases #{aliases.inspect}"
+        end
+        aliases |= existing_aliases
+
+        parents = Array(parents)
+        if parents.any? && parents.sort == Array(Marcel::TYPE_PARENTS[type]).sort
+          warn "#{type} already has parents #{parents.inspect}"
+        end
+        parents |= Array(Marcel::TYPE_PARENTS[type])
+
+        magic = Array(magic)
+        existing_magic = Marcel::MAGIC.select { |type, _| type == type }.map(&:last)
+        if magic.any? && magic == existing_magic
+          warn "#{type} already has magic matchers #{magic.inspect}"
+        end
+
+        Magic.add type, extensions: extensions, magic: magic, aliases: aliases, parents: parents
       end
 
       # Returns the most appropriate content type for the given file.
@@ -32,7 +59,6 @@ module Marcel
       end
 
       private
-
         def for_data(pathname_or_io)
           if pathname_or_io
             with_io(pathname_or_io) do |io|
@@ -60,7 +86,7 @@ module Marcel
         end
 
         def for_declared_type(declared_type)
-          type = parse_media_type(declared_type)
+          type = Marcel::Magic.canonical(parse_media_type(declared_type))
 
           # application/octet-stream is treated as an undeclared/missing type,
           # allowing the type to be inferred from the filename. If there's no
