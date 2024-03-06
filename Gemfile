@@ -1,4 +1,8 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-# Specify your gem's dependencies in marcel.gemspec
+if RUBY_VERSION >= "2.7"
+  gem "irb"
+  gem "debug"
+end
+
 gemspec

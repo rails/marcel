@@ -2,6 +2,11 @@ require 'minitest/autorun'
 require 'marcel'
 require 'pathname'
 
+begin
+  require 'debug'
+rescue LoadError
+end
+
 class Marcel::TestCase < Minitest::Test
   class << self
     def setup(&block)
