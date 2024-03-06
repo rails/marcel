@@ -2,10 +2,7 @@ require 'minitest/autorun'
 require 'marcel'
 require 'pathname'
 
-begin
-  require 'debug'
-rescue LoadError
-end
+require 'debug' rescue nil
 
 class Marcel::TestCase < Minitest::Test
   class << self
