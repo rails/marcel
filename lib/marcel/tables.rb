@@ -2399,7 +2399,7 @@ module Marcel
     ['image/bmp', [[0, b['BM'], [[26, b["\001\000"], [[28, b["\000\000"]], [28, b["\001\000"]], [28, b["\004\000"]], [28, b["\b\000"]], [28, b["\020\000"]], [28, b["\030\000"]], [28, b[" \000"]]]]]]]],
     ['image/vnd.adobe.photoshop', [[0, b["8BPS\000\001"]], [0, b["8BPS\000\002"]]]],
     ['image/webp', [[0, b['RIFF'], [[8, b['WEBP']]]]]],
-    ['text/html', [[0..64, b['<!DOCTYPE HTML']], [0..64, b['<!DOCTYPE html']], [0..64, b['<!doctype HTML']], [0..64, b['<!doctype html']], [0..64, b['<HEAD']], [0..64, b['<head']], [0..64, b['<TITLE']], [0..64, b['<title']], [0..64, b['<HTML']], [0, b['<BODY']], [0, b['<body']], [0, b['<DIV']], [0, b['<div']], [0, b['<TITLE']], [0, b['<title']], [0, b['<h1']], [0, b['<H1']], [0..128, b['<html']]]],
+    ['text/html', [[0..64, b['<!DOCTYPE HTML']], [0..64, b['<!DOCTYPE html']], [0..64, b['<!doctype HTML']], [0..64, b['<!doctype html']], [0..64, b['<HEAD']], [0..64, b['<head']], [0..64, b['<HTML']], [0, b['<BODY']], [0, b['<body']], [0, b['<DIV']], [0, b['<div']], [0, b['<h1']], [0, b['<H1']], [0..128, b['<html']]]],
     ['image/svg+xml', [[0..4096, b['<svg']]]],
     ['video/x-msvideo', [[0, b['RIFF'], [[8, b['AVI ']]]], [8, b['AVI ']]]],
     ['video/x-ms-wmv', [[0..8192, b['Windows Media Video']], [0..8192, b['VC-1 Advanced Profile']], [0..8192, b['wmv2']]]],
