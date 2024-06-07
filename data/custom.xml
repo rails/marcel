@@ -83,6 +83,7 @@
           <match value="webm" type="string" offset="4:4096">
             <match value="V_VP8" type="string" offset="4:4096" />
             <match value="V_VP9" type="string" offset="4:4096" />
+            <match value="V_AV1" type="string" offset="4:4096" />
           </match>
         </match>
       </match>
