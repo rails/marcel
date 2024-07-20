@@ -46,7 +46,7 @@ class Marcel::TestCase < Minitest::Test
   end
 
   def files(name)
-    Pathname.new fixture_path(name)
+    self.class.files(name)
   end
 
   def fixture_path(name)
