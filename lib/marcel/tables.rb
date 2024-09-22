@@ -401,6 +401,7 @@ module Marcel
     'gpg' => 'application/pgp-encrypted',
     'gph' => 'application/vnd.flographit',
     'gpkg' => 'application/x-geopackage',
+    'gpx' => 'application/gpx+xml',
     'gqf' => 'application/vnd.grafeq',
     'gqs' => 'application/vnd.grafeq',
     'gram' => 'application/srgs',
@@ -1330,6 +1331,7 @@ module Marcel
     'application/epub+zip' => %w(epub), # Electronic Publication
     'application/fits' => %w(fits fit fts), # Flexible Image Transport System
     'application/font-tdpfr' => %w(pfr),
+    'application/gpx+xml' => %w(gpx), # GPS Exchange Format (GPX)
     'application/gzip' => %w(gz tgz), # Gzip Compressed Archive
     'application/hwp+zip' => %w(hwpx), # Hangul Word Processor File, zip based
     'application/hyperstudio' => %w(stk),
@@ -2243,6 +2245,7 @@ module Marcel
     'application/dita+xml;format=map' => %w(application/dita+xml),
     'application/dita+xml;format=topic' => %w(application/dita+xml),
     'application/dita+xml;format=val' => %w(application/dita+xml),
+    'application/gpx+xml' => %w(application/xml),
     'application/hwp+zip' => %w(application/zip),
     'application/illustrator' => %w(application/pdf),
     'application/java-archive' => %w(application/zip),
@@ -2658,6 +2661,7 @@ module Marcel
     ['application/epub+zip', [[0, b["PK\003\004"], [[30, b['mimetypeapplication/epub+zip']]]]]],
     ['application/fits', [[0, b['SIMPLE  =                    T']], [0, b['SIMPLE  =                T']]]],
     ['application/java-vm', [[0, b["\312\376\272\276"]]]],
+    ['application/gpx+xml', [[0..4096, b['<gpx']]]],
     ['application/mac-binhex40', [[11, b['must be converted with BinHex']]]],
     ['application/marc', [[0, b['[0-9]{5,5}'], [[20, b['45'], [[5, b['[acdnp][acdefgijkmoprt][abcdims]']], [5, b['[acdnosx]z']], [5, b['[cdn][uvxy]']], [5, b['[acdn]w']], [5, b['[cdn]q']]]]]]]],
     ['application/mathematica', [[0, b['(**']], [0, b['(* ']]]],
