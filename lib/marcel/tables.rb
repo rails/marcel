@@ -384,6 +384,7 @@ module Marcel
     'gnumeric' => 'application/x-gnumeric',
     'go' => 'text/x-go',
     'gph' => 'application/vnd.flographit',
+    'gpx' => 'application/gpx+xml',
     'gqf' => 'application/vnd.grafeq',
     'gqs' => 'application/vnd.grafeq',
     'gram' => 'application/srgs',
@@ -1280,6 +1281,7 @@ module Marcel
     'application/epub+zip' => %w(epub), # Electronic Publication
     'application/fits' => %w(fits fit fts), # Flexible Image Transport System
     'application/font-tdpfr' => %w(pfr),
+    'application/gpx+xml' => %w(gpx), # GPS Exchange Format (GPX)
     'application/gzip' => %w(gz tgz), # Gzip Compressed Archive
     'application/hyperstudio' => %w(stk),
     'application/illustrator' => %w(ai), # Adobe Illustrator Artwork
@@ -2155,6 +2157,7 @@ module Marcel
     'application/dita+xml;format=map' => %w(application/dita+xml),
     'application/dita+xml;format=topic' => %w(application/dita+xml),
     'application/dita+xml;format=val' => %w(application/dita+xml),
+    'application/gpx+xml' => %w(application/xml),
     'application/illustrator' => %w(application/postscript),
     'application/java-archive' => %w(application/zip),
     'application/javascript' => %w(text/plain),
@@ -2497,6 +2500,7 @@ module Marcel
     ['application/dicom', [[128, b['DICM']]]],
     ['application/epub+zip', [[0, b["PK\003\004"], [[30, b['mimetypeapplication/epub+zip']]]]]],
     ['application/fits', [[0, b['SIMPLE  =                    T']], [0, b['SIMPLE  =                T']]]],
+    ['application/gpx+xml', [[0..4096, b['<gpx']]]],
     ['application/javascript', [[0, b['/* jQuery ']], [0, b['/*! jQuery ']], [0, b['/*!'], [[4..8, b['* jQuery ']]]], [0, b['(function(e,undefined){']], [0, b['!function(window,undefined){']], [0, b['/*  Prototype JavaScript ']], [0, b['var Prototype={']], [0, b['function $w(t){']], [0, b['/** @license React']], [0, b['/**'], [[4..8, b['* React ']]]]]],
     ['application/mac-binhex40', [[11, b['must be converted with BinHex']]]],
     ['application/mathematica', [[0, b['(**']], [0, b['(* ']]]],
