@@ -2,7 +2,7 @@
   <mime-type type="image/svg+xml">
     <sub-class-of type="application/xml" />
 
-    <magic priority="50">
+    <magic priority="60">
       <match value="&lt;svg" type="string" offset="0:4096" />
     </magic>
   </mime-type>
