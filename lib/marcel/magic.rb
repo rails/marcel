@@ -119,7 +119,7 @@ module Marcel
 
       io.binmode if io.respond_to?(:binmode)
       io.set_encoding(Encoding::BINARY) if io.respond_to?(:set_encoding)
-      buffer = "".encode(Encoding::BINARY)
+      buffer = (+"").encode(Encoding::BINARY)
 
       MAGIC.send(method) { |type, matches| magic_match_io(io, matches, buffer) }
     end
