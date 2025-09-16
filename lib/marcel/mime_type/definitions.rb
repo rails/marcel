@@ -34,6 +34,7 @@ Marcel::MimeType.extend "application/vnd.apple.numbers", extensions: %w( numbers
 Marcel::MimeType.extend "application/vnd.apple.keynote", extensions: %w( key ), parents: "application/zip"
 
 Marcel::MimeType.extend "audio/aac", extensions: %w( aac ), parents: "audio/x-aac"
+Marcel::MimeType.extend("audio/ogg", extensions: %w( opus ), magic: [[0, 'OggS', [[28, 'OpusHead']]]])
 Marcel::MimeType.extend("audio/ogg", extensions: %w( ogg oga ), magic: [[0, 'OggS', [[29, 'vorbis']]]])
 
 Marcel::MimeType.extend "image/vnd.dwg", magic: [[0, "AC10"]]
