@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Marcel::MimeType.extend "text/plain", extensions: %w( txt asc )
+Marcel::MimeType.extend "text/html", magic: [[0..64, "<!DOCTYPE HTML"], [0..64, "<!DOCTYPE html"], [0..64, "<!doctype HTML"], [0..64, "<!doctype html"]]
 
 Marcel::MimeType.extend "application/illustrator", parents: "application/pdf"
 Marcel::MimeType.extend "image/vnd.adobe.photoshop", magic: [[0, "8BPS"]], extensions: %w( psd psb )
