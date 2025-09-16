@@ -26,6 +26,7 @@ module Marcel
     'ac' => 'text/plain',
     'ac3' => 'audio/ac3',
     'acc' => 'application/vnd.americandynamics.acc',
+    'accdb' => 'application/x-msaccess',
     'ace' => 'application/x-ace-compressed',
     'acfm' => 'application/x-font-adobe-metric',
     'acu' => 'application/vnd.acucobol',
@@ -1297,6 +1298,7 @@ module Marcel
     'z' => 'application/x-compress',
     'zaz' => 'application/vnd.zzazz.deck+xml',
     'zip' => 'application/zip',
+    'zipx' => 'application/zip',
     'zir' => 'application/vnd.zul',
     'zirz' => 'application/vnd.zul',
     'zmm' => 'application/vnd.handheld-entertainment+xml',
@@ -1849,7 +1851,7 @@ module Marcel
     'application/x-ms-wmd' => %w(wmd),
     'application/x-ms-wmz' => %w(wmz),
     'application/x-ms-xbap' => %w(xbap),
-    'application/x-msaccess' => %w(mdb),
+    'application/x-msaccess' => %w(accdb mdb),
     'application/x-msbinder' => %w(obd),
     'application/x-mscardfile' => %w(crd),
     'application/x-msclip' => %w(clp),
@@ -1949,7 +1951,7 @@ module Marcel
     'application/xslt+xml' => %w(xslt), # XSL Transformations
     'application/xspf+xml' => %w(xspf), # XML Shareable Playlist Format
     'application/xv+xml' => %w(mxml xhvml xvml xvm),
-    'application/zip' => %w(zip), # Compressed Archive File
+    'application/zip' => %w(zip zipx), # Compressed Archive File
     'application/zstd' => %w(zst), # https://tools.ietf.org/id/draft-kucherawy-dispatch-zstd-01.html
     'audio/ac3' => %w(ac3), # Dolby Digital Audio Compression File
     'audio/adpcm' => %w(adp),
@@ -2244,7 +2246,7 @@ module Marcel
     'application/hwp+zip' => %w(application/zip),
     'application/illustrator' => %w(application/pdf),
     'application/java-archive' => %w(application/zip),
-    'application/json' => %w(application/javascript),
+    'application/json' => %w(text/javascript),
     'application/manifest+json' => %w(application/json),
     'application/mathematica' => %w(text/plain),
     'application/mbox' => %w(text/x-tika-text-based-message),
