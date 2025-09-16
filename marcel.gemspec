@@ -24,4 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '>= 13.0'
   spec.add_development_dependency 'rack', '>= 2'
   spec.add_development_dependency 'nokogiri', '>= 1.9.1'
+
+  spec.metadata["changelog_uri"] = 'https://github.com/rails/marcel/releases'
 end
