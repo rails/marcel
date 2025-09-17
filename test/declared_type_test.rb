@@ -19,4 +19,9 @@ class Marcel::MimeType::DeclaredTypeTest < Marcel::TestCase
   test "ignores charset declarations" do
     assert_equal "text/html", Marcel::MimeType.for(declared_type: "text/html; charset=utf-8")
   end
+
+  test "resolves declared type to a canonical MIME type" do
+    aliased, canonical = Marcel::TYPE_ALIASES.first
+    assert_equal canonical, Marcel::MimeType.for(declared_type: aliased)
+  end
 end

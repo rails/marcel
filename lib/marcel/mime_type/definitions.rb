@@ -29,29 +29,29 @@ Marcel::MimeType.extend "application/vnd.ms-powerpoint.presentation.macroenabled
 Marcel::MimeType.extend "application/vnd.ms-powerpoint.template.macroenabled.12", parents: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 Marcel::MimeType.extend "application/vnd.ms-powerpoint.slideshow.macroenabled.12", parents: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 
-Marcel::MimeType.extend "application/vnd.apple.pages", extensions: %w( pages ), parents: "application/zip"
-Marcel::MimeType.extend "application/vnd.apple.numbers", extensions: %w( numbers ), parents: "application/zip"
-Marcel::MimeType.extend "application/vnd.apple.keynote", extensions: %w( key ), parents: "application/zip"
+Marcel::MimeType.extend "application/vnd.apple.pages", parents: "application/zip"
+Marcel::MimeType.extend "application/vnd.apple.numbers", parents: "application/zip"
+Marcel::MimeType.extend "application/vnd.apple.keynote", parents: "application/zip"
 
-Marcel::MimeType.extend "audio/aac", extensions: %w( aac ), parents: "audio/x-aac"
-Marcel::MimeType.extend("audio/ogg", extensions: %w( ogg oga ), magic: [[0, 'OggS', [[29, 'vorbis']]]])
+# Upstream aliases to application/x-x509-cert. Override with a ;format=pem subtype.
+Marcel::MimeType.extend "application/x-x509-ca-cert", magic: [[0, '-----BEGIN CERTIFICATE-----']], extensions: %w( pem ), parents: "application/x-x509-cert;format=pem"
+
+Marcel::MimeType.extend "audio/mpc", magic: [[0, "MPCKSH"]], extensions: %w( mpc )
+Marcel::MimeType.extend "audio/ogg", extensions: %w( ogg oga ), magic: [[0, 'OggS', [[29, 'vorbis']]]]
+Marcel::MimeType.canonicalize "audio/aac", instead_of: "audio/x-aac"
+Marcel::MimeType.canonicalize "audio/flac", instead_of: "audio/x-flac"
+Marcel::MimeType.canonicalize "audio/x-wav", instead_of: "audio/vnd.wave"
 
 Marcel::MimeType.extend "image/vnd.dwg", magic: [[0, "AC10"]]
 
-Marcel::MimeType.extend "application/x-x509-ca-cert", magic: [[0, '-----BEGIN CERTIFICATE-----']], extensions: %w( pem ), parents: "application/x-x509-cert;format=pem"
-
-Marcel::MimeType.extend "image/avif", magic: [[4, "ftypavif"]], extensions: %w( avif )
-Marcel::MimeType.extend "image/heif", magic: [[4, "ftypmif1"]], extensions: %w( heif )
-Marcel::MimeType.extend "image/heic", magic: [[4, "ftypheic"]], extensions: %w( heic )
+Marcel::MimeType.extend "image/avif", magic: [[4, "ftypavif"]]
+Marcel::MimeType.extend "image/heif", magic: [[4, "ftypmif1"]]
+Marcel::MimeType.extend "image/heic", magic: [[4, "ftypheic"]]
 
 Marcel::MimeType.extend "image/x-raw-sony", extensions: %w( arw ), parents: "image/tiff"
-Marcel::MimeType.extend "image/x-raw-canon",  extensions: %w( cr2 crw ), parents: "image/tiff"
+Marcel::MimeType.extend "image/x-raw-canon", parents: "image/tiff"
 
 Marcel::MimeType.extend "video/mp4", magic: [[4, "ftypisom"], [4, "ftypM4V "]], extensions: %w( mp4 m4v )
-
-Marcel::MimeType.extend "audio/flac", magic: [[0, 'fLaC']], extensions: %w( flac ), parents: "audio/x-flac"
-Marcel::MimeType.extend "audio/x-wav", magic: [[0, 'RIFF', [[8, 'WAVE']]]], extensions: %w( wav ), parents: "audio/vnd.wav"
-Marcel::MimeType.extend "audio/mpc", magic: [[0, "MPCKSH"]], extensions: %w( mpc )
 
 Marcel::MimeType.extend "font/ttf", magic: [[0, "\x00\x01\x00\x00"]], extensions: %w( ttf ttc )
 Marcel::MimeType.extend "font/otf", magic: [[0, "OTTO"]], extensions: %w( otf ), parents: "font/ttf"

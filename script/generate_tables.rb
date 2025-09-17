@@ -128,6 +128,7 @@ end
 
 extensions = {}
 types = {}
+aliases = {}
 magics = []
 
 ARGV.each do |path|
@@ -137,6 +138,7 @@ ARGV.each do |path|
   (doc/'mime-info/mime-type').each do |mime|
     comments = Hash[*(mime/'_comment').map {|comment| [comment['xml:lang'], comment.inner_text] }.flatten]
     type = mime['type']
+    (mime/'alias').each { |x| aliases[x['type']] = type }
     subclass = (mime/'sub-class-of').map{|x| x['type']}
     exts = (mime/'glob').map{|x| x['pattern'] =~ /^\*\.([^\[\]]+)$/ ? $1.downcase : nil }.compact
     (mime/'magic').each do |magic|
@@ -220,6 +222,11 @@ types.keys.sort.each do |key|
   comment = types[key][2]
   comment = " # #{comment.tr("\n", " ")}" if comment
   puts "    '#{key}' => %w(#{exts}),#{comment}"
+end
+puts "  }"
+puts "  TYPE_ALIASES = {"
+aliases.each do |aliased, type|
+  puts "    '#{aliased}' => '#{type}',"
 end
 puts "  }"
 puts "  TYPE_PARENTS = {"
