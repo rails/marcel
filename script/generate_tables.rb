@@ -4,6 +4,7 @@
 # Copyright (c) 2011 Daniel Mendler. Available at https://github.com/mimemagicrb/mimemagic.
 
 require 'nokogiri'
+require_relative '../lib/marcel/tika_regex'
 
 class String
   alias inspect_old inspect
@@ -27,6 +28,16 @@ class BinaryString
   end
 end
 
+class RegexString
+  def initialize(pattern)
+    @pattern = pattern
+  end
+
+  def inspect
+    "r[#{@pattern.inspect}]"
+  end
+end
+
 def str2int(s)
   return s.to_i(16) if s[0..1].downcase == '0x'
   return s.to_i(8) if s[0..0].downcase == '0'
@@ -39,6 +50,8 @@ def binary_strings(object)
     object.map { |o| binary_strings(o) }
   when String
     BinaryString.new(object)
+  when RegexString
+    object
   when Numeric, Range, nil
     object
   else
@@ -69,6 +82,8 @@ def get_matches(mime, parent)
         value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
         encoding = type == 'unicodeLE' ? Encoding::UTF_16LE : Encoding::UTF_16BE
         value = value.encode(encoding).force_encoding(Encoding::BINARY)
+    when 'regex'
+      value = RegexString.new(value)
     when 'string', 'stringignorecase'
       value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
       value.gsub!(/\\(x[\dA-Fa-f]{1,2}|0\d{1,3}|\d{1,3}|.)/) { eval("\"\\#{$1}\"") }
@@ -235,6 +250,7 @@ types.keys.sort.each do |key|
 end
 puts "  }"
 puts "  b = Hash.new { |h, k| h[k] = k.b.freeze }"
+puts "  r = Hash.new { |h, k| h[k] = Marcel::TikaRegex.to_ruby_regexp(k) }"
 puts "  # @private"
 puts "  # :nodoc:"
 puts "  MAGIC = ["

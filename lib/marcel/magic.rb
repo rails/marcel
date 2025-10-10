@@ -123,9 +123,14 @@ module Marcel
 
     def self.magic_match_io(io, matches, buffer)
       matches.any? do |offset, value, children|
+        # Skip if value is nil (e.g., invalid regex pattern - it was meant for Java after all)
+        next false if value.nil?
+        
         match =
           if value
-            if Range === offset
+            if value.is_a?(Regexp)
+              match_regex(io, offset, value, buffer)
+            elsif Range === offset
               io.read(offset.begin, buffer)
               x = io.read(offset.end - offset.begin + value.bytesize, buffer)
               x && x.include?(value)
@@ -140,6 +145,33 @@ module Marcel
       end
     end
 
-    private_class_method :magic_match, :magic_match_io
+    def self.match_regex(io, offset, regexp, buffer)
+      start = offset.is_a?(Range) ? offset.begin : offset
+      io.read(start, buffer) if start > 0
+      data = io.read(256, buffer)
+      return false unless data
+
+      # I know, I know... this is awful, but the patterns come from Apache Tika
+      # and we are getting warnings about character class overlaps, so we'll
+      # suppress warnings for this match call.
+      # I'm open to better ideas.
+      begin
+        old_verbose = $VERBOSE
+        $VERBOSE = nil
+
+        # For regex patterns, simply match within the data buffer
+        # The patterns themselves should be designed to match appropriately
+        data.match?(regexp)
+      ensure
+        $VERBOSE = old_verbose
+      end
+
+      # we need to catch all exceptions here because TruffleRuby raises Polyglot::ForeignException
+    rescue Exception => e
+      warn "Marcel::Magic.match_regex: error matching #{regexp.inspect}: #{e.message}"
+      false
+    end
+
+    private_class_method :magic_match, :magic_match_io, :match_regex
   end
 end
