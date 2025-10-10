@@ -70,3 +70,17 @@ Marcel::MimeType.extend(
 )
 
 Marcel::MimeType.extend "text/markdown", extensions: %w(md mdtext markdown mkd), parents: "text/x-web-markdown"
+
+Marcel::MimeType.extend "application/x-bzip2", 
+  magic: [
+    [0, "BZh1"],
+    [0, "BZh2"], 
+    [0, "BZh3"],
+    [0, "BZh4"],
+    [0, "BZh5"],
+    [0, "BZh6"],
+    [0, "BZh7"],
+    [0, "BZh8"],
+    [0, "BZh9"]
+  ],
+  extensions: %w( bz2 boz tbz2 )
