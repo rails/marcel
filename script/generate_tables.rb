@@ -307,7 +307,7 @@ puts "  MAGIC = ["
 magics.each do |priority, type, matches|
   next if matches.nil? || matches.empty?
 
-  puts "    ['#{type}', #{binary_strings(matches).inspect}],"
+  puts "    ['#{type.strip}', #{binary_strings(matches).inspect}],"
 end
 puts "  ]"
 puts "end"
