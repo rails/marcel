@@ -65,6 +65,10 @@ def get_matches(mime, parent)
 
     offset = offset.size == 2 ? offset[0]..offset[1] : offset[0]
     case type
+      when 'unicodeLE', 'unicodeBE' # Unicode string types (UTF-16 Little/Big Endian)
+        value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
+        encoding = type == 'unicodeLE' ? Encoding::UTF_16LE : Encoding::UTF_16BE
+        value = value.encode(encoding).force_encoding(Encoding::BINARY)
     when 'string', 'stringignorecase'
       value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
       value.gsub!(/\\(x[\dA-Fa-f]{1,2}|0\d{1,3}|\d{1,3}|.)/) { eval("\"\\#{$1}\"") }
