@@ -123,9 +123,6 @@ module Marcel
 
     def self.magic_match_io(io, matches, buffer)
       matches.any? do |offset, value, children|
-        # Skip if value is nil (e.g., invalid regex pattern - it was meant for Java after all)
-        next false if value.nil?
-        
         match =
           if value
             if value.is_a?(Regexp)
@@ -151,25 +148,7 @@ module Marcel
       data = io.read(256, buffer)
       return false unless data
 
-      # I know, I know... this is awful, but the patterns come from Apache Tika
-      # and we are getting warnings about character class overlaps, so we'll
-      # suppress warnings for this match call.
-      # I'm open to better ideas.
-      begin
-        old_verbose = $VERBOSE
-        $VERBOSE = nil
-
-        # For regex patterns, simply match within the data buffer
-        # The patterns themselves should be designed to match appropriately
-        data.match?(regexp)
-      ensure
-        $VERBOSE = old_verbose
-      end
-
-      # we need to catch all exceptions here because TruffleRuby raises Polyglot::ForeignException
-    rescue Exception => e
-      warn "Marcel::Magic.match_regex: error matching #{regexp.inspect}: #{e.message}"
-      false
+      data.match?(regexp)
     end
 
     private_class_method :magic_match, :magic_match_io, :match_regex

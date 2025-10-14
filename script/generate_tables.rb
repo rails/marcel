@@ -60,6 +60,8 @@ def binary_strings(object)
 end
 
 def get_matches(mime, parent)
+  well_known_regex_types = %w( application/x-bzip2 text/html )
+
   parent.elements.map {|match|
     children = get_matches(mime, match)
 
@@ -83,6 +85,8 @@ def get_matches(mime, parent)
         encoding = type == 'unicodeLE' ? Encoding::UTF_16LE : Encoding::UTF_16BE
         value = value.encode(encoding).force_encoding(Encoding::BINARY)
     when 'regex'
+      next nil unless well_known_regex_types.include?(mime['type'])
+
       value = RegexString.new(value)
     when 'string', 'stringignorecase'
       value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
@@ -134,6 +138,7 @@ def get_matches(mime, parent)
       nil
     else
       warn "#{mime['type']}: unsupported #{type} match: #{match.to_s}"
+      next nil
     end
 
     children.empty? ? [offset, value] : [offset, value, children]
@@ -255,6 +260,8 @@ puts "  # @private"
 puts "  # :nodoc:"
 puts "  MAGIC = ["
 magics.each do |priority, type, matches|
+  next if matches.nil? || matches.empty?
+
   puts "    ['#{type}', #{binary_strings(matches).inspect}],"
 end
 puts "  ]"

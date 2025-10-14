@@ -1,12 +1,4 @@
 <mime-info>
-  <!-- Override audio/mpeg pattern to anchor it at file start -->
-  <mime-type type="audio/mpeg">
-    <magic priority="30">
-      <!-- Anchored version: must match at file start, not mid-buffer -->
-      <match value="\\A(?:\\x0D\\x0A|\\x00{1,1024})(?:\\xff[\\xe3\\xf2\\xf3\\xf4\\xf5\\xf6\\xf7\\xf8\\xf9\\xfa\\xfb\\xfc\\xfd\\xfe\\xff]|ID3)" type="regex" offset="0"/>
-    </magic>
-  </mime-type>
-
   <mime-type type="image/svg+xml">
     <sub-class-of type="application/xml" />
 

@@ -32,7 +32,7 @@ module Marcel
       # - \\OOO -> \xHH (convert octal to hex to avoid backreference ambiguity in TruffleRuby)
       # - \\d, \\w, \\s, etc. -> \d, \w, \s (character classes)
       # - \\[, \\], \\{, \\}, etc. -> \[, \], \{, \} (literal characters)
-      # 
+      #
       # We process these specifically to avoid breaking the regex structure
       processed = processed.gsub(/\\\\(x[0-9a-fA-F]{2})/, '\\\\\1')     # \\xHH -> \xHH
                            .gsub(/\\\\(u[0-9a-fA-F]{4})/, '\\\\\1')     # \\uHHHH -> \uHHHH
@@ -44,18 +44,7 @@ module Marcel
       # Force binary encoding to handle binary escape sequences like \xff
       processed = processed.force_encoding(Encoding::BINARY)
 
-      # I know, I know... this is awful, but the patterns come from Apache Tika
-      # and we are getting warnings about character class overlaps, so we'll
-      # suppress warnings for this Regexp compilation.
-      # I'm open to better ideas.
-      old_verbose = $VERBOSE
-      $VERBOSE = nil
-      
       Regexp.new(processed, flags).freeze
-    rescue RegexpError
-      nil
-    ensure
-      $VERBOSE = old_verbose
     end
   end
 end
