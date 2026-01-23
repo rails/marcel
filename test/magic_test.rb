@@ -25,4 +25,25 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     assert Marcel::Magic.child?('text/csv', 'text/plain')
     refute Marcel::Magic.child?('text/plain', 'text/csv')
   end
+
+  test "no Ruby 3.4 frozen string warnings with StringIO" do
+    # Ruby 3.4 warns about code that will break when frozen string literals become default
+    # This test ensures marcel handles StringIO with frozen strings correctly
+    content = "Test content for mime detection"
+    io = StringIO.new(content)
+
+    # Capture warnings
+    warnings = []
+    original_stderr = $stderr
+    $stderr = StringIO.new
+
+    begin
+      Marcel::MimeType.for(io)
+      warnings = $stderr.string.lines.grep(/marcel.*magic\.rb.*frozen/)
+    ensure
+      $stderr = original_stderr
+    end
+
+    assert_empty warnings, "Expected no frozen string warnings, but got:\n#{warnings.join}"
+  end
 end
