@@ -121,8 +121,6 @@ module Marcel
       # Should be fixed in Ruby 3.5+: https://redmine.ruby-lang.org/issues/21280
       io.close_write if io.respond_to?(:closed_write?) && !io.closed_write?
 
-      io.binmode if io.respond_to?(:binmode)
-      io.set_encoding(Encoding::BINARY) if io.respond_to?(:set_encoding)
       buffer = (+"").encode(Encoding::BINARY)
 
       MAGIC.send(method) { |type, matches| magic_match_io(io, matches, buffer) }
