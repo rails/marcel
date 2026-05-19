@@ -125,7 +125,9 @@ module Marcel
       matches.any? do |offset, value, children|
         match =
           if value
-            if Range === offset
+            if value.is_a?(Regexp)
+              match_regex(io, offset, value, buffer)
+            elsif Range === offset
               io.read(offset.begin, buffer)
               x = io.read(offset.end - offset.begin + value.bytesize, buffer)
               x && x.include?(value)
@@ -140,6 +142,15 @@ module Marcel
       end
     end
 
-    private_class_method :magic_match, :magic_match_io
+    def self.match_regex(io, offset, regexp, buffer)
+      start = offset.is_a?(Range) ? offset.begin : offset
+      io.read(start, buffer) if start > 0
+      data = io.read(256, buffer)
+      return false unless data
+
+      data.match?(regexp)
+    end
+
+    private_class_method :magic_match, :magic_match_io, :match_regex
   end
 end

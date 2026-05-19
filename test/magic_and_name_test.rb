@@ -7,7 +7,7 @@ class Marcel::MimeType::MagicAndNameTest < Marcel::TestCase
   # generic type, while the name will choose a more specific subclass
   each_content_type_fixture('name') do |file, name, content_type|
     test "correctly returns #{content_type} for #{name} given both file and name" do
-      assert_equal content_type, Marcel::MimeType.for(file, name: name)
+      assert_equal content_type, raw_type(Marcel::MimeType.for(file, name: name))
     end
   end
 end
