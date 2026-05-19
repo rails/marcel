@@ -58,6 +58,7 @@ Marcel::MimeType.extend "audio/aac", extensions: %w( aac ), parents: "audio/x-aa
 Marcel::MimeType.extend("audio/ogg", extensions: %w( ogg oga ), magic: [[0, 'OggS', [[29, 'vorbis']]]])
 
 Marcel::MimeType.extend "image/vnd.dwg", magic: [[0, "AC10"]]
+Marcel::MimeType.extend "application/pkcs8", magic: [[0, '-----BEGIN PRIVATE KEY-----']], extensions: %w( p8 )
 
 Marcel::MimeType.extend "application/x-x509-ca-cert", magic: [[0, '-----BEGIN CERTIFICATE-----']], extensions: %w( pem ), parents: "application/x-x509-cert;format=pem"
 
