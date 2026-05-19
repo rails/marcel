@@ -42,9 +42,8 @@ desc "Download latest Tika data and update data tables"
 task update: [ "tika:download", "tables" ]
 
 desc "Generate data tables"
-task tables: "lib/marcel/tables.rb"
-file "lib/marcel/tables.rb" => %w[ data/tika.xml data/custom.xml ] do |target|
-  sh "script/generate_tables.rb", *target.prerequisites, out: target.name
+task :tables do
+  sh "script/generate_tables.rb", "data/tika.xml", "data/custom.xml", out: "lib/marcel/tables.rb"
 end
 
 namespace :tika do

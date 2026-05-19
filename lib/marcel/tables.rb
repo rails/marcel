@@ -1534,7 +1534,7 @@ module Marcel
     'application/vnd.is-xpr' => %w(xpr),
     'application/vnd.isac.fcs' => %w(fcs), # Flow Cytometry Standard File
     'application/vnd.jam' => %w(jam),
-    'application/vnd.java.hprof ' => %w(hprof), # Java hprof text file
+    'application/vnd.java.hprof' => %w(hprof), # Java hprof text file
     'application/vnd.java.hprof.text' => %w(hprof.txt), # Java hprof text file
     'application/vnd.jcp.javame.midlet-rms' => %w(rms),
     'application/vnd.jisp' => %w(jisp),
@@ -2680,6 +2680,8 @@ module Marcel
     ['application/vnd.digilite.prolights', [[0, b["\177\fD+"]]]],
     ['application/vnd.fdf', [[0, b['%FDF-']]]],
     ['application/vnd.iccprofile', [[36, b['acsp']]]],
+    ['application/vnd.java.hprof', [[0, /JAVA PROFILE \d\.\d\.\d\u0000/]]],
+    ['application/vnd.java.hprof.text', [[0, /JAVA PROFILE \d\.\d\.\d,/]]],
     ['application/vnd.lotus-1-2-3;version=1', [[0, b["\000\000\002\000\004\004"]]]],
     ['application/vnd.lotus-1-2-3;version=2', [[0, b["\000\000\002\000\006\004\006\000\b\000"]]]],
     ['application/vnd.lotus-1-2-3;version=3', [[0, b["\000\000\032\000\000\020\004\000"]]]],

@@ -105,9 +105,14 @@ def binary_strings(object)
   end
 end
 
-def get_matches(mime, parent)
-  well_known_regex_types = %w( application/x-bzip2 text/html )
+WELL_KNOWN_REGEX_TYPES = %w(
+  application/x-bzip2
+  text/html
+  application/vnd.java.hprof
+  application/vnd.java.hprof.text
+)
 
+def get_matches(mime, parent)
   parent.elements.map {|match|
     children = get_matches(mime, match)
 
@@ -131,7 +136,10 @@ def get_matches(mime, parent)
         encoding = type == 'unicodeLE' ? Encoding::UTF_16LE : Encoding::UTF_16BE
         value = value.encode(encoding).force_encoding(Encoding::BINARY)
     when 'regex'
-      next nil unless well_known_regex_types.include?(mime['type'])
+      unless WELL_KNOWN_REGEX_TYPES.include?(mime['type'].strip)
+        warn "#{mime['type']}: unsupported #{type} match: #{match.to_s}"
+        next nil
+      end
 
       value = RegexString.new(value)
     when 'string', 'stringignorecase'
@@ -279,7 +287,7 @@ puts "  # @private"
 puts "  # :nodoc:"
 puts "  EXTENSIONS = {"
 extensions.keys.sort.each do |key|
-  puts "    '#{key}' => '#{extensions[key]}',"
+  puts "    '#{key.strip}' => '#{extensions[key]}',"
 end
 puts "  }"
 puts "  # @private"
@@ -289,14 +297,14 @@ types.keys.sort.each do |key|
   exts = types[key][0].join(' ')
   comment = types[key][2]
   comment = " # #{comment.tr("\n", " ")}" if comment
-  puts "    '#{key}' => %w(#{exts}),#{comment}"
+  puts "    '#{key.strip}' => %w(#{exts}),#{comment}"
 end
 puts "  }"
 puts "  TYPE_PARENTS = {"
 types.keys.sort.each do |key|
   parents = types[key][1].sort.join(' ')
   unless parents.empty?
-    puts "    '#{key}' => %w(#{parents}),"
+    puts "    '#{key.strip}' => %w(#{parents}),"
   end
 end
 puts "  }"
@@ -307,7 +315,7 @@ puts "  MAGIC = ["
 magics.each do |priority, type, matches|
   next if matches.nil? || matches.empty?
 
-  puts "    ['#{type}', #{binary_strings(matches).inspect}],"
+  puts "    ['#{type.strip}', #{binary_strings(matches).inspect}],"
 end
 puts "  ]"
 puts "end"
