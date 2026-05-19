@@ -2,8 +2,39 @@
   <mime-type type="image/svg+xml">
     <sub-class-of type="application/xml" />
 
+    <magic priority="80">
+      <!-- That's the easiest variant: matching SVG files that start with <svg immediately -->
+      <match value="&lt;svg" type="string" offset="0" />
+    </magic>
+    
+    <magic priority="75">
+      <!-- Match SVG files that start with XML declaration followed by <svg -->
+      <match value="&lt;?xml" type="string" offset="0">
+        <match value="&lt;svg" type="string" offset="25:512" />
+      </match>
+    </magic>
+    
+    <magic priority="70">
+      <!-- Match SVG files with DOCTYPE followed by <svg -->
+      <match value="&lt;!DOCTYPE svg" type="string" offset="0">
+        <match value="&lt;svg" type="string" offset="25:1024" />
+      </match>
+    </magic>
+    
+    <magic priority="65">
+      <!-- Match SVG files with comments followed by <svg -->
+      <match value="&lt;!--" type="string" offset="0">
+        <match value="&lt;svg" type="string" offset="4:1024" />
+      </match>
+    </magic>
+    
     <magic priority="60">
-      <match value="&lt;svg" type="string" offset="0:4096" />
+      <!-- Match SVG files with whitespace before <svg tag -->
+      <match value=" &lt;svg" type="string" offset="0" />
+      <match value="\n&lt;svg" type="string" offset="0" />
+      <match value="\r&lt;svg" type="string" offset="0" />
+      <match value="\r\n&lt;svg" type="string" offset="0" />
+      <match value="\t&lt;svg" type="string" offset="0" />
     </magic>
   </mime-type>
 
