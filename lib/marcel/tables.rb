@@ -2511,7 +2511,6 @@ module Marcel
     'video/x-ogm' => %w(video/ogg),
   }
   b = Hash.new { |h, k| h[k] = k.b.freeze }
-  r = Hash.new { |h, k| h[k] = Marcel::TikaRegex.to_ruby_regexp(k) }
   # @private
   # :nodoc:
   MAGIC = [
@@ -2522,7 +2521,7 @@ module Marcel
     ['image/bmp', [[0, b['BM'], [[26, b["\001\000"], [[0, nil, [[0, nil, [[28, b["\000\000"]], [28, b["\001\000"]], [28, b["\004\000"]], [28, b["\b\000"]], [28, b["\020\000"]], [28, b["\030\000"]], [28, b[" \000"]]]], [30, b["\000\000\000\000"]]]]]]]]]],
     ['image/vnd.adobe.photoshop', [[0, b["8BPS\000\001"]], [0, b["8BPS\000\002"]]]],
     ['image/webp', [[0, b['RIFF'], [[8, b['WEBP']]]]]],
-    ['text/html', [[0, r['(?i)<(html|head|body|title|div)[ >]']], [0, r['(?i)<h[123][ >]']]]],
+    ['text/html', [[0, /(?i)<(html|head|body|title|div)[ >]/], [0, /(?i)<h[123][ >]/]]],
     ['image/svg+xml', [[0, b['<svg']]]],
     ['video/x-msvideo', [[0, b['RIFF'], [[8, b['AVI ']]]], [8, b['AVI ']]]],
     ['video/x-ms-wmv', [[0..8192, b["W\000i\000n\000d\000o\000w\000s\000 \000M\000e\000d\000i\000a\000 \000V\000i\000d\000e\000o\000"]], [0..8192, b["V\000C\000-\0001\000 \000A\000d\000v\000a\000n\000c\000e\000d\000 \000P\000r\000o\000f\000i\000l\000e\000"]], [0..8192, b["w\000m\000v\0002\000"]]]],
@@ -2909,7 +2908,7 @@ module Marcel
     ['application/pdf', [[0..128, b['%%'], [[1..512, b['%PDF-1.']]]], [0..128, b['%%'], [[1..512, b['%PDF-2.']]]]]],
     ['application/vnd.wordperfect', [[0, b["\377WPC"]]]],
     ['application/x-bzip', [[0, b['BZ0']]]],
-    ['application/x-bzip2', [[0, r['BZh[1-9]']]]],
+    ['application/x-bzip2', [[0, /BZh[1-9]/]]],
     ['application/x-font-adobe-metric', [[0, b['StartFontMetrics']]]],
     ['application/x-font-otf', [[0, b["OTTO\000"]]]],
     ['application/x-font-printer-metric', [[0, b["\000\001"], [[4, b["\000\000Copyr"]]]]]],
