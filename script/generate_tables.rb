@@ -105,9 +105,14 @@ def binary_strings(object)
   end
 end
 
-def get_matches(mime, parent)
-  well_known_regex_types = %w( application/x-bzip2 text/html )
+WELL_KNOWN_REGEX_TYPES = %w(
+  application/x-bzip2
+  text/html
+  application/vnd.java.hprof
+  application/vnd.java.hprof.text
+)
 
+def get_matches(mime, parent)
   parent.elements.map {|match|
     children = get_matches(mime, match)
 
@@ -131,7 +136,10 @@ def get_matches(mime, parent)
         encoding = type == 'unicodeLE' ? Encoding::UTF_16LE : Encoding::UTF_16BE
         value = value.encode(encoding).force_encoding(Encoding::BINARY)
     when 'regex'
-      next nil unless well_known_regex_types.include?(mime['type'])
+      unless WELL_KNOWN_REGEX_TYPES.include?(mime['type'].strip)
+        warn "#{mime['type']}: unsupported #{type} match: #{match.to_s}"
+        next nil
+      end
 
       value = RegexString.new(value)
     when 'string', 'stringignorecase'
