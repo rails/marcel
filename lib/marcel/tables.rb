@@ -2685,7 +2685,7 @@ module Marcel
     ['application/vnd.fdf', [[0, b['%FDF-']]]],
     ['application/vnd.iccprofile', [[36, b['acsp']]]],
     ['application/vnd.isac.fcs', [[0, b["FCS[1-3]\\\\.[0-9]    "]]]],
-    ['application/vnd.java.hprof ', [[0, b["JAVA PROFILE \\\\d\\\\.\\\\d\\\\.\\\\d\\\\u0000"]]]],
+    ['application/vnd.java.hprof', [[0, b["JAVA PROFILE \\\\d\\\\.\\\\d\\\\.\\\\d\\\\u0000"]]]],
     ['application/vnd.java.hprof.text', [[0, b["JAVA PROFILE \\\\d\\\\.\\\\d\\\\.\\\\d,"]]]],
     ['application/vnd.lotus-1-2-3;version=1', [[0, b["\000\000\002\000\004\004"]]]],
     ['application/vnd.lotus-1-2-3;version=2', [[0, b["\000\000\002\000\006\004\006\000\b\000"]]]],
