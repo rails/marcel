@@ -7,7 +7,7 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
   # be recognised by magic alone; their name is also needed to correctly identify them.
   each_content_type_fixture('magic') do |file, name, content_type|
     test "gets type for #{content_type} by using only magic bytes #{name}" do
-      actual_type = Marcel::MimeType.for(file)
+      actual_type = raw_type(Marcel::MimeType.for(file))
       assert_equal content_type, actual_type, "Expected #{file} to be #{content_type}, but was #{actual_type}"
     end
   end

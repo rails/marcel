@@ -65,7 +65,7 @@ Marcel::MimeType.extend "image/avif", magic: [[4, "ftypavif"]], extensions: %w( 
 Marcel::MimeType.extend "image/heif", magic: [[4, "ftypmif1"]], extensions: %w( heif )
 Marcel::MimeType.extend "image/heic", magic: [[4, "ftypheic"]], extensions: %w( heic )
 
-Marcel::MimeType.extend "image/x-raw-sony", extensions: %w( arw ), parents: "image/tiff"
+Marcel::MimeType.extend "image/x-raw-sony", magic: [[0, "II*\000", [[0..4096, 'SONY']]], [0, "MM\000*", [[0..4096, 'SONY']]]], extensions: %w( arw ), parents: "image/tiff"
 Marcel::MimeType.extend "image/x-raw-canon",  extensions: %w( cr2 crw ), parents: "image/tiff"
 
 Marcel::MimeType.extend "video/mp4", magic: [[4, "ftypisom"], [4, "ftypM4V "]], extensions: %w( mp4 m4v )

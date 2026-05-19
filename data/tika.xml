@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Downloaded at 2025-09-16 17:53:34 UTC from https://raw.githubusercontent.com/apache/tika/main/tika-core/src/main/resources/org/apache/tika/mime/tika-mimetypes.xml -->
+<!-- Downloaded at 2026-05-19 17:03:59 UTC from https://raw.githubusercontent.com/apache/tika/main/tika-core/src/main/resources/org/apache/tika/mime/tika-mimetypes.xml -->
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  See the NOTICE file distributed with
@@ -4163,7 +4163,12 @@
 	 <_comment>General Regularly-distributed Information in Binary form</_comment>
 	 <tika:link>http://en.wikipedia.org/wiki/GRIB</tika:link>
 	 <magic priority="50">
-	   <match value="GRIB" type="string" offset="0"/>
+	   <match value="GRIB" type="string" offset="0">
+	     <match value="\x01" type="string" offset="7"/>
+	   </match>
+	   <match value="GRIB" type="string" offset="0">
+	     <match value="\x02" type="string" offset="7"/>
+	   </match>
 	 </magic>
 	 <glob pattern="*.grb"/>
 	 <glob pattern="*.grb1"/>
@@ -4287,7 +4292,7 @@
   <mime-type type="application/x-iso9660-image">
     <acronym>ISO</acronym>
     <_comment>ISO 9660 CD-ROM filesystem data</_comment>
-    <magic priority="50">
+    <magic priority="60">
       <match value="CD001" type="string" offset="32769"/>
       <match value="CD001" type="string" offset="34817"/>
       <match value="CD001" type="string" offset="36865"/>
@@ -5929,7 +5934,7 @@
     <alias type="audio/x-mpeg"/>
     <acronym>MP3</acronym>
     <_comment>MPEG-1 Audio Layer 3</_comment>
-    <magic priority="20">
+    <magic priority="50">
       <!-- http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html -->
       <!-- Bit pattern for first two bytes: 11111111 111VVLLC    -->
       <!-- VV = MPEG Audio Version ID; 10 = V2, 11 = V1          -->
@@ -5948,11 +5953,20 @@
       <match value="0xffe3" type="string" offset="0"/> <!-- MP3 2.5 from pronom     -->
       <!-- TIKA-417: This is the UTF-16 LE byte order mark! -->
       <!-- match value="0xfffe" type="string" offset="0"/ --> <!-- V1, L1, CRC -->
-      <match value="0xffff" type="string" offset="0"/> <!-- V1, L1      -->
-      <match value="ID3" type="string" offset="0"/>
+      <!-- 0xffff has layer bits 00 which is "reserved" in the MPEG spec, not L1.
+           Removed: caused false positives with binary files. -->
+      <!-- match value="0xffff" type="string" offset="0"/ -->
+      <!-- TIKA-4582: Require MP3 frame sync after ID3 tag to avoid false positives with other ID3-tagged formats -->
+      <match value="ID3" type="string" offset="0">
+         <match type="regex" value="\\xFF[\\xE3\\xF2-\\xF7\\xFA-\\xFD\\xFF]" offset="512:8192" />
+      </match>
       <!-- in the wild, 0D0A or quite a few \x00 may precede the magic -->
       <match value="(?:\\x0D\\x0A|\\x00{1,1024})(?:\\xff[\\xe3\\xf2\\xf3\\xf4\\xf5\\xf6\\xf7\\xf8\\xf9\\xfa\\xfb\\xfc\\xfd\\xfe\\xff]|ID3)"
              type="regex" offset="0"/>
+    </magic>
+    <!-- TIKA-4582: Low-priority fallback for ID3-only files (truncated or very large ID3 tags) -->
+    <magic priority="10">
+      <match value="ID3" type="string" offset="0"/>
     </magic>
     <glob pattern="*.mpga"/>
     <glob pattern="*.mp2"/>
@@ -6160,13 +6174,14 @@
     <alias type="audio/aac"/>
     <glob pattern="*.aac"/>
     <magic priority="30">
-      <!-- Without ID3 tags -->
-      <match type="regex" value="\\xFF(\\xF0|\\xF1|\\xF8|\\xF9)(\\x40|\\x41|\\x44|\\x45|\\x48|\\x49|\\x4C|\\x4D|\\x50|\\x51|\\x54|\\x55|\\x58|\\x59|\\x5C|\\x5D|\\x60|\\x61|\\x64|\\x65|\\x68|\\x69|\\x6C|\\x6D|\\x70|\\x71|\\x80|\\x81|\\x84|\\x85|\\x88|\\x89|\\x8C|\\x8D|\\x90|\\x91|\\x94|\\x95|\\x98|\\x99|\\x9C|\\x9D|\\xA0|\\xA1|\\xA4|\\xA5|\\xA8|\\xA9|\\xAC|\\xAD|\\xB0|\\xB1)(\\x00|\\x01|\\x20|\\x40|\\x41|\\x60|\\x80|\\x81|\\x60|\\xA0|\\xC0|\\xC1|\\xE0)" offset="0" />
+      <!-- Without ID3 tags - require two consecutive ADTS frame syncs -->
+      <!-- ADTS frames are typically 100-2000 bytes, so look for second sync at that distance -->
+      <match type="regex" value="(?s)\\xFF[\\xF0\\xF1\\xF8\\xF9].{2}.{100,2000}\\xFF[\\xF0\\xF1\\xF8\\xF9]" offset="0" />
     </magic>
     <magic priority="40">
-      <!-- With ID3 tags at the start -->
+      <!-- With ID3 tags at the start - require two consecutive ADTS frame syncs -->
       <match value="ID3" type="string" offset="0">
-         <match type="regex" value="\\xFF(\\xF0|\\xF1|\\xF8|\\xF9)(\\x40|\\x41|\\x44|\\x45|\\x48|\\x49|\\x4C|\\x4D|\\x50|\\x51|\\x54|\\x55|\\x58|\\x59|\\x5C|\\x5D|\\x60|\\x61|\\x64|\\x65|\\x68|\\x69|\\x6C|\\x6D|\\x70|\\x71|\\x80|\\x81|\\x84|\\x85|\\x88|\\x89|\\x8C|\\x8D|\\x90|\\x91|\\x94|\\x95|\\x98|\\x99|\\x9C|\\x9D|\\xA0|\\xA1|\\xA4|\\xA5|\\xA8|\\xA9|\\xAC|\\xAD|\\xB0|\\xB1)(\\x00|\\x01|\\x20|\\x40|\\x41|\\x60|\\x80|\\x81|\\x60|\\xA0|\\xC0|\\xC1|\\xE0)" offset="512:2048" />
+         <match type="regex" value="(?s)\\xFF[\\xF0\\xF1\\xF8\\xF9].{2}.{100,2000}\\xFF[\\xF0\\xF1\\xF8\\xF9]" offset="512:8192" />
       </match>
     </magic>
   </mime-type>
@@ -6381,20 +6396,48 @@
     <magic priority="50">
       <match value="BM" type="string" offset="0">
         <match value="0x0100" type="string" offset="26">
-      	  <match value="0x0000" type="string" offset="28"/>
-      	  <match value="0x0100" type="string" offset="28"/>
-      	  <match value="0x0400" type="string" offset="28"/>
-      	  <match value="0x0800" type="string" offset="28"/>
-      	  <match value="0x1000" type="string" offset="28"/>
-      	  <match value="0x1800" type="string" offset="28"/>
-      	  <match value="0x2000" type="string" offset="28"/>
+          <match minShouldMatch="2">
+            <match minShouldMatch="1">
+              <match value="0x0000" type="string" offset="28"/>
+              <match value="0x0100" type="string" offset="28"/>
+              <match value="0x0400" type="string" offset="28"/>
+              <match value="0x0800" type="string" offset="28"/>
+              <match value="0x1000" type="string" offset="28"/>
+              <match value="0x1800" type="string" offset="28"/>
+              <match value="0x2000" type="string" offset="28"/>
+            </match>
+            <match value="0x00000000" type="string" offset="30"/>
+          </match>
         </match>
       </match>
     </magic>
     <glob pattern="*.bmp"/>
     <glob pattern="*.dib"/>
   </mime-type>
-
+  <mime-type type="image/bmp;format=compressed">
+    <acronym>BMP</acronym>
+    <_comment>Windows bitmap compressed</_comment>
+    <tika:link>http://en.wikipedia.org/wiki/BMP_file_format</tika:link>
+    <tika:uti>com.microsoft.bmp</tika:uti>
+    <!-- detection could be based on a non-zero value at offset=30.
+         current strategy is to determine uncompressed if value is zero
+         at a lower priority.
+    -->
+    <magic priority="45">
+      <match value="BM" type="string" offset="0">
+        <match value="0x0100" type="string" offset="26">
+          <match value="0x0000" type="string" offset="28"/>
+          <match value="0x0100" type="string" offset="28"/>
+          <match value="0x0400" type="string" offset="28"/>
+          <match value="0x0800" type="string" offset="28"/>
+          <match value="0x1000" type="string" offset="28"/>
+          <match value="0x1800" type="string" offset="28"/>
+          <match value="0x2000" type="string" offset="28"/>
+        </match>
+      </match>
+    </magic>
+    <sub-class-of type="image/bmp"/>
+  </mime-type>
   <mime-type type="image/x-bpg">
     <acronym>BPG</acronym>
     <_comment>Better Portable Graphics</_comment>
@@ -8491,8 +8534,10 @@
     <sub-class-of type="text/plain"/>
   </mime-type>
 
-  <mime-type type="text/x-web-markdown">
-    <_comment>Markdown source code</_comment>
+  <mime-type type="text/markdown">
+    <_comment>Markdown document</_comment>
+    <alias type="text/x-web-markdown"/>
+    <alias type="text/x-markdown"/>
     <glob pattern="*.md"/>
     <glob pattern="*.mdtext"/>
     <glob pattern="*.mkd"/>
