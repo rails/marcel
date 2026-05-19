@@ -53,4 +53,13 @@ class Marcel::MimeTypeTest < Marcel::TestCase
       assert_equal "image/gif", content_type
     end
   end
+
+  test "does not mutate the source IO's encoding" do
+    io = StringIO.new("hello world")
+    original_encoding = io.external_encoding
+
+    Marcel::MimeType.for(io)
+
+    assert_equal original_encoding, io.external_encoding
+  end
 end
