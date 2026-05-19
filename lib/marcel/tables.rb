@@ -1873,7 +1873,7 @@ module Marcel
     'application/x-pkcs7-certreqresp' => %w(p7r),
     'application/x-project' => %w(mpx),
     'application/x-prt' => %w(prt),
-    'application/x-quattro-pro' => %w(wq1 wq2 wkq qpw wb1 wb2 wb3), #        Quattro Pro - Corel Spreadsheet (part of WordPerfect Office suite)     
+    'application/x-quattro-pro' => %w(wq1 wq2 wkq qpw wb1 wb2 wb3), #        Quattro Pro - Corel Spreadsheet (part of WordPerfect Office suite)
     'application/x-quattro-pro;version=1+5' => %w(wb1), # Quattro Pro for Windows, version 1, 5
     'application/x-quattro-pro;version=1-4' => %w(wq1 wkq), # Quattro Pro for DOS, version 1-4
     'application/x-quattro-pro;version=5' => %w(wq2 wkq), # Quattro Pro for DOS, version 5
@@ -2047,7 +2047,7 @@ module Marcel
     'image/x-dpx' => %w(dpx), # Digital Picture Exchange from SMPTE
     'image/x-emf-compressed' => %w(emz), # Compressed Enhanced Metafile
     'image/x-freehand' => %w(fh fhc fh4 fh40 fh5 fh50 fh7 fh8 fh9 fh10 fh11 fh12 ft7 ft8 ft9 ft10 ft11 ft12), # FreeHand image
-    'image/x-jbig2' => %w(jb2 jbig2), #        A lossless image compression standard from the       Joint Bi-level Image Experts Group.     
+    'image/x-jbig2' => %w(jb2 jbig2), #        A lossless image compression standard from the       Joint Bi-level Image Experts Group.
     'image/x-jp2-codestream' => %w(j2c), # JPEG 2000 Codestream
     'image/x-pict' => %w(pic pct pict), # Apple Macintosh QuickDraw/PICT Format
     'image/x-portable-anymap' => %w(pnm), # Portable Any Map
@@ -2514,6 +2514,7 @@ module Marcel
     ['image/jpeg', [[0, b["\377\330\377"]]]],
     ['image/png', [[0, b["\211PNG\r\n\032\n"]]]],
     ['image/gif', [[0, b['GIF87a']], [0, b['GIF89a']]]],
+    ['image/x-raw-sony', [[0, b["II*\000"], [[0..4096, b['SONY']]]], [0, b["MM\000*"], [[0..4096, b['SONY']]]]]],
     ['image/tiff', [[0, b["MM\000*"]], [0, b["II*\000"]], [0, b["MM\000+"]]]],
     ['image/bmp', [[0, b['BM'], [[26, b["\001\000"], [[28, b["\000\000"]], [28, b["\001\000"]], [28, b["\004\000"]], [28, b["\b\000"]], [28, b["\020\000"]], [28, b["\030\000"]], [28, b[" \000"]]]]]]]],
     ['image/vnd.adobe.photoshop', [[0, b["8BPS\000\001"]], [0, b["8BPS\000\002"]]]],
