@@ -117,8 +117,7 @@ module Marcel
     def self.magic_match(io, method)
       return magic_match(StringIO.new(io.to_s), method) unless io.respond_to?(:read)
 
-      buffer = (+"").encode(Encoding::BINARY)
-
+      buffer = "".b
       MAGIC.send(method) { |type, matches| magic_match_io(io, matches, buffer) }
     end
 
