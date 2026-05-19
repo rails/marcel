@@ -1534,7 +1534,7 @@ module Marcel
     'application/vnd.is-xpr' => %w(xpr),
     'application/vnd.isac.fcs' => %w(fcs), # Flow Cytometry Standard File
     'application/vnd.jam' => %w(jam),
-    'application/vnd.java.hprof ' => %w(hprof), # Java hprof text file
+    'application/vnd.java.hprof' => %w(hprof), # Java hprof text file
     'application/vnd.java.hprof.text' => %w(hprof.txt), # Java hprof text file
     'application/vnd.jcp.javame.midlet-rms' => %w(rms),
     'application/vnd.jisp' => %w(jisp),

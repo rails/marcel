@@ -279,7 +279,7 @@ puts "  # @private"
 puts "  # :nodoc:"
 puts "  EXTENSIONS = {"
 extensions.keys.sort.each do |key|
-  puts "    '#{key}' => '#{extensions[key]}',"
+  puts "    '#{key.strip}' => '#{extensions[key]}',"
 end
 puts "  }"
 puts "  # @private"
@@ -289,14 +289,14 @@ types.keys.sort.each do |key|
   exts = types[key][0].join(' ')
   comment = types[key][2]
   comment = " # #{comment.tr("\n", " ")}" if comment
-  puts "    '#{key}' => %w(#{exts}),#{comment}"
+  puts "    '#{key.strip}' => %w(#{exts}),#{comment}"
 end
 puts "  }"
 puts "  TYPE_PARENTS = {"
 types.keys.sort.each do |key|
   parents = types[key][1].sort.join(' ')
   unless parents.empty?
-    puts "    '#{key}' => %w(#{parents}),"
+    puts "    '#{key.strip}' => %w(#{parents}),"
   end
 end
 puts "  }"
