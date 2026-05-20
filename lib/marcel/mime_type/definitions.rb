@@ -6,22 +6,8 @@ Marcel::Magic.remove("text/html")
 Marcel::MimeType.extend "text/html", 
   extensions: %w( html htm ),
   magic: [
-    [0, "<!DOCTYPE html"],
-    [0, "<!DOCTYPE HTML"], 
-    [0, "<!doctype html"],
-    [0, "<!doctype HTML"],
-    [0, "<html"],
-    [0, "<HTML"],
-    [0, " <!DOCTYPE html"],
-    [0, "\n<!DOCTYPE html"],
-    [0, "\r<!DOCTYPE html"], 
-    [0, "\r\n<!DOCTYPE html"],
-    [0, "\t<!DOCTYPE html"],
-    [0, " <html"],
-    [0, "\n<html"],
-    [0, "\r<html"],
-    [0, "\r\n<html"],
-    [0, "\t<html"]
+    [64, %r{\A\s*<(!DOCTYPE html|html)}mi],
+    [-64, %r{</html>\s*\z}mi],
   ]
 
 Marcel::MimeType.extend "application/illustrator", parents: "application/pdf"
