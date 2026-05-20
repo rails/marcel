@@ -152,6 +152,8 @@ module Marcel
 
     def self.io_seek(io, offset, buffer)
       return if offset == 0
+      offset = io.size + offset if offset < 0
+      return if offset < 0
 
       if io.respond_to?(:seek)
         io.seek(offset, IO::SEEK_CUR)
