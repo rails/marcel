@@ -128,11 +128,11 @@ module Marcel
             if value.is_a?(Regexp)
               match_regex(io, offset, value, buffer)
             elsif Range === offset
-              io.read(offset.begin, buffer)
+              io_seek(io, offset.begin, buffer)
               x = io.read(offset.end - offset.begin + value.bytesize, buffer)
               x && x.include?(value)
             else
-              io.read(offset, buffer)
+              io_seek(io, offset, buffer)
               io.read(value.bytesize, buffer) == value
             end
           end
@@ -151,6 +151,17 @@ module Marcel
       data.match?(regexp)
     end
 
-    private_class_method :magic_match, :magic_match_io, :match_regex
+    def self.io_seek(io, offset, buffer)
+      return if offset == 0
+
+      if io.respond_to?(:seek)
+        io.seek(offset, IO::SEEK_CUR)
+      else
+        # Some IOs don't support `seek`. e.g. Rack::RewindableInput
+        io.read(offset, buffer)
+      end
+    end
+
+    private_class_method :magic_match, :magic_match_io, :match_regex, :io_seek
   end
 end
