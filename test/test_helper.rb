@@ -45,10 +45,6 @@ class Marcel::TestCase < Minitest::Test
     end
   end
 
-  def raw_type(content_type)
-    content_type.split(";").first
-  end
-
   def files(name)
     self.class.files(name)
   end
