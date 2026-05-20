@@ -204,6 +204,10 @@ if ARGV.size == 0
   exit 1
 end
 
+TYPE_RENAMES = {
+  "image/bmp;format=compressed" => "image/bmp",
+}.freeze
+
 extensions = {}
 types = {}
 magics = []
@@ -214,7 +218,8 @@ ARGV.each do |path|
 
   (doc/'mime-info/mime-type').each do |mime|
     comments = Hash[*(mime/'_comment').map {|comment| [comment['xml:lang'], comment.inner_text] }.flatten]
-    type = mime['type']
+    type = TYPE_RENAMES[mime['type']] || mime['type']
+
     subclass = (mime/'sub-class-of').map{|x| x['type']}
     exts = (mime/'glob').map{|x| x['pattern'] =~ /^\*\.([^\[\]]+)$/ ? $1.downcase : nil }.compact
     (mime/'magic').each do |magic|
