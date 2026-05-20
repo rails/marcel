@@ -50,7 +50,7 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
 
   test "none of the regex patterns should match random test data" do
     ignore_list = %w( application/x-dbf )
-    
+
     extract_regexes = lambda do |matching_rules, collected = []|
       matching_rules.each do |offset, value, children|
         collected << [offset, value] if value.is_a?(Regexp)
@@ -58,22 +58,17 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
       end
       collected
     end
-    
+
     # Use a test string that's very unlikely to match any file format regex
     # Using only high Unicode characters and very specific patterns
     test_data = "🇨🇭 \xFF\xFE\x03\x05\x06🧀 cheese\x06\x07\x03"
-    
+
     Marcel::MAGIC.each do |type, matching_rules|
       next if ignore_list.include?(type)
       regexes = extract_regexes.call(matching_rules)
-      
-      regexes.each do |offset, regex|
-        buffer = (+"").encode(Encoding::BINARY)
-        
-        result = Marcel::Magic.send(:match_regex, StringIO.new(test_data), offset, regex, buffer)
-        
-        assert_equal false, result, "Test data unexpectedly matched a file format regexp (#{type}, #{regex.inspect})"
-      end
+
+      result = Marcel::Magic.send(:magic_match_io, StringIO.new(test_data), regexes, "".b)
+      assert_equal false, result, "Test data unexpectedly matched a file format regexp (#{type}, #{regexes.inspect})"
     end
   end
 

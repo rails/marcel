@@ -123,32 +123,31 @@ module Marcel
 
     def self.magic_match_io(io, matches, buffer)
       matches.any? do |offset, value, children|
-        match =
-          if value
-            if value.is_a?(Regexp)
-              match_regex(io, offset, value, buffer)
-            elsif Range === offset
-              io_seek(io, offset.begin, buffer)
-              x = io.read(offset.end - offset.begin + value.bytesize, buffer)
-              x && x.include?(value)
-            else
-              io_seek(io, offset, buffer)
-              io.read(value.bytesize, buffer) == value
-            end
+        match = if value
+          is_range = Range === offset
+          is_regexp = Regexp === value
+          sample_size = is_regexp ? 256 : value.bytesize
+
+          x = if is_range
+            io_seek(io, offset.begin, buffer)
+            io.read(offset.end - offset.begin + sample_size, buffer)
+          else
+            io_seek(io, offset, buffer)
+            io.read(sample_size, buffer)
           end
+
+          if is_regexp
+            x&.match?(value)
+          elsif is_range
+            x&.include?(value)
+          else
+            x == value
+          end
+        end
 
         io.rewind
         match && (!children || magic_match_io(io, children, buffer))
       end
-    end
-
-    def self.match_regex(io, offset, regexp, buffer)
-      start = offset.is_a?(Range) ? offset.begin : offset
-      io.read(start, buffer) if start > 0
-      data = io.read(256, buffer)
-      return false unless data
-
-      data.match?(regexp)
     end
 
     def self.io_seek(io, offset, buffer)
@@ -162,6 +161,6 @@ module Marcel
       end
     end
 
-    private_class_method :magic_match, :magic_match_io, :match_regex, :io_seek
+    private_class_method :magic_match, :magic_match_io, :io_seek
   end
 end
