@@ -50,6 +50,7 @@ Marcel::MimeType.extend "application/pkcs8", magic: [[0, '-----BEGIN PRIVATE KEY
 Marcel::MimeType.extend "application/x-x509-ca-cert", magic: [[0, '-----BEGIN CERTIFICATE-----']], extensions: %w( pem ), parents: "application/x-x509-cert;format=pem"
 
 Marcel::MimeType.extend "image/avif", magic: [[4, "ftypavif"]], extensions: %w( avif )
+Marcel::MimeType.extend "image/avif", magic: [[4, "ftypavis"]], extensions: %w( avif )
 Marcel::MimeType.extend "image/heif", magic: [[4, "ftypmif1"]], extensions: %w( heif )
 Marcel::MimeType.extend "image/heic", magic: [[4, "ftypheic"]], extensions: %w( heic )
 
