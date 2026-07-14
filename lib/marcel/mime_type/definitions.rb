@@ -6,7 +6,7 @@ Marcel::Magic.remove("text/html")
 Marcel::MimeType.extend "text/html", 
   extensions: %w( html htm ),
   magic: [
-    [64, %r{\A\s*<(!DOCTYPE html|html)}mi],
+    [0, %r{\A(?:\xEF\xBB\xBF)?\s*(?:<\?xml\s+[^>]*\?>\s*)?(?:<!--.*?-->\s*)*<(?:!DOCTYPE\s+html|html)(?=[\s>])}min],
     [-64, %r{</html>\s*\z}mi],
   ]
 

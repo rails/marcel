@@ -12,6 +12,29 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     end
   end
 
+  test "detects HTML in partial reads with leading metadata" do
+    prefixes = [
+      "<!-- leading comment, padded past 128 characters: #{"a" * 90} -->\n",
+      "\xEF\xBB\xBF".b,
+      "<?xml version=\"1.0\"?>\n"
+    ]
+
+    prefixes.each do |prefix|
+      html = prefix + "<html><body>\n" + ("<p>x</p>\n" * 600) + "</body></html>"
+      chunk = html.byteslice(0, 4096)
+
+      assert_equal 4096, chunk.bytesize
+      refute_includes chunk, "</html>"
+      assert_equal "text/html", Marcel::MimeType.for(
+        StringIO.new(chunk), name: "page.html", declared_type: "text/html"
+      )
+    end
+  end
+
+  test "does not detect an HTML-prefixed custom element as HTML" do
+    assert_equal "application/octet-stream", Marcel::MimeType.for(StringIO.new("<html-custom>"))
+  end
+
   test "add and remove type" do
     Marcel::Magic.add('application/x-my-thing', extensions: 'mtg', parents: 'application/json')
     Marcel::Magic.remove('application/x-my-thing')
