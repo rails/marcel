@@ -1,0 +1,31 @@
+test/generate_tables_test.rb
+  s_e1bb0a5a5f768f::t_1144990732a8e8 1-43
+script/generate_tables.rb
+  s_e1bb0a5a5f768f::t_1144990732a8e8 55-67,69-83,94,104-109,119-141,196,344,351,353-354,359,361,372
+README.md
+  s_e1bb0a5a5f768f::t_700fa9a194334f 60
+lib/marcel/tables.rb
+  s_e1bb0a5a5f768f::t_cbcb73d8aae813 2524,2683-2684,2757,2913
+data/tika.xml
+  s_e1bb0a5a5f768f::t_1144990732a8e8 2
+Rakefile
+  s_e1bb0a5a5f768f::t_1144990732a8e8 41,50
+script/download_tika_data.rb
+  s_e1bb0a5a5f768f::t_1144990732a8e8 2,6-10,12-16,18-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5f788adbe36272e3d3992431475dbda36ad40a7f",
+  "prompts": {},
+  "sessions": {
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
