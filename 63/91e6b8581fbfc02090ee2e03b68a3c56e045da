@@ -1,0 +1,98 @@
+lib/marcel/magic.rb
+  s_bc3a8a60108573::t_ced63eaa5fb218 138
+  s_bc3a8a60108573::t_8eb61cdecd510a 150-152,154-156,174-181,189-190
+  s_bc3a8a60108573::t_b7462aadecaa4e 74-77,85-86
+  s_bc3a8a60108573::t_2a58b68a89c42e 119-131
+lib/marcel/mime_type.rb
+  s_bc3a8a60108573::t_45557cfc7486f0 89-94
+  s_bc3a8a60108573::t_e147479c9cad98 8,96
+  s_bc3a8a60108573::t_6497e994b72682 6-7,95
+  s_bc3a8a60108573::t_8eb61cdecd510a 82
+  s_bc3a8a60108573::t_c92d48d69b3298 34-35
+  s_bc3a8a60108573::t_4325b4c228f290 29-33
+lib/marcel/tables.rb
+  s_bc3a8a60108573::t_9b149b34f36557 2524,2546,2683-2684,2913
+  s_bc3a8a60108573::t_30d84d8d2fa680 2757
+test/extension_test.rb
+  s_bc3a8a60108573::t_cfe44cf35dc446 12-14,16-18
+  s_bc3a8a60108573::t_b7462aadecaa4e 19-22,24-27
+  s_bc3a8a60108573::t_c4857317e5a8d2 15,23
+test/declared_type_test.rb
+  s_bc3a8a60108573::t_2702390ab8eab7 85
+  s_bc3a8a60108573::t_9c501ca03d2fa8 39
+  s_bc3a8a60108573::t_555037f05624b1 54-55
+  s_bc3a8a60108573::t_c92d48d69b3298 30,52-53
+  s_bc3a8a60108573::t_9a77189795e224 22,28-29,31-38,40-51,59-81,96
+  s_bc3a8a60108573::t_d037ad17b3121c 92
+  s_bc3a8a60108573::t_6497e994b72682 56-58
+  s_bc3a8a60108573::t_e147479c9cad98 23-27,82-84,86-91,93-95
+data/custom.xml
+  s_bc3a8a60108573::t_2a58b68a89c42e 13
+Rakefile
+  s_bc3a8a60108573::t_2a58b68a89c42e 41,50
+test/name_test.rb
+  s_bc3a8a60108573::t_cfe44cf35dc446 5-7,9,16-17
+  s_bc3a8a60108573::t_9e4dedf5f05735 25
+  s_bc3a8a60108573::t_c4857317e5a8d2 8,10-15
+  s_bc3a8a60108573::t_b7462aadecaa4e 18-24,26-29
+data/tika.xml
+  s_bc3a8a60108573::t_2a58b68a89c42e 2
+lib/marcel/mime_type/definitions.rb
+  s_bc3a8a60108573::t_df54e64e633bf3 9,14
+  s_bc3a8a60108573::t_e1fdd3112ad4b4 10-13
+script/generate_tables.rb
+  s_bc3a8a60108573::t_41ea7834a63d86 57-63,78
+  s_bc3a8a60108573::t_1c01b7ecc4fd4d 119-141,196
+  s_bc3a8a60108573::t_9c2cf5a6a9eb04 55-56,64-67,69-77,79-83,94,104-109,344,351,353-354,359,361,372
+test/magic_test.rb
+  s_bc3a8a60108573::t_6b59ecc2a92e35 30-39
+  s_bc3a8a60108573::t_8eb61cdecd510a 162-191
+test/html_magic_test.rb
+  s_bc3a8a60108573::t_df54e64e633bf3 2,78-87
+  s_bc3a8a60108573::t_9c501ca03d2fa8 20-27
+  s_bc3a8a60108573::t_9a77189795e224 1,3-19,28-50,60-61,74-77,88-93,121-122
+  s_bc3a8a60108573::t_6b59ecc2a92e35 66,94-120
+  s_bc3a8a60108573::t_6497e994b72682 51-59
+  s_bc3a8a60108573::t_e1fdd3112ad4b4 62-65,67-73
+test/generate_tables_test.rb
+  s_bc3a8a60108573::t_41ea7834a63d86 18,36-39
+  s_bc3a8a60108573::t_6b59ecc2a92e35 1-17,19-35,40-43
+test/mime_type_test.rb
+  s_bc3a8a60108573::t_6b59ecc2a92e35 21-32
+  s_bc3a8a60108573::t_ced63eaa5fb218 53-59
+README.md
+  s_bc3a8a60108573::t_2a58b68a89c42e 68
+  s_bc3a8a60108573::t_4325b4c228f290 8,10,15-17,19,46,63
+  s_bc3a8a60108573::t_e147479c9cad98 12,18
+  s_bc3a8a60108573::t_78d1c0a83b97be 14,20
+  s_e1bb0a5a5f768f::t_a481e33faaccaa 13
+script/download_tika_data.rb
+  s_bc3a8a60108573::t_2a58b68a89c42e 6-8,18-19
+  s_bc3a8a60108573::t_1c01b7ecc4fd4d 2,9-10,12-16
+SECURITY.md
+  s_bc3a8a60108573::t_dcb1d5c5847117 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6391e6b8581fbfc02090ee2e03b68a3c56e045da",
+  "prompts": {},
+  "sessions": {
+    "s_bc3a8a60108573": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ff9c4-f167-7b70-993f-92de8c7b1397",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    },
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
