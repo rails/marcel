@@ -27,6 +27,11 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     refute Marcel::Magic.child?('text/plain', 'text/csv')
   end
 
+  test "X bitmap resolves its C source alias to a canonical text parent" do
+    assert Marcel::Magic.child?('image/x-xbitmap', 'text/x-csrc')
+    assert Marcel::Magic.new('image/x-xbitmap').text?
+  end
+
   test "no Ruby 3.4 frozen string warnings with StringIO" do
     # Ruby 3.4 warns about code that will break when frozen string literals become default
     # This test ensures marcel handles StringIO with frozen strings correctly

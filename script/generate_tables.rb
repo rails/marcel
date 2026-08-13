@@ -4,6 +4,12 @@
 # Copyright (c) 2011 Daniel Mendler. Available at https://github.com/mimemagicrb/mimemagic.
 
 require 'nokogiri'
+require 'digest'
+require 'open3'
+require 'optparse'
+require 'rbconfig'
+require 'stringio'
+require 'tempfile'
 
 module TikaRegex
   # Apache Tika uses Java regex syntax, which has some differences from Ruby:
@@ -52,16 +58,140 @@ module TikaRegex
   end
 end
 
-class String
-  alias inspect_old inspect
-
-  def inspect
-    str = b.inspect_old.gsub(/\\x([0-9a-f]{2})/i) do
-      '\\%03o' % $1.to_i(16)
+module RubySource
+  def self.string(value)
+    source = value.b.dump.gsub(/(\\+)x([0-9a-f]{2})/i) do |escape|
+      slashes = $1
+      if slashes.length.odd?
+        slashes[0...-1] + ('\\%03o' % $2.to_i(16))
+      else
+        escape
+      end
     end
-    str.gsub!('"', '\'') unless str.match?(/[\\']/)
-    str
+    source.tr!('"', '\'') unless source.match?(/[\\']/)
+    source
   end
+
+  def self.words(values)
+    if values.all? { |value| safe_word?(value) }
+      "%w(#{values.join(' ')})"
+    else
+      "[#{values.map { |value| string(value) }.join(', ')}]"
+    end
+  end
+
+  def self.comment(value)
+    value.gsub(/[\x00-\x1f\x7f]|\u0085|\u2028|\u2029/, " ")
+  end
+
+  def self.safe_word?(value)
+    !value.empty? && value.each_byte.all? do |byte|
+      byte > 0x20 && byte < 0x7f && byte != 0x28 && byte != 0x29 && byte != 0x5c
+    end
+  end
+end
+
+module MimeData
+  TOKEN = "[!#$%&'*+\\-.^_`|~0-9A-Za-z]+".freeze
+  TYPE = %r{\A#{TOKEN}/#{TOKEN}(?:;[ \t]*#{TOKEN}=#{TOKEN})*\z}.freeze
+  EXTENSION = /\A[0-9A-Za-z][0-9A-Za-z.+_~-]*\z/.freeze
+  OFFSET = /\A\d+(?::\d+)?\z/.freeze
+  PRIORITY = /\A\d+\z/.freeze
+  MAX_MAGIC_OFFSET = 64 * 1024
+  MAX_MAGIC_RANGE_BYTES = 64 * 1024
+  MAX_MAGIC_PRIORITY = 100
+
+  def self.type(value, source)
+    if value&.match?(/[\x00-\x08\x0A-\x1F\x7F]/)
+      raise ArgumentError, "Invalid MIME type in #{source}: #{value.inspect}"
+    end
+
+    normalized = value&.strip
+    unless normalized&.match?(TYPE)
+      raise ArgumentError, "Invalid MIME type in #{source}: #{value.inspect}"
+    end
+
+    normalized
+  end
+
+  def self.extension(value, source)
+    unless value&.match?(EXTENSION)
+      raise ArgumentError, "Invalid extension in #{source}: #{value.inspect}"
+    end
+
+    value.downcase
+  end
+
+  def self.offset(value, source)
+    maximum_length = "#{MAX_MAGIC_OFFSET}:#{MAX_MAGIC_OFFSET}".bytesize
+    unless value && value.bytesize <= maximum_length && value.match?(OFFSET)
+      raise ArgumentError, "Invalid magic offset in #{source}: #{value.inspect}"
+    end
+
+    bounds = value.split(":").map { |bound| Integer(bound, 10) }
+    if bounds.any? { |bound| bound > MAX_MAGIC_OFFSET }
+      raise ArgumentError, "Magic offset exceeds #{MAX_MAGIC_OFFSET} in #{source}: #{value.inspect}"
+    end
+    if bounds.size == 2 && bounds.first > bounds.last
+      raise ArgumentError, "Descending magic offset in #{source}: #{value.inspect}"
+    end
+    if bounds.size == 2 && bounds.last - bounds.first + 1 > MAX_MAGIC_RANGE_BYTES
+      raise ArgumentError, "Magic range exceeds #{MAX_MAGIC_RANGE_BYTES} bytes in #{source}: #{value.inspect}"
+    end
+
+    bounds.size == 2 ? bounds[0]..bounds[1] : bounds[0]
+  end
+
+  def self.priority(value, source)
+    unless value && value.bytesize <= MAX_MAGIC_PRIORITY.to_s.bytesize && value.match?(PRIORITY)
+      raise ArgumentError, "Invalid magic priority in #{source}: #{value.inspect}"
+    end
+
+    priority = Integer(value, 10)
+    if priority > MAX_MAGIC_PRIORITY
+      raise ArgumentError, "Magic priority exceeds #{MAX_MAGIC_PRIORITY} in #{source}: #{value.inspect}"
+    end
+
+    priority
+  end
+end
+
+class UnsupportedRules
+  # Tika currently contains 58 unsupported XML rules. Their pretty-printed warnings
+  # span 112 physical lines, so pin the canonical rule set rather than stderr layout.
+  EXPECTED_COUNT = 58
+  EXPECTED_SHA256 = "15d595d20bca116234fda6893b8fceb1533fcbd542d425a6d609d2efcb51b582"
+
+  def initialize
+    @signatures = []
+  end
+
+  def count
+    @signatures.size
+  end
+
+  def skip(kind, mime_type, element, message)
+    @signatures << [kind, mime_type, canonical_element(element)].inspect
+    warn message
+  end
+
+  def verify!
+    return if count.zero?
+
+    digest = Digest::SHA256.hexdigest(@signatures.sort.join("\0"))
+    return if count == EXPECTED_COUNT && digest == EXPECTED_SHA256
+
+    raise ArgumentError,
+      "Unsupported magic rules changed: expected #{EXPECTED_COUNT} " \
+      "(sha256 #{EXPECTED_SHA256}), got #{count} (sha256 #{digest})"
+  end
+
+  private
+    def canonical_element(element)
+      attributes = element.attribute_nodes.sort_by(&:name).map { |attribute| [attribute.name, attribute.value] }
+      children = element.element_children.map { |child| canonical_element(child) }
+      [element.name, attributes, children]
+    end
 end
 
 class BinaryString
@@ -70,7 +200,7 @@ class BinaryString
   end
 
   def inspect
-    "b[#{@string.inspect}]"
+    "b[#{RubySource.string(@string)}]"
   end
 end
 
@@ -80,7 +210,12 @@ class RegexString
   end
 
   def inspect
-    TikaRegex.to_ruby_regexp(@pattern).inspect
+    regexp = TikaRegex.to_ruby_regexp(@pattern)
+    if regexp
+      "Regexp.new(#{regexp.source.b.dump}.b, #{regexp.options}).freeze"
+    else
+      "nil"
+    end
   end
 end
 
@@ -88,6 +223,29 @@ def str2int(s)
   return s.to_i(16) if s[0..1].downcase == '0x'
   return s.to_i(8) if s[0..0].downcase == '0'
   s.to_i(10)
+end
+
+ESCAPED_CHARACTERS = {
+  'a' => "\a",
+  'b' => "\b",
+  'e' => "\e",
+  'f' => "\f",
+  'n' => "\n",
+  'r' => "\r",
+  's' => " ",
+  't' => "\t",
+  'v' => "\v",
+}.freeze
+
+def decode_string_escape(escape)
+  case escape
+  when /\Ax([0-9a-f]{1,2})\z/i
+    $1.to_i(16).chr
+  when /\A0?([0-7]{1,3})\z/
+    $1.to_i(8).chr
+  else
+    ESCAPED_CHARACTERS.fetch(escape, escape)
+  end
 end
 
 def binary_strings(object)
@@ -112,39 +270,39 @@ WELL_KNOWN_REGEX_TYPES = %w(
   application/vnd.java.hprof.text
 )
 
-def get_matches(mime, parent)
+def get_matches(mime_type, parent, unsupported_rules)
   parent.elements.map {|match|
-    children = get_matches(mime, match)
+    children = get_matches(mime_type, match, unsupported_rules)
 
     type = match['type']
     value = match['value']
     offset = match['offset'] || '0'
-    offset = offset.split(':').map {|x| x.to_i }
+    offset = MimeData.offset(offset, mime_type)
 
     mask = match['mask']
 
     # We only support masks of whole bytes against a string type
     if mask && (!mask.match?(/\A0x(FF|00)*\z/) || type != 'string')
-      warn "#{mime['type']}: unsupported mask #{match.to_s}"
+      unsupported_rules.skip "mask", mime_type, match, "#{mime_type}: unsupported mask #{match.to_s}"
       next nil
     end
 
-    offset = offset.size == 2 ? offset[0]..offset[1] : offset[0]
     case type
       when 'unicodeLE', 'unicodeBE' # Unicode string types (UTF-16 Little/Big Endian)
         value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
         encoding = type == 'unicodeLE' ? Encoding::UTF_16LE : Encoding::UTF_16BE
         value = value.encode(encoding).force_encoding(Encoding::BINARY)
     when 'regex'
-      unless WELL_KNOWN_REGEX_TYPES.include?(mime['type'].strip)
-        warn "#{mime['type']}: unsupported #{type} match: #{match.to_s}"
+      unless WELL_KNOWN_REGEX_TYPES.include?(mime_type)
+        unsupported_rules.skip "regex", mime_type, match,
+          "#{mime_type}: unsupported #{type} match: #{match.to_s}"
         next nil
       end
 
       value = RegexString.new(value)
     when 'string', 'stringignorecase'
       value.gsub!(/\A0x([0-9a-f]+)\z/i) { [$1].pack('H*') }
-      value.gsub!(/\\(x[\dA-Fa-f]{1,2}|0\d{1,3}|\d{1,3}|.)/) { eval("\"\\#{$1}\"") }
+      value.gsub!(/\\(x[\dA-Fa-f]{1,2}|0\d{1,3}|\d{1,3}|.)/) { decode_string_escape($1) }
 
       if mask
         segments = []
@@ -191,7 +349,8 @@ def get_matches(mime, parent)
     when nil
       nil
     else
-      warn "#{mime['type']}: unsupported #{type} match: #{match.to_s}"
+      unsupported_rules.skip "type", mime_type, match,
+        "#{mime_type}: unsupported #{type} match: #{match.to_s}"
       next nil
     end
 
@@ -199,10 +358,15 @@ def get_matches(mime, parent)
   }.compact
 end
 
-if ARGV.size == 0
-  puts "Usage: #{$0} path/to/data.xml"
-  exit 1
+options = {}
+option_parser = OptionParser.new do |parser|
+  parser.banner = "Usage: #{$0} [--output path/to/tables.rb] path/to/data.xml [...]"
+  parser.on("-o", "--output PATH", "Atomically write generated Ruby to PATH") do |path|
+    options[:output] = path
+  end
 end
+option_parser.parse!(ARGV)
+abort option_parser.to_s if ARGV.empty?
 
 TYPE_RENAMES = {
   "image/bmp;format=compressed" => "image/bmp",
@@ -211,20 +375,30 @@ TYPE_RENAMES = {
 extensions = {}
 types = {}
 magics = []
+unsupported_rules = UnsupportedRules.new
 
 ARGV.each do |path|
-  file = File.new(path)
-  doc = Nokogiri::XML(file)
+  doc = File.open(path, "rb") do |file|
+    Nokogiri::XML(file) { |config| config.strict.nonet }
+  end
+  unless doc.root&.name == "mime-info"
+    raise ArgumentError, "Expected mime-info root in #{path}"
+  end
 
   (doc/'mime-info/mime-type').each do |mime|
     comments = Hash[*(mime/'_comment').map {|comment| [comment['xml:lang'], comment.inner_text] }.flatten]
-    type = TYPE_RENAMES[mime['type']] || mime['type']
+    type = MimeData.type(mime['type'], path)
+    type = TYPE_RENAMES[type] || type
 
-    subclass = (mime/'sub-class-of').map{|x| x['type']}
-    exts = (mime/'glob').map{|x| x['pattern'] =~ /^\*\.([^\[\]]+)$/ ? $1.downcase : nil }.compact
+    subclass = (mime/'sub-class-of').map { |element| MimeData.type(element['type'], path) }
+    exts = (mime/'glob').map do |element|
+      if element['pattern'] =~ /^\*\.([^\[\]]+)$/
+        MimeData.extension($1, path)
+      end
+    end.compact
     (mime/'magic').each do |magic|
-      priority = (magic['priority'] || '50').to_i
-      matches = get_matches(mime, magic)
+      priority = MimeData.priority(magic['priority'] || '50', type)
+      matches = get_matches(type, magic, unsupported_rules)
       magics << [priority, type, matches]
     end
     if !exts.empty?
@@ -236,7 +410,9 @@ ARGV.each do |path|
   end
 end
 
-magics = magics.sort_by { |priority, type| [-priority, type] }
+magics = magics.each_with_index.sort_by do |(priority, type), source_index|
+  [ -priority, type, source_index ]
+end.map(&:first)
 
 common_types = [
   "image/jpeg",                                                                # .jpg
@@ -282,45 +458,76 @@ end
 
 magics = (common_magics.compact + magics).uniq
 
-puts "# frozen_string_literal: true"
-puts ""
-puts "# This file is auto-generated. Instead of editing this file, please"
-puts "# add MIMEs to data/custom.xml or lib/marcel/mime_type/definitions.rb."
-puts ""
-puts "module Marcel"
-puts "  # @private"
-puts "  # :nodoc:"
-puts "  EXTENSIONS = {"
-extensions.keys.sort.each do |key|
-  puts "    '#{key.strip}' => '#{extensions[key]}',"
+def emit_tables(output, extensions, types, magics)
+  output.puts "# frozen_string_literal: true"
+  output.puts ""
+  output.puts "# This file is auto-generated. Instead of editing this file, please"
+  output.puts "# add MIMEs to data/custom.xml or the definitions files under lib/marcel."
+  output.puts ""
+  output.puts "module Marcel"
+  output.puts "  # @private"
+  output.puts "  # :nodoc:"
+  output.puts "  EXTENSIONS = {"
+  extensions.keys.sort.each do |key|
+    output.puts "    #{RubySource.string(key.strip)} => #{RubySource.string(extensions[key])},"
+  end
+  output.puts "  }"
+  output.puts "  # @private"
+  output.puts "  # :nodoc:"
+  output.puts "  TYPE_EXTS = {"
+  types.keys.sort.each do |key|
+    exts = types[key][0]
+    comment = types[key][2]
+    comment = " # #{RubySource.comment(comment)}" if comment
+    output.puts "    #{RubySource.string(key.strip)} => #{RubySource.words(exts)},#{comment}"
+  end
+  output.puts "  }"
+  output.puts "  TYPE_PARENTS = {"
+  types.keys.sort.each do |key|
+    parents = types[key][1].sort
+    unless parents.empty?
+      output.puts "    #{RubySource.string(key.strip)} => #{RubySource.words(parents)},"
+    end
+  end
+  output.puts "  }"
+  output.puts "  b = Hash.new { |h, k| h[k] = k.b.freeze }"
+  output.puts "  # @private"
+  output.puts "  # :nodoc:"
+  output.puts "  MAGIC = ["
+  magics.each do |priority, type, matches|
+    next if matches.nil? || matches.empty?
+
+    output.puts "    [#{RubySource.string(type.strip)}, #{binary_strings(matches).inspect}],"
+  end
+  output.puts "  ]"
+  output.puts "end"
 end
-puts "  }"
-puts "  # @private"
-puts "  # :nodoc:"
-puts "  TYPE_EXTS = {"
-types.keys.sort.each do |key|
-  exts = types[key][0].join(' ')
-  comment = types[key][2]
-  comment = " # #{comment.tr("\n", " ")}" if comment
-  puts "    '#{key.strip}' => %w(#{exts}),#{comment}"
-end
-puts "  }"
-puts "  TYPE_PARENTS = {"
-types.keys.sort.each do |key|
-  parents = types[key][1].sort.join(' ')
-  unless parents.empty?
-    puts "    '#{key.strip}' => %w(#{parents}),"
+
+def write_tables(output_path, contents)
+  return $stdout.write(contents) unless output_path
+
+  destination = File.expand_path(output_path)
+  directory = File.dirname(destination)
+  mode = File.exist?(destination) ? File.stat(destination).mode & 0o777 : 0o644
+
+  Tempfile.create([File.basename(destination), ".tmp"], directory) do |temporary|
+    temporary.binmode
+    temporary.write(contents)
+    temporary.flush
+    temporary.fsync
+    temporary.close
+
+    syntax_output, status = Open3.capture2e(RbConfig.ruby, "-c", temporary.path)
+    raise "Generated table syntax is invalid:\n#{syntax_output}" unless status.success?
+
+    File.chmod(mode, temporary.path)
+    File.rename(temporary.path, destination)
   end
 end
-puts "  }"
-puts "  b = Hash.new { |h, k| h[k] = k.b.freeze }"
-puts "  # @private"
-puts "  # :nodoc:"
-puts "  MAGIC = ["
-magics.each do |priority, type, matches|
-  next if matches.nil? || matches.empty?
 
-  puts "    ['#{type.strip}', #{binary_strings(matches).inspect}],"
-end
-puts "  ]"
-puts "end"
+unsupported_rules.verify!
+
+buffer = StringIO.new
+emit_tables(buffer, extensions, types, magics)
+write_tables(options[:output], buffer.string)
+warn "Skipped #{unsupported_rules.count} unsupported magic rules" if unsupported_rules.count > 0

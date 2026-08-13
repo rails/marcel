@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # This file is auto-generated. Instead of editing this file, please
-# add MIMEs to data/custom.xml or lib/marcel/mime_type/definitions.rb.
+# add MIMEs to data/custom.xml or the definitions files under lib/marcel.
 
 module Marcel
   # @private
@@ -441,7 +441,7 @@ module Marcel
     'hpgl' => 'application/vnd.hp-hpgl',
     'hpid' => 'application/vnd.hp-hpid',
     'hpp' => 'text/x-c++hdr',
-    'hprof' => 'application/vnd.java.hprof ',
+    'hprof' => 'application/vnd.java.hprof',
     'hprof.txt' => 'application/vnd.java.hprof.text',
     'hps' => 'application/vnd.hp-hps',
     'hqx' => 'application/mac-binhex40',
@@ -2410,7 +2410,7 @@ module Marcel
     'image/x-portable-bitmap' => %w(image/x-portable-anymap),
     'image/x-portable-graymap' => %w(image/x-portable-anymap),
     'image/x-portable-pixmap' => %w(image/x-portable-anymap),
-    'image/x-xbitmap' => %w(text/x-c),
+    'image/x-xbitmap' => %w(text/x-csrc),
     'message/rfc822' => %w(text/x-tika-text-based-message),
     'message/x-emlx' => %w(text/x-tika-text-based-message),
     'model/vnd.dwfx+xps' => %w(application/x-tika-ooxml),
@@ -2521,7 +2521,7 @@ module Marcel
     ['image/bmp', [[0, b['BM'], [[26, b["\001\000"], [[0, nil, [[0, nil, [[28, b["\000\000"]], [28, b["\001\000"]], [28, b["\004\000"]], [28, b["\b\000"]], [28, b["\020\000"]], [28, b["\030\000"]], [28, b[" \000"]]]], [30, b["\000\000\000\000"]]]]]]]]]],
     ['image/vnd.adobe.photoshop', [[0, b["8BPS\000\001"]], [0, b["8BPS\000\002"]]]],
     ['image/webp', [[0, b['RIFF'], [[8, b['WEBP']]]]]],
-    ['text/html', [[0, /(?i)<(html|head|body|title|div)[ >]/], [0, /(?i)<h[123][ >]/]]],
+    ['text/html', [[0, Regexp.new("(?i)<(html|head|body|title|div)[ >]".b, 0).freeze], [0, Regexp.new("(?i)<h[123][ >]".b, 0).freeze]]],
     ['image/svg+xml', [[0, b['<svg']]]],
     ['video/x-msvideo', [[0, b['RIFF'], [[8, b['AVI ']]]], [8, b['AVI ']]]],
     ['video/x-ms-wmv', [[0..8192, b["W\000i\000n\000d\000o\000w\000s\000 \000M\000e\000d\000i\000a\000 \000V\000i\000d\000e\000o\000"]], [0..8192, b["V\000C\000-\0001\000 \000A\000d\000v\000a\000n\000c\000e\000d\000 \000P\000r\000o\000f\000i\000l\000e\000"]], [0..8192, b["w\000m\000v\0002\000"]]]],
@@ -2534,7 +2534,7 @@ module Marcel
     ['video/x-flv', [[0, b['FLV']]]],
     ['audio/mpeg', [[0, b["\377\362"]], [0, b["\377\363"]], [0, b["\377\364"]], [0, b["\377\365"]], [0, b["\377\366"]], [0, b["\377\367"]], [0, b["\377\372"]], [0, b["\377\373"]], [0, b["\377\374"]], [0, b["\377\375"]], [0, b["\377\343"]], [0, b['ID3']]]],
     ['application/pdf', [[0, b['%PDF-']], [0, b["\357\273\277%PDF-"]]]],
-    ['application/msword', [[0..8, b["\320\317\021\340\241\261\032\341"], [[546, b['jbjb']], [546, b['bjbj']]]]]],
+    ['application/msword', [[2080, b['Microsoft Word 6.0 Document']], [2080, b['Documento Microsoft Word 6']], [2112, b['MSWordDoc']], [0, b["1\276\000\000"]], [0, b['PO^Q`']], [0, b["\3767\000#"]], [0, b["\333\245-\000\000\000"]], [0, b["\224\246."]], [0..8, b["\320\317\021\340\241\261\032\341"], [[1152..4096, b["W\000o\000r\000d\000D\000o\000c\000u\000m\000e\000n\000t"]]]]]],
     ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', [[0, b["PK\003\004"], [[30..65536, b['[Content_Types].xml'], [[0..4096, b['word/']]]], [30, b['_rels/.rels'], [[0..4096, b['word/']]]]]]]],
     ['application/vnd.ms-powerpoint', [[0..8, b["\320\317\021\340\241\261\032\341"], [[1152..4096, b["P\000o\000w\000e\000r\000P\000o\000i\000n\000t\000 D\000o\000c\000u\000m\000e\000n\000t"]]]]]],
     ['application/vnd.openxmlformats-officedocument.presentationml.presentation', [[0, b["PK\003\004"], [[30..65536, b['[Content_Types].xml'], [[0..4096, b['ppt/']]]], [30, b['_rels/.rels'], [[0..4096, b['ppt/']]]]]]]],
@@ -2661,7 +2661,7 @@ module Marcel
     ['application/java-vm', [[0, b["\312\376\272\276"]]]],
     ['application/mac-binhex40', [[11, b['must be converted with BinHex']]]],
     ['application/mathematica', [[0, b['(**']], [0, b['(* ']]]],
-    ['application/msword', [[2080, b['Microsoft Word 6.0 Document']], [2080, b['Documento Microsoft Word 6']], [2112, b['MSWordDoc']], [0, b["1\276\000\000"]], [0, b['PO^Q`']], [0, b["\3767\000#"]], [0, b["\333\245-\000\000\000"]], [0, b["\224\246."]], [0..8, b["\320\317\021\340\241\261\032\341"], [[1152..4096, b["W\000o\000r\000d\000D\000o\000c\000u\000m\000e\000n\000t"]]]]]],
+    ['application/msword', [[0..8, b["\320\317\021\340\241\261\032\341"], [[546, b['jbjb']], [546, b['bjbj']]]]]],
     ['application/msword2', [[0, b["\233\245"]], [0, b["\333\245"]]]],
     ['application/msword5', [[0, b["\3767"]]]],
     ['application/octet-stream', [[10, b['# This is a shell archive']], [0, b["\037\036"]], [0, b["\037\037"]], [0, b["\377\037"]], [0, b["\377\037"]], [0, b["\005\313"]]]],
@@ -2680,8 +2680,8 @@ module Marcel
     ['application/vnd.digilite.prolights', [[0, b["\177\fD+"]]]],
     ['application/vnd.fdf', [[0, b['%FDF-']]]],
     ['application/vnd.iccprofile', [[36, b['acsp']]]],
-    ['application/vnd.java.hprof', [[0, /JAVA PROFILE \d\.\d\.\d\u0000/]]],
-    ['application/vnd.java.hprof.text', [[0, /JAVA PROFILE \d\.\d\.\d,/]]],
+    ['application/vnd.java.hprof', [[0, Regexp.new("JAVA PROFILE \\d\\.\\d\\.\\d\\u0000".b, 0).freeze]]],
+    ['application/vnd.java.hprof.text', [[0, Regexp.new("JAVA PROFILE \\d\\.\\d\\.\\d,".b, 0).freeze]]],
     ['application/vnd.lotus-1-2-3;version=1', [[0, b["\000\000\002\000\004\004"]]]],
     ['application/vnd.lotus-1-2-3;version=2', [[0, b["\000\000\002\000\006\004\006\000\b\000"]]]],
     ['application/vnd.lotus-1-2-3;version=3', [[0, b["\000\000\032\000\000\020\004\000"]]]],
@@ -2754,7 +2754,7 @@ module Marcel
     ['application/x-endnote-style', [[0, b["\000\b"], [[4, b["\000\000"], [[8, b['RSFTSTYL']], [8, b['ENDNENFT']]]]]]]],
     ['application/x-erdas-hfa', [[0, b['EHFA_HEADER_TAG']]]],
     ['application/x-executable', [[0, b["\177ELF"], [[16, b["\002\000"]], [16, b["\000\002"]]]]]],
-    ['application/x-fat-diskimage', [[0, b["\\353"], [[2, b["\\220"]]]]]],
+    ['application/x-fat-diskimage', [[0, b["\\xEB"], [[2, b["\\x90"]]]]]],
     ['application/x-filemaker', [[14, b["\300HBAM7"], [[525, b["HBAM2101OCT99\301\002H\aPro 7.0\300\300"]]]]]],
     ['application/x-foxmail', [[0, b["\020\020\020\020\020\020\020\021\021\021\021\021\021S"]]]],
     ['application/x-gnumeric', [[39, b['=<gmr:Workbook']]]],
@@ -2910,7 +2910,7 @@ module Marcel
     ['application/pdf', [[0..128, b['%%'], [[1..512, b['%PDF-1.']]]], [0..128, b['%%'], [[1..512, b['%PDF-2.']]]]]],
     ['application/vnd.wordperfect', [[0, b["\377WPC"]]]],
     ['application/x-bzip', [[0, b['BZ0']]]],
-    ['application/x-bzip2', [[0, /BZh[1-9]/]]],
+    ['application/x-bzip2', [[0, Regexp.new("BZh[1-9]".b, 0).freeze]]],
     ['application/x-font-adobe-metric', [[0, b['StartFontMetrics']]]],
     ['application/x-font-otf', [[0, b["OTTO\000"]]]],
     ['application/x-font-printer-metric', [[0, b["\000\001"], [[4, b["\000\000Copyr"]]]]]],

@@ -178,4 +178,12 @@
 
     <sub-class-of type="text/plain"/>
   </mime-type>
+
+  <!-- Tika declares text/x-c as an alias of text/x-csrc, but Marcel's tables do not
+       otherwise model aliases. Keep the X bitmap parent graph on canonical types. -->
+  <mime-type type="image/x-xbitmap">
+    <glob pattern="*.xbm" />
+
+    <sub-class-of type="text/x-csrc"/>
+  </mime-type>
 </mime-info>
