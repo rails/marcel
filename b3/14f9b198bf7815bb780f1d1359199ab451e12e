@@ -1,0 +1,21 @@
+README.md
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 8,10,12-20,46,63
+SECURITY.md
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b314f9b198bf7815bb780f1d1359199ab451e12e",
+  "prompts": {},
+  "sessions": {
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
