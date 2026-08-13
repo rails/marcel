@@ -114,6 +114,14 @@
     </magic>
   </mime-type>
 
+  <mime-type type="application/vnd.google-apps.spreadsheet">
+    <!-- Source https://developers.google.com/drive/api/guides/mime-types -->
+    <_comment>Google Sheets</_comment>
+    <glob pattern="*.gsheet" />
+
+    <sub-class-of type="application/json"/>
+  </mime-type>
+
   <mime-type type="video/webm">
     <sub-class-of type="application/x-matroska" />
 

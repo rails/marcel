@@ -414,6 +414,7 @@ module Marcel
     'grv' => 'application/vnd.groove-injector',
     'grxml' => 'application/srgs+xml',
     'gsf' => 'application/x-font-ghostscript',
+    'gsheet' => 'application/vnd.google-apps.spreadsheet',
     'gslib' => 'audio/x-psf',
     'gtar' => 'application/x-gtar',
     'gtm' => 'application/vnd.groove-tool-message',
@@ -1498,6 +1499,7 @@ module Marcel
     'application/vnd.gmx' => %w(gmx),
     'application/vnd.google-earth.kml+xml' => %w(kml), # Keyhole Markup Language
     'application/vnd.google-earth.kmz' => %w(kmz),
+    'application/vnd.google-apps.spreadsheet' => %w(gsheet),
     'application/vnd.grafeq' => %w(gqf gqs),
     'application/vnd.groove-account' => %w(gac),
     'application/vnd.groove-help' => %w(ghf),
