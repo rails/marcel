@@ -1,0 +1,23 @@
+SECURITY.md
+  s_e1bb0a5a5f768f::t_77e96b379be938 5-7
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 1-4
+README.md
+  s_e1bb0a5a5f768f::t_b47e55721ba13a 20
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 8,10,12-19,46,63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "729a575d4121c9e663f0d6d4f1716f5f7b511111",
+  "prompts": {},
+  "sessions": {
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
