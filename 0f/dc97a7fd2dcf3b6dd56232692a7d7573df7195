@@ -1,0 +1,22 @@
+SECURITY.md
+  s_9c333a204464a9::t_d7e6170ed98736 1-7
+README.md
+  s_9c333a204464a9::t_7cd169547278c0 18,20-26
+  s_9c333a204464a9::t_d7e6170ed98736 8,10,12-17,19,27-28,54,69-70,73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0fdc97a7fd2dcf3b6dd56232692a7d7573df7195",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
