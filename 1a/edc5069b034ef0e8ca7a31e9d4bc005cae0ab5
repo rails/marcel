@@ -1,0 +1,33 @@
+test/extension_test.rb
+  s_9c333a204464a9::t_e09e768401efee 12-27
+test/mime_type_test.rb
+  s_9c333a204464a9::t_64ab8d5edbe67a 59
+  s_9c333a204464a9::t_e09e768401efee 21-32,53-58
+lib/marcel/magic.rb
+  s_9c333a204464a9::t_b9c42d920aedc5 135-138,142,144-155,158,166-167,170-171,185,189,200,203-204,208-234,236-246,249
+  s_9c333a204464a9::t_e09e768401efee 74-77,85-86,119-131,143,168,172,190-197,205-207
+test/name_test.rb
+  s_9c333a204464a9::t_e09e768401efee 5-29
+lib/marcel/mime_type.rb
+  s_9c333a204464a9::t_e09e768401efee 73
+test/magic_test.rb
+  s_9c333a204464a9::t_b33563b848e7bb 358
+  s_9c333a204464a9::t_b9c42d920aedc5 195-357
+  s_9c333a204464a9::t_e09e768401efee 35-44,167-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1aedc5069b034ef0e8ca7a31e9d4bc005cae0ab5",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
