@@ -31,6 +31,8 @@ lib/marcel/magic.rb
 test/html_magic_test.rb
   s_9c333a204464a9::t_1a539fd21427eb 2-3,76-171,220-227
   s_e1bb0a5a5f768f::t_1ea0b3caea85a9 1,4-75,172-219,228
+README.md
+  s_9c333a204464a9::t_19d5f72a7f25e3 60
 ---
 {
   "schema_version": "authorship/3.0.0",
