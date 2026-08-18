@@ -2,14 +2,6 @@
 
 Marcel::MimeType.extend "text/plain", extensions: %w( txt asc )
 
-Marcel::Magic.remove("text/html")
-Marcel::MimeType.extend "text/html", 
-  extensions: %w( html htm ),
-  magic: [
-    [64, %r{\A\s*<(!DOCTYPE html|html)}mi],
-    [-64, %r{</html>\s*\z}mi],
-  ]
-
 Marcel::MimeType.extend "application/illustrator", parents: "application/pdf"
 Marcel::MimeType.extend "image/vnd.adobe.photoshop", magic: [[0, "8BPS"]], extensions: %w( psd psb )
 
