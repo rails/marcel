@@ -18,6 +18,18 @@ class Marcel::MimeTypeTest < Marcel::TestCase
     assert_equal "image/gif", content_type
   end
 
+  test "opens Pathnames in binary mode" do
+    pathname = Pathname.new(@path)
+    opened_mode = nil
+    pathname.define_singleton_method(:open) do |mode, &block|
+      opened_mode = mode
+      File.open(to_path, mode, &block)
+    end
+
+    assert_equal "image/gif", Marcel::MimeType.for(pathname)
+    assert_equal "rb", opened_mode
+  end
+
   test "closes Pathname files after use" do
     skip if RUBY_ENGINE == "jruby"
     open_files = ObjectSpace.each_object(File).reject(&:closed?)
@@ -36,6 +48,13 @@ class Marcel::MimeTypeTest < Marcel::TestCase
     io = StringIO.new(File.read(@path))
     content_type = Marcel::MimeType.for io
     assert_equal "image/gif", content_type
+  end
+
+  test "reads IOs from the beginning" do
+    io = StringIO.new(File.read(@path))
+    io.read(10)
+
+    assert_equal "image/gif", Marcel::MimeType.for(io)
   end
 
   test "gets content type from sources that conform to Rack RewindableInput" do

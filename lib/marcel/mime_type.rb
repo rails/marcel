@@ -70,7 +70,7 @@ module Marcel
 
         def with_io(pathname_or_io, &block)
           if defined?(Pathname) && pathname_or_io.is_a?(Pathname)
-            pathname_or_io.open(&block)
+            pathname_or_io.open("rb", &block)
           else
             yield pathname_or_io
           end

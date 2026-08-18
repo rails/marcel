@@ -71,7 +71,10 @@ module Marcel
 
     # Lookup mime type by file extension
     def self.by_extension(ext)
-      ext = ext.to_s.downcase
+      ext = ext.to_s
+      return unless ext.valid_encoding?
+
+      ext = ext.downcase
       mime = ext[0..0] == '.' ? EXTENSIONS[ext[1..-1]] : EXTENSIONS[ext]
       mime && new(mime)
     end
@@ -79,6 +82,8 @@ module Marcel
     # Lookup mime type by filename
     def self.by_path(path)
       by_extension(File.extname(path))
+    rescue ArgumentError, EncodingError
+      nil
     end
 
     # Lookup mime type by magic content analysis.
@@ -111,17 +116,46 @@ module Marcel
     alias == eql?
 
     def self.child?(child, parent)
-      child == parent || TYPE_PARENTS[child]&.any? {|p| child?(p, parent) }
+      pending = [child]
+      visited = {}
+
+      until pending.empty?
+        type = pending.pop
+        return true if type == parent
+        next if visited[type]
+
+        visited[type] = true
+        pending.concat(TYPE_PARENTS[type] || [])
+      end
+
+      false
     end
 
     def self.magic_match(io, method)
+      if defined?(Pathname) && io.is_a?(Pathname)
+        return io.open("rb") { |file| magic_match(file, method) }
+      end
+
       return magic_match(StringIO.new(io.to_s), method) unless io.respond_to?(:read)
 
       buffer = "".b
-      MAGIC.send(method) { |type, matches| magic_match_io(io, matches, buffer) }
+      read_mode = read_mode(io)
+      io.rewind
+      body_failed = true
+      begin
+        result = MAGIC.send(method) { |type, matches| magic_match_io(io, matches, buffer, read_mode) }
+        body_failed = false
+        result
+      ensure
+        begin
+          io.rewind
+        rescue Exception # Preserve an exception already raised while reading or matching.
+          raise unless body_failed
+        end
+      end
     end
 
-    def self.magic_match_io(io, matches, buffer)
+    def self.magic_match_io(io, matches, buffer, mode = read_mode(io))
       matches.any? do |offset, value, children|
         match = if value
           is_range = Range === offset
@@ -129,12 +163,15 @@ module Marcel
           sample_size = is_regexp ? 256 : value.bytesize
 
           x = if is_range
-            io_seek(io, offset.begin, buffer)
-            io.read(offset.end - offset.begin + sample_size, buffer)
+            if io_seek(io, offset.begin, buffer, mode)
+              io_read(io, offset.end - offset.begin + sample_size, buffer, mode)
+            end
           else
-            io_seek(io, offset, buffer)
-            io.read(sample_size, buffer)
+            if io_seek(io, offset, buffer, mode)
+              io_read(io, sample_size, buffer, mode)
+            end
           end
+          x.force_encoding(Encoding::BINARY) if x
 
           if is_regexp
             x&.match?(value)
@@ -146,24 +183,71 @@ module Marcel
         end
 
         io.rewind
-        match && (!children || magic_match_io(io, children, buffer))
+        match && (!children || magic_match_io(io, children, buffer, mode))
       end
     end
 
-    def self.io_seek(io, offset, buffer)
-      return if offset == 0
-      offset = io.size + offset if offset < 0
-      return if offset < 0
+    def self.io_seek(io, offset, buffer, mode)
+      return true if offset == 0
+
+      if offset < 0
+        return false unless io.respond_to?(:size)
+
+        offset = io.size + offset
+        return false if offset < 0
+      end
 
       if io.respond_to?(:seek)
-        io.seek(offset, IO::SEEK_CUR)
+        io.seek(offset, IO::SEEK_SET)
       else
         # Some IOs don't support `seek`. e.g. Rack::RewindableInput
-        io.read(offset, buffer)
+        skipped = io_read(io, offset, buffer, mode)
+        return false unless skipped && skipped.bytesize == offset
       end
+
+      true
     end
 
-    private_class_method :magic_match, :magic_match_io, :io_seek
+    def self.io_read(io, length, buffer, mode)
+      return io.read(length, buffer) if mode == :native
+
+      buffer.clear
+
+      read_with_buffer = mode == :buffer
+      chunk = read_with_buffer ? io.read(length, buffer) : io.read(length)
+      return if chunk && chunk.bytesize > length
+      buffer.replace(chunk) if chunk && !chunk.equal?(buffer)
+
+      return if chunk.nil? || buffer.empty?
+      return buffer if buffer.bytesize == length
+
+      continuation_buffer = "".b if read_with_buffer
+      while buffer.bytesize < length
+        remaining = length - buffer.bytesize
+        chunk = if read_with_buffer
+          io.read(remaining, continuation_buffer.clear)
+        else
+          io.read(remaining)
+        end
+        return if chunk && chunk.bytesize > remaining
+        break if chunk.nil? || chunk.empty?
+
+        buffer << chunk
+      end
+
+      buffer unless buffer.empty?
+    end
+
+    def self.read_mode(io)
+      return :native if io.is_a?(IO) || io.is_a?(StringIO)
+
+      parameters = io.method(:read).parameters
+      supports_buffer = parameters.any? { |kind,| kind == :rest } ||
+        parameters.count { |kind,| kind == :req || kind == :opt } >= 2
+      supports_buffer ? :buffer : :single
+    end
+
+    private_class_method :magic_match, :magic_match_io, :io_seek, :io_read, :read_mode
   end
 end
 
