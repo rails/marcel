@@ -1,7 +1,9 @@
 lib/marcel/mime_type.rb
   s_9c333a204464a9::t_28d62c7a803a94 6-9,30-36,90-98
+  s_e1bb0a5a5f768f::t_409de23b5710d8 7-9,30-36,90,92-98
 test/declared_type_test.rb
   s_9c333a204464a9::t_28d62c7a803a94 22-106
+  s_e1bb0a5a5f768f::t_409de23b5710d8 22-96
 ---
 {
   "schema_version": "authorship/3.0.0",
@@ -14,6 +16,14 @@ test/declared_type_test.rb
         "tool": "codex",
         "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
         "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    },
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-fable-5"
       },
       "human_author": "Jeremy Daer <jeremy@37signals.com>"
     }
