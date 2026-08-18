@@ -1,0 +1,29 @@
+gemfiles/release/Gemfile
+  s_9c333a204464a9::t_9bb94313d247f3 1-3
+.github/workflows/release.yml
+  s_9c333a204464a9::t_9bb94313d247f3 7-12,14-16,18-36,38-42,44-45,47-63,65-272
+script/validate_release_toolchain.rb
+  s_9c333a204464a9::t_9bb94313d247f3 1-69
+.github/workflows/ci.yml
+  s_9c333a204464a9::t_9bb94313d247f3 72-94
+.github/dependabot.yml
+  s_9c333a204464a9::t_9bb94313d247f3 11-14
+gemfiles/release/Gemfile.lock
+  s_9c333a204464a9::t_daeb8f46553e10 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "495e1e9e02e87e811577b37da439edf172bee853",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
