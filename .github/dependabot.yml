@@ -8,6 +8,10 @@ updates:
     directory: /gemfiles/runtime
     schedule:
       interval: weekly
+  - package-ecosystem: bundler
+    directory: /gemfiles/release
+    schedule:
+      interval: weekly
   - package-ecosystem: github-actions
     directory: /
     schedule:

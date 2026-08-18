@@ -4,21 +4,269 @@ on:
   release:
     types: [published]
 
+permissions: {}
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
 jobs:
-  release:
+  verify:
+    name: Verify release commit
+    runs-on: ubuntu-24.04
     permissions:
-      contents: write
-      id-token: write
-
-    environment: release
-
-    runs-on: ubuntu-latest
-
+      contents: read
+    env:
+      BUNDLE_FROZEN: "true"
+      BUNDLE_GEMFILE: Gemfile
     steps:
-    - uses: actions/checkout@v5
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-        ruby-version: 3.4.4
-    - uses: rubygems/release-gem@v1
+      - name: Check out release commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Verify release ref
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: "3.4.10"
+          bundler: "4.0.6"
+
+      - name: Install frozen dependencies
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Run complete verification
+        run: bundle exec rake
+
+      - name: Validate locked release toolchain
+        run: bundle exec ruby script/validate_release_toolchain.rb
+
+  build:
+    name: Build gem
+    needs: verify
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      filename: ${{ steps.build.outputs.filename }}
+      sha256: ${{ steps.build.outputs.sha256 }}
+      tool-gemfile-sha256: ${{ steps.toolchain.outputs.gemfile-sha256 }}
+      tool-lock-sha256: ${{ steps.toolchain.outputs.lock-sha256 }}
+    steps:
+      - name: Check out release commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: "3.4.10"
+          bundler: "4.0.6"
+
+      - name: Build and validate gem
+        id: build
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+          version="$(ruby -Ilib -rmarcel/version -e 'print Marcel::VERSION')"
+          [[ "$version" =~ ^[0-9]+([.][0-9A-Za-z]+)*$ ]]
+          test "$RELEASE_TAG" = "v$version"
+
+          filename="marcel-$version.gem"
+          mkdir pkg
+          gem build marcel.gemspec --output "pkg/$filename"
+
+          ruby -rrubygems/package -e '
+            path, expected_version = ARGV
+            expected_files = %w[
+              APACHE-LICENSE
+              MIT-LICENSE
+              README.md
+              SECURITY.md
+              lib/marcel.rb
+              lib/marcel/magic.rb
+              lib/marcel/magic/definitions.rb
+              lib/marcel/mime_type.rb
+              lib/marcel/mime_type/definitions.rb
+              lib/marcel/tables.rb
+              lib/marcel/version.rb
+            ].sort
+            package = Gem::Package.new(path)
+            package.verify
+            spec = package.spec
+            valid_identity = spec.name == "marcel" &&
+              spec.version == Gem::Version.new(expected_version) &&
+              spec.platform == Gem::Platform::RUBY &&
+              File.basename(path) == spec.full_name + ".gem"
+            abort "unexpected gem identity: #{spec.full_name}" unless valid_identity
+            abort "unexpected runtime dependencies" unless spec.runtime_dependencies.empty?
+            abort "unexpected gem executables" unless spec.executables.empty?
+            abort "unexpected gem extensions" unless spec.extensions.empty?
+            abort "unexpected gem manifest" unless spec.files.sort == expected_files && package.contents.sort == expected_files
+            expected_files.each do |entry|
+              abort "package source is missing or linked: #{entry}" unless File.file?(entry) && !File.symlink?(entry)
+            end
+          ' "pkg/$filename" "$version"
+
+          sha256="$(sha256sum "pkg/$filename" | cut -d ' ' -f 1)"
+          printf 'filename=%s\nsha256=%s\n' "$filename" "$sha256" >> "$GITHUB_OUTPUT"
+          printf 'Gem: %s\n\nSHA-256: %s\n' "$filename" "$sha256" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Validate locked release toolchain
+        id: toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ruby script/validate_release_toolchain.rb
+
+          gemfile_sha256="$(sha256sum gemfiles/release/Gemfile | cut -d ' ' -f 1)"
+          lock_sha256="$(sha256sum gemfiles/release/Gemfile.lock | cut -d ' ' -f 1)"
+          printf 'gemfile-sha256=%s\nlock-sha256=%s\n' "$gemfile_sha256" "$lock_sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Upload exact gem
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: marcel-gem
+          path: pkg/${{ steps.build.outputs.filename }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload locked release toolchain
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: marcel-release-toolchain
+          path: |
+            gemfiles/release/Gemfile
+            gemfiles/release/Gemfile.lock
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish approved gem
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: release
+      url: ${{ github.event.release.html_url }}
+    permissions:
+      contents: read
+      id-token: write # RubyGems trusted publishing and Sigstore signing
+    env:
+      GEM_FILENAME: ${{ needs.build.outputs.filename }}
+      GEM_SHA256: ${{ needs.build.outputs.sha256 }}
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+      TOOL_GEMFILE_SHA256: ${{ needs.build.outputs.tool-gemfile-sha256 }}
+      TOOL_LOCK_SHA256: ${{ needs.build.outputs.tool-lock-sha256 }}
+      BUNDLE_GEMFILE: ${{ github.workspace }}/release-toolchain/Gemfile
+      BUNDLE_FROZEN: "true"
+      BUNDLE_DEPLOYMENT: "true"
+      BUNDLE_PATH: vendor/release-bundle
+    steps:
+      - name: Download built gem
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: marcel-gem
+          path: pkg
+
+      - name: Download locked release toolchain
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: marcel-release-toolchain
+          path: release-toolchain
+
+      - name: Verify locked release toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          [[ "$TOOL_GEMFILE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$TOOL_LOCK_SHA256" =~ ^[0-9a-f]{64}$ ]]
+
+          shopt -s nullglob dotglob
+          files=(release-toolchain/*)
+          test "${#files[@]}" -eq 2
+          test -f release-toolchain/Gemfile
+          test ! -L release-toolchain/Gemfile
+          test -f release-toolchain/Gemfile.lock
+          test ! -L release-toolchain/Gemfile.lock
+          printf '%s  %s\n' "$TOOL_GEMFILE_SHA256" release-toolchain/Gemfile | sha256sum --check --strict
+          printf '%s  %s\n' "$TOOL_LOCK_SHA256" release-toolchain/Gemfile.lock | sha256sum --check --strict
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: "3.4.10"
+          bundler: "4.0.6"
+
+      - name: Install locked release toolchain
+        shell: bash
+        run: bundle install
+
+      - name: Verify exact gem
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          [[ "$GEM_FILENAME" =~ ^marcel-[0-9]+([.][0-9A-Za-z]+)*[.]gem$ ]]
+          [[ "$GEM_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          version="${RELEASE_TAG#v}"
+          test "$RELEASE_TAG" = "v$version"
+          test "$GEM_FILENAME" = "marcel-$version.gem"
+
+          shopt -s nullglob dotglob
+          files=(pkg/*)
+          test "${#files[@]}" -eq 1
+          test "${files[0]}" = "pkg/$GEM_FILENAME"
+          test -f "pkg/$GEM_FILENAME"
+          test ! -L "pkg/$GEM_FILENAME"
+          printf '%s  %s\n' "$GEM_SHA256" "pkg/$GEM_FILENAME" | sha256sum --check --strict
+
+          ruby -rrubygems/package -e "
+            path, expected_version = ARGV
+            spec = Gem::Package.new(path).spec
+            valid = spec.name == 'marcel' &&
+              spec.version == Gem::Version.new(expected_version) &&
+              spec.platform == Gem::Platform::RUBY &&
+              File.basename(path) == spec.full_name + '.gem'
+            abort('unexpected gem identity: ' + spec.full_name) unless valid
+          " "pkg/$GEM_FILENAME" "$version"
+
+          gem help push | grep -Fq -- '--attestation FILE'
+
+      - name: Sign exact gem
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundle exec sigstore-cli sign "pkg/$GEM_FILENAME" \
+            --bundle "pkg/$GEM_FILENAME.sigstore.json"
+          test -s "pkg/$GEM_FILENAME.sigstore.json"
+
+      - name: Configure RubyGems trusted publishing
+        uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
+
+      - name: Publish exact gem with attestation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s  %s\n' "$GEM_SHA256" "pkg/$GEM_FILENAME" | sha256sum --check --strict
+          gem push "pkg/$GEM_FILENAME" \
+            --host https://rubygems.org \
+            --attestation "pkg/$GEM_FILENAME.sigstore.json"
