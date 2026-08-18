@@ -1,0 +1,21 @@
+lib/marcel/mime_type.rb
+  s_9c333a204464a9::t_28d62c7a803a94 6-9,30-36,90-98
+test/declared_type_test.rb
+  s_9c333a204464a9::t_28d62c7a803a94 22-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ac3580eebc6c7ce6da37453d6a236b1dbc9cc154",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
