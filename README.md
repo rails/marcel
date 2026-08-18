@@ -5,11 +5,27 @@ Marcel chooses the most appropriate content type for a file by inspecting its co
 Marcel checks, in order:
 
 1. The "magic bytes" sniffed from the file contents.
-2. The declared type, typically provided in a Content-Type header on an uploaded file, unless it's the `application/octet-stream` default.
+2. The declared type, typically provided in a Content-Type header on an uploaded file, if it is a valid single media type other than the `application/octet-stream` default.
 3. The filename extension.
-4. Safe fallback to the indeterminate `application/octet-stream` default.
+4. Conservative fallback to the indeterminate `application/octet-stream` default.
 
-At each step, the most specific MIME subtype is selected. This allows the declared type and file extension to refine the parent type sniffed from the file contents, but not conflict with it. For example, if "file.csv" has declared type `text/plain`, `text/csv` is returned since it's a more specific subtype of `text/plain`. Similarly, Adobe Illustrator files are PDFs internally, so magic byte sniffing indicates `application/pdf` which is refined to `application/illustrator` by the `ai` file extension. But a PDF named "image.png" will still be detected as `application/pdf` since `image/png` is not a subtype.
+At each step, the most specific MIME subtype is selected. This allows the declared type and file extension to refine the parent type sniffed from the file contents, but not conflict with it. For example, if "file.csv" has declared type `text/plain`, `text/csv` is returned since it's a more specific subtype of `text/plain`. Similarly, Adobe Illustrator files are PDFs internally, so magic byte sniffing indicates `application/pdf` which is refined to `application/illustrator` by the `ai` file extension. But a PDF named "image.png" will still be detected as `application/pdf` since `image/png` is not a subtype. Specificity is based on MIME taxonomy, not proof that a file conforms to the selected type; see Security considerations below.
+
+Declared types may include parameters and surrounding HTTP whitespace. As a deliberate compatibility recovery, Marcel tolerates a single trailing semicolon. It ignores other malformed and comma-separated declared types rather than choosing one value from a list.
+
+## Security considerations
+
+Marcel is a best-effort file type labeler, not a file validator or a security boundary. The declared type and filename are caller-provided hints. A syntactically valid but unregistered declared type may be returned as-is when content magic does not conflict with it.
+
+When content magic identifies only a generic container such as ZIP, Marcel may refine that result from those hints without inspecting archive members. It does not verify format conformance, archive contents, or the presence or absence of macros. Likewise, `Marcel::Magic#text?` and `#image?` describe MIME taxonomy, not whether content is safe.
+
+Do not use Marcel's result by itself to decide whether content is safe to execute, parse with privileged features, or render inline. Apply the controls required by the consuming parser or renderer independently of the detected label.
+
+Magic rules inspect bounded samples, so results can differ when a caller provides only a prefix. HTML detection recognizes document-opening `<html>` and `<!DOCTYPE html>` markers, not every fragment that can contain active markup. A result other than `text/html` is therefore not proof that the bytes are safe markup.
+
+Serve untrusted uploads as attachments, restrict inline rendering to a small vetted allowlist, or isolate them on a separate untrusted origin. Also set an explicit `Content-Type` from a trusted source and `X-Content-Type-Options: nosniff`; those headers do not make correctly labelled active content safe to render inline. Rails Active Storage applies separate content-type and disposition controls when serving blobs. Call `Marcel::Magic.by_magic` directly when caller-provided filename and declared-type hints need to be evaluated separately from content magic.
+
+Callers should apply their normal request and metadata size limits before invoking Marcel. Declared MIME types larger than 8 KiB are ignored. Content IOs must support `rewind`; buffer pipes and sockets before detection.
 
 ## Usage
 
@@ -35,7 +51,7 @@ Marcel::MimeType.for extension: ".pdf"
 Marcel::MimeType.for Pathname.new("unrecognisable-data"), name: "example", declared_type: "image/png"
 #  => "image/png"
 
-# Safe fallback to application/octet-stream
+# Conservative fallback to application/octet-stream
 Marcel::MimeType.for StringIO.new(File.read "unrecognisable-data")
 #  => "application/octet-stream"
 ```
@@ -50,9 +66,11 @@ Marcel::MimeType.for name: "file.customtxt"
 #  => "text/custom"
 ```
 
+Registration mutates a process-global registry. Add custom types during single-threaded application boot, before concurrent detection begins. Extension collisions replace the existing mapping, and removing the custom type does not restore a mapping it replaced.
+
 ## Motivation
 
-Marcel was extracted from Basecamp's file detection heuristics. The aim is provide sensible, safe, "do what I expect" results for typical file handling. Test fixtures have been added for many common file types, including those typically encountered by Basecamp.
+Marcel was extracted from Basecamp's file detection heuristics. The aim is to provide sensible, conservative, "do what I expect" results for typical file handling. Test fixtures have been added for many common file types, including those typically encountered by Basecamp.
 
 
 ## Contributing
