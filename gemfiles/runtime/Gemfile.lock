@@ -1,0 +1,25 @@
+PATH
+  remote: ../..
+  specs:
+    marcel (1.2.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (5.26.1)
+    rack (3.2.7)
+    rake (13.4.2)
+
+PLATFORMS
+  arm64-darwin-27
+  ruby
+
+DEPENDENCIES
+  bundler (>= 1.7)
+  marcel!
+  minitest (~> 5.11)
+  rack (>= 2)
+  rake (>= 13.0)
+
+BUNDLED WITH
+   2.4.22

@@ -1,36 +1,86 @@
 name: CI
 on: [push, pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     continue-on-error: ${{ matrix.experimental }}
+    env:
+      BUNDLE_FROZEN: "true"
+      BUNDLE_GEMFILE: ${{ matrix.gemfile || 'Gemfile' }}
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["2.7", "3.0", "3.1", "3.2", "3.3", "3.4", "4.0"]
+        ruby: ["3.2", "3.3", "3.4", "4.0"]
         experimental: [false]
         include:
+        - ruby: "2.7"
+          experimental: false
+          gemfile: gemfiles/runtime/Gemfile
+          task: test:runtime
+        - ruby: "3.0"
+          experimental: false
+          gemfile: gemfiles/runtime/Gemfile
+          task: test:runtime
+        - ruby: "3.1"
+          experimental: false
+          gemfile: gemfiles/runtime/Gemfile
+          task: test:runtime
         - ruby: head
           experimental: true
+          bundler: default
+          gemfile: gemfiles/runtime/Gemfile
+          skip_cache: true
+          task: test:runtime
         - ruby: jruby
           experimental: true
+          gemfile: gemfiles/runtime/Gemfile
+          task: test:runtime
         - ruby: jruby-head
           experimental: true
+          gemfile: gemfiles/runtime/Gemfile
+          task: test:runtime
         - ruby: truffleruby
           experimental: true
+          gemfile: gemfiles/runtime/Gemfile
+          task: test:runtime
         - ruby: truffleruby-head
           experimental: true
+          gemfile: gemfiles/runtime/Gemfile
+          task: test:runtime
 
     name: ${{ matrix.ruby }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
+          bundler: ${{ matrix.bundler || 'Gemfile.lock' }}
+          bundler-cache: ${{ !matrix.skip_cache }}
+
+      - name: Install Ruby head dependencies
+        if: matrix.ruby == 'head'
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundler_version="$(ruby -rbundler -e 'print Bundler::VERSION')"
+          [[ "$bundler_version" =~ ^[0-9]+([.][0-9]+)*([.]dev)?$ ]]
+          printf 'BUNDLER_VERSION=%s\n' "$bundler_version" >> "$GITHUB_ENV"
+          BUNDLER_VERSION="$bundler_version" bundle install
 
       - name: Run tests
-        run: bundle exec rake
+        env:
+          RAKE_TASK: ${{ matrix.task || 'default' }}
+        run: bundle exec rake "$RAKE_TASK"
