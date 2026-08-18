@@ -1,0 +1,100 @@
+data/custom.xml
+  s_9c333a204464a9::t_b9b14d2573425d 13
+  s_e1bb0a5a5f768f::t_1ea0b3caea85a9 13
+lib/marcel/tables.rb
+  s_9c333a204464a9::t_b9b14d2573425d 2545
+  s_e1bb0a5a5f768f::t_6e581baceeee77 2545
+lib/marcel/magic.rb
+  s_9c333a204464a9::t_a2a64330c1fb79 252-253
+  s_9c333a204464a9::t_e09e768401efee 74-77,85-86,119-131,143,168,172,190-197,205-207
+  s_9c333a204464a9::t_b9c42d920aedc5 135-138,142,144-155,158,166-167,170-171,185,189,200,203-204,208-234,236-246,249
+test/generate_tables_test.rb
+  s_9c333a204464a9::t_1a539fd21427eb 316-350
+test/html_magic_test.rb
+  s_9c333a204464a9::t_1a539fd21427eb 2-3,76-171,220-227
+  s_9c333a204464a9::t_b9b14d2573425d 1,4-75,172-219,228
+  s_e1bb0a5a5f768f::t_1ea0b3caea85a9 1,4-75,172-219,228
+lib/marcel/magic/definitions.rb
+  s_9c333a204464a9::t_1a539fd21427eb 1-36
+script/generate_tables.rb
+  s_9c333a204464a9::t_1a539fd21427eb 375-381,406-411
+test/mime_type_test.rb
+  s_9c333a204464a9::t_e09e768401efee 21-32,53-58
+  s_9c333a204464a9::t_64ab8d5edbe67a 59
+test/extension_test.rb
+  s_9c333a204464a9::t_e09e768401efee 12-27
+test/magic_test.rb
+  s_9c333a204464a9::t_e09e768401efee 35-44,167-194
+  s_9c333a204464a9::t_b9c42d920aedc5 195-357
+  s_9c333a204464a9::t_b33563b848e7bb 358
+test/name_test.rb
+  s_9c333a204464a9::t_e09e768401efee 5-29
+lib/marcel/mime_type.rb
+  s_9c333a204464a9::t_e09e768401efee 83
+  s_9c333a204464a9::t_28d62c7a803a94 6-9,30-36,90-98
+  s_e1bb0a5a5f768f::t_409de23b5710d8 7-9,30-36,90,92-98
+test/declared_type_test.rb
+  s_9c333a204464a9::t_28d62c7a803a94 22-106
+  s_e1bb0a5a5f768f::t_409de23b5710d8 22-96
+SECURITY.md
+  s_9c333a204464a9::t_d7e6170ed98736 1-7
+  s_e1bb0a5a5f768f::t_77e96b379be938 6-7
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 1-4
+README.md
+  s_9c333a204464a9::t_7cd169547278c0 18,20-26
+  s_9c333a204464a9::t_d7e6170ed98736 8,10,12-17,19,27-28,54,69-70,73
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 8,10,12-17,19,54,73
+test/package_test.rb
+  s_9c333a204464a9::t_f919b6b037afa9 1-66,82-91
+  s_9c333a204464a9::t_a14f5d1a76cb77 67-81
+marcel.gemspec
+  s_9c333a204464a9::t_b0656bc480debf 15,20
+Gemfile
+  s_9c333a204464a9::t_a14f5d1a76cb77 8-9
+gemfiles/runtime/Gemfile
+  s_9c333a204464a9::t_a14f5d1a76cb77 1-3
+.github/dependabot.yml
+  s_9c333a204464a9::t_a14f5d1a76cb77 1-10,15-18
+  s_9c333a204464a9::t_9bb94313d247f3 11-14
+.github/workflows/ci.yml
+  s_9c333a204464a9::t_a14f5d1a76cb77 3-10,13,15-17,21,24-35,40-41,44-45,48-49,52-53,58-60,63,69-71
+  s_9c333a204464a9::t_9bb94313d247f3 72-94
+Rakefile
+  s_9c333a204464a9::t_a14f5d1a76cb77 14-18
+Gemfile.lock
+  s_9c333a204464a9::t_efa3565c008009 1-106
+gemfiles/runtime/Gemfile.lock
+  s_9c333a204464a9::t_08e434395a7987 1-31
+gemfiles/release/Gemfile
+  s_9c333a204464a9::t_9bb94313d247f3 1-3
+.github/workflows/release.yml
+  s_9c333a204464a9::t_9bb94313d247f3 7-12,14-16,18-36,38-42,44-45,47-63,65-272
+script/validate_release_toolchain.rb
+  s_9c333a204464a9::t_9bb94313d247f3 1-69
+gemfiles/release/Gemfile.lock
+  s_9c333a204464a9::t_daeb8f46553e10 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2089caef6a6344154c592a1aa446e23d5781132a",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    },
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
