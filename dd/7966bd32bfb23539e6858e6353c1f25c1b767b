@@ -1,0 +1,33 @@
+SECURITY.md
+  s_9c333a204464a9::t_d7e6170ed98736 1-7
+  s_e1bb0a5a5f768f::t_77e96b379be938 6-7
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 1-4
+README.md
+  s_9c333a204464a9::t_7cd169547278c0 18,20-26
+  s_9c333a204464a9::t_d7e6170ed98736 8,10,12-17,19,27-28,54,69-70,73
+  s_e1bb0a5a5f768f::t_a3f84b5db8ca83 8,10,12-17,19,54,73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dd7966bd32bfb23539e6858e6353c1f25c1b767b",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    },
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
