@@ -1,0 +1,45 @@
+script/generate_tables.rb
+  s_9c333a204464a9::t_1a539fd21427eb 375-381,406-411
+lib/marcel/magic.rb
+  s_9c333a204464a9::t_a2a64330c1fb79 169-170
+lib/marcel/magic/definitions.rb
+  s_9c333a204464a9::t_1a539fd21427eb 1-12,17-39
+  s_9c333a204464a9::t_b6243358c19a32 13-16
+data/custom.xml
+  s_e1bb0a5a5f768f::t_1ea0b3caea85a9 13
+README.md
+  s_9c333a204464a9::t_19d5f72a7f25e3 60
+lib/marcel/tables.rb
+  s_e1bb0a5a5f768f::t_6e581baceeee77 2545
+test/generate_tables_test.rb
+  s_9c333a204464a9::t_1a539fd21427eb 352-386
+test/html_magic_test.rb
+  s_e1bb0a5a5f768f::t_1ea0b3caea85a9 1,4-68,72-78,179-226,235
+  s_9c333a204464a9::t_b6243358c19a32 69-71,80-82,84-85,88
+  s_9c333a204464a9::t_1a539fd21427eb 2-3,79,86-87,89-178,227-234
+  s_9c333a204464a9::t_cd336eecdf56a8 83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9db5f70124439746ec208413a4ffed90a0f69246",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": null
+    },
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
