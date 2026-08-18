@@ -1,7 +1,9 @@
 data/custom.xml
   s_9c333a204464a9::t_b9b14d2573425d 13
+  s_e1bb0a5a5f768f::t_1ea0b3caea85a9 13
 lib/marcel/tables.rb
   s_9c333a204464a9::t_b9b14d2573425d 2545
+  s_e1bb0a5a5f768f::t_6e581baceeee77 2545
 lib/marcel/magic.rb
   s_9c333a204464a9::t_a2a64330c1fb79 169-170
 test/generate_tables_test.rb
@@ -9,6 +11,7 @@ test/generate_tables_test.rb
 test/html_magic_test.rb
   s_9c333a204464a9::t_1a539fd21427eb 2-3,76-171,220-227
   s_9c333a204464a9::t_b9b14d2573425d 1,4-75,172-219,228
+  s_e1bb0a5a5f768f::t_1ea0b3caea85a9 1,4-75,172-219,228
 lib/marcel/magic/definitions.rb
   s_9c333a204464a9::t_1a539fd21427eb 1-36
 script/generate_tables.rb
@@ -25,6 +28,14 @@ script/generate_tables.rb
         "tool": "codex",
         "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
         "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    },
+    "s_e1bb0a5a5f768f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1ffe88b-e4e3-405b-b5d5-0432969674e5",
+        "model": "claude-fable-5"
       },
       "human_author": "Jeremy Daer <jeremy@37signals.com>"
     }
