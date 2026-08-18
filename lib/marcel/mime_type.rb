@@ -3,6 +3,10 @@
 module Marcel
   class MimeType
     BINARY = "application/octet-stream"
+    MAX_DECLARED_TYPE_BYTES = 8 * 1024
+    TOKEN = "[!#$%&'*+\\-.^_`|~0-9A-Za-z]+"
+    QUOTED_STRING = '"(?:[\t\x20\x21\x23-\x5B\x5D-\x7E\x80-\xFF]|\\\\[\t\x20-\x7E\x80-\xFF])*"'
+    MEDIA_TYPE = %r{\A(#{TOKEN}/#{TOKEN})(?:[ \t]*;[ \t]*#{TOKEN}=(?:#{TOKEN}|#{QUOTED_STRING}))*(?:[ \t]*;[ \t]*)?\z}n
 
     class << self
       def extend(type, extensions: [], parents: [], magic: nil)
@@ -23,7 +27,13 @@ module Marcel
       #
       # The most appropriate type is determined by the following:
       # * type declared by binary magic number data
-      # * type declared by the first of file name, file extension, or declared MIME type
+      # * valid declared MIME type, unless it is application/octet-stream
+      # * type inferred from the file name or extension
+      #
+      # A later candidate is used only if it is more specific than the type already found.
+      #
+      # The result is a best-effort label, not validation that the file is safe or conforms to
+      # the returned type. Treat +name+ and +declared_type+ as hints from their respective sources.
       #
       # If no type can be determined, then +application/octet-stream+ is returned.
       def for(pathname_or_io = nil, name: nil, extension: nil, declared_type: nil)
@@ -77,10 +87,15 @@ module Marcel
         end
 
         def parse_media_type(content_type)
-          if content_type
-            result = content_type.downcase.split(/[;,\s]/, 2).first
-            result if result && result.index("/")
-          end
+          return unless content_type
+          return if content_type.bytesize > MAX_DECLARED_TYPE_BYTES
+
+          content_type = content_type.dup.force_encoding(Encoding::BINARY)
+          content_type.sub!(/\A[ \t\r\n]+/n, "")
+          content_type.sub!(/[ \t\r\n]+\z/n, "")
+
+          media_type = MEDIA_TYPE.match(content_type)
+          media_type[1].downcase.force_encoding(Encoding::UTF_8) if media_type
         end
 
         # For some document types (notably Microsoft Office) we recognise the main content
