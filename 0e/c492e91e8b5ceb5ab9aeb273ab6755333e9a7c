@@ -1,0 +1,25 @@
+test/package_test.rb
+  s_9c333a204464a9::t_52bee56a027974 76
+  s_9c333a204464a9::t_bb9b7e4ce516e5 5-75,77-86
+  s_9c333a204464a9::t_8e10c70290b774 2-4
+  s_9c333a204464a9::t_7679018df9168a 87
+  s_9c333a204464a9::t_7b5c234e81ac07 1
+marcel.gemspec
+  s_9c333a204464a9::t_a1a04bcd269f6f 15,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0ec492e91e8b5ceb5ab9aeb273ab6755333e9a7c",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": null
+    }
+  }
+}
