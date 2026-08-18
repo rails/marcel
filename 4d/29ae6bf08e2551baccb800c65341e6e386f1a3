@@ -1,0 +1,21 @@
+test/package_test.rb
+  s_9c333a204464a9::t_f919b6b037afa9 1-76
+marcel.gemspec
+  s_9c333a204464a9::t_b0656bc480debf 15,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4d29ae6bf08e2551baccb800c65341e6e386f1a3",
+  "prompts": {},
+  "sessions": {
+    "s_9c333a204464a9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01245-839a-7e62-8d22-6b14a437f1bf",
+        "model": "gpt-daybreak-blue-latest"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
