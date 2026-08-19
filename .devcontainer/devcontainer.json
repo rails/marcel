@@ -3,7 +3,7 @@
 {
 	"name": "Marcel",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "ghcr.io/rails/devcontainer/images/ruby:3.4.6",
+	"image": "ghcr.io/rails/devcontainer/images/ruby:3.4.6@sha256:4906355f9b25276ccd9cf29f690b2af7d3862dc5b683a045aed6fb3d5ad3a4d6",
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	}
