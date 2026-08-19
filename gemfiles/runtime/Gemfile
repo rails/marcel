@@ -1,4 +1,3 @@
 source "https://rubygems.org"
 
-# Ruby 2.7 uses Bundler 2.4, whose lock format does not enforce checksums.
 gemspec path: "../.."
