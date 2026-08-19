@@ -11,6 +11,11 @@ Rake::TestTask.new :test do |t|
   t.test_files = FileList['test/**/*_test.rb']
 end
 
+Rake::TestTask.new "test:runtime" do |t|
+  t.libs << "test"
+  t.test_files = FileList['test/**/*_test.rb'].exclude('test/generate_tables_test.rb')
+end
+
 namespace :test do
   task tables: [ :tables, :test ]
   task update: [ :update, :test ]

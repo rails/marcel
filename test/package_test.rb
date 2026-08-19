@@ -65,6 +65,13 @@ class Marcel::PackageTest < Marcel::TestCase
     assert_empty specification.runtime_dependencies
   end
 
+  test "locks runtime dependencies with the Bundler supported by Ruby 2.7" do
+    lock = File.binread(File.join(PROJECT_ROOT, "gemfiles/runtime/Gemfile.lock"))
+    assert_equal "https://rubygems.org/", lock[/^GEM\n  remote: (.+)$/, 1]
+    refute_match(/^CHECKSUMS$/, lock)
+    assert_match(/\nBUNDLED WITH\n   2\.4\.22\n?\z/, lock)
+  end
+
   test "requires the oldest Ruby exercised by CI" do
     assert specification.required_ruby_version.satisfied_by?(Gem::Version.new("2.7.0"))
     refute specification.required_ruby_version.satisfied_by?(Gem::Version.new("2.6.10"))
