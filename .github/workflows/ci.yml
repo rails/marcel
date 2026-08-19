@@ -18,18 +18,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4", "4.0"]
+        ruby: ["3.3", "3.4", "4.0"]
         experimental: [false]
+        gemfile: [Gemfile]
         include:
-        - ruby: "2.7"
-          experimental: false
-          gemfile: gemfiles/runtime/Gemfile
-          task: test:runtime
-        - ruby: "3.0"
-          experimental: false
-          gemfile: gemfiles/runtime/Gemfile
-          task: test:runtime
-        - ruby: "3.1"
+        - ruby: "3.3"
+          label: 3.3 runtime
           experimental: false
           gemfile: gemfiles/runtime/Gemfile
           task: test:runtime
@@ -56,7 +50,7 @@ jobs:
           gemfile: gemfiles/runtime/Gemfile
           task: test:runtime
 
-    name: ${{ matrix.ruby }}
+    name: ${{ matrix.label || matrix.ruby }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
