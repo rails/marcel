@@ -1,0 +1,21 @@
+test/fixtures/name/application/vnd.google-apps.spreadsheet/gsheet.gsheet
+  s_a61b5f7975e3f5::t_ebdd81b010c5bf 1
+lib/marcel/tables.rb
+  s_a61b5f7975e3f5::t_839d0ac1a9e9ab 1500,2278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "510d54f463e493df0d12a6b39cece0714224f3f1",
+  "prompts": {},
+  "sessions": {
+    "s_a61b5f7975e3f5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17d21429-20ac-4604-b35b-91764e6820b9",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
