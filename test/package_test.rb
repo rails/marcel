@@ -15,6 +15,7 @@ class Marcel::PackageTest < Marcel::TestCase
     lib/marcel.rb
     lib/marcel/magic.rb
     lib/marcel/magic/definitions.rb
+    lib/marcel/magic/zip.rb
     lib/marcel/mime_type.rb
     lib/marcel/mime_type/definitions.rb
     lib/marcel/tables.rb
