@@ -32,6 +32,16 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     assert Marcel::Magic.new('image/x-xbitmap').text?
   end
 
+  test ".child? handles custom parent cycles" do
+    Marcel::Magic.add('application/x-cycle-a', parents: 'application/x-cycle-b')
+    Marcel::Magic.add('application/x-cycle-b', parents: 'application/x-cycle-a')
+
+    refute Marcel::Magic.child?('application/x-cycle-a', 'application/zip')
+  ensure
+    Marcel::Magic.remove('application/x-cycle-a')
+    Marcel::Magic.remove('application/x-cycle-b')
+  end
+
   test "no Ruby 3.4 frozen string warnings with StringIO" do
     # Ruby 3.4 warns about code that will break when frozen string literals become default
     # This test ensures marcel handles StringIO with frozen strings correctly
@@ -152,6 +162,234 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     io3 = StringIO.new("ROOTXXXX")
     refute Marcel::Magic.send(:magic_match_io, io3, test_rules, buffer),
            "Should not match when parent matches but no child matches"
+  end
+
+  test "negative offsets do not scan from the start of short data" do
+    rules = [[-64, %r{\A<html>}]]
+
+    refute Marcel::Magic.send(:magic_match_io, StringIO.new("<html>"), rules, "".b)
+  end
+
+  test "negative offsets are skipped when the IO has no size" do
+    io = Class.new do
+      def initialize(data)
+        @io = StringIO.new(data)
+      end
+
+      def read(*args)
+        @io.read(*args)
+      end
+
+      def seek(*args)
+        @io.seek(*args)
+      end
+
+      def rewind
+        @io.rewind
+      end
+    end.new("x" * 64 + "</html>")
+
+    rules = [[-64, %r{</html>\z}]]
+
+    refute Marcel::Magic.send(:magic_match_io, io, rules, "".b)
+  end
+
+  test "non-seekable IO consumes exact offsets despite short reads" do
+    io = Class.new do
+      def initialize(data)
+        @io = StringIO.new(data)
+        @first_read = true
+      end
+
+      def read(length)
+        length = 1 if @first_read
+        @first_read = false
+        @io.read(length)
+      end
+
+      def rewind
+        @first_read = true
+        @io.rewind
+      end
+    end.new("Xftypavif")
+
+    assert_equal "application/octet-stream", Marcel::MimeType.for(io)
+  end
+
+  test "two-argument non-seekable IO consumes exact offsets despite short reads" do
+    io = Class.new do
+      def initialize(data)
+        @io = StringIO.new(data)
+      end
+
+      def read(length, buffer)
+        chunk = @io.read([length, 1].min)
+        chunk ? buffer.replace(chunk) : nil
+      end
+
+      def rewind
+        @io.rewind
+      end
+    end.new("Xftypavif")
+
+    assert_equal "application/octet-stream", Marcel::MimeType.for(io)
+  end
+
+  test "custom IO samples are matched as binary data" do
+    one_argument_reader = Class.new do
+      def initialize(data)
+        @io = StringIO.new(data)
+      end
+
+      def read(length)
+        @io.read(length)&.force_encoding(Encoding::UTF_8)
+      end
+
+      def rewind
+        @io.rewind
+      end
+    end
+
+    two_argument_reader = Class.new do
+      def initialize(data)
+        @io = StringIO.new(data)
+      end
+
+      def read(length, buffer)
+        chunk = @io.read(length)
+        chunk ? buffer.replace(chunk).force_encoding(Encoding::UTF_8) : nil
+      end
+
+      def rewind
+        @io.rewind
+      end
+    end
+
+    [one_argument_reader, two_argument_reader].each do |reader|
+      assert_equal "text/html", Marcel::MimeType.for(reader.new("<html><body>café</body></html>"))
+      assert_equal "image/png", Marcel::MimeType.for(reader.new(File.binread(files("magic/image/png/png.png"))))
+    end
+  end
+
+  test "non-seekable IO skips offset rules at early EOF" do
+    io = Class.new do
+      def initialize(data)
+        @io = StringIO.new(data)
+      end
+
+      def read(length)
+        @io.read([length, 1].min)
+      end
+
+      def rewind
+        @io.rewind
+      end
+    end.new("Xft")
+
+    rules = [[4, "ftypavif".b]]
+
+    refute Marcel::Magic.send(:magic_match_io, io, rules, "".b)
+  end
+
+  test "public magic matching rewinds after a read exception" do
+    io = Class.new do
+      def initialize
+        @io = StringIO.new("data")
+      end
+
+      def read(*_args)
+        @io.read(1)
+        raise IOError, "read failed"
+      end
+
+      def rewind
+        @io.rewind
+      end
+
+      def position
+        @io.pos
+      end
+    end.new
+
+    assert_raises(IOError) { Marcel::Magic.by_magic(io) }
+    assert_equal 0, io.position
+  end
+
+  test "a cleanup rewind failure does not mask a read failure" do
+    original_error = ArgumentError.new("original read failed")
+    io = Class.new do
+      def initialize(original_error)
+        @original_error = original_error
+        @rewinds = 0
+      end
+
+      def read(*)
+        raise @original_error
+      end
+
+      def rewind
+        @rewinds += 1
+        raise IOError, "cleanup rewind failed" if @rewinds > 1
+      end
+    end.new(original_error)
+
+    raised_error = assert_raises(ArgumentError) { Marcel::Magic.by_magic(io) }
+    assert_same original_error, raised_error
+  end
+
+  test "a cleanup rewind failure is preserved after successful matching" do
+    Marcel::Magic.add("application/x-cleanup-test", magic: [[0, "MATCH"]])
+    io = Class.new do
+      def initialize(data)
+        @io = StringIO.new(data)
+        @rewinds = 0
+      end
+
+      def read(*args)
+        @io.read(*args)
+      end
+
+      def rewind
+        @rewinds += 1
+        raise IOError, "cleanup rewind failed" if @rewinds == 3
+
+        @io.rewind
+      end
+    end.new("MATCH")
+
+    error = assert_raises(IOError) { Marcel::Magic.by_magic(io) }
+    assert_equal "cleanup rewind failed", error.message
+  ensure
+    Marcel::Magic.remove("application/x-cleanup-test")
+  end
+
+  test "public magic matching accepts Pathnames and closes their files" do
+    path_class = Class.new(Pathname) do
+      attr_reader :opened_files
+
+      def initialize(path)
+        super
+        @opened_files = []
+      end
+
+      def open(*arguments)
+        file = File.open(to_path, *arguments)
+        @opened_files << file
+        return file unless block_given?
+
+        begin
+          yield file
+        ensure
+          file.close
+        end
+      end
+    end
+    path = path_class.new(files("image.gif").to_s)
+
+    assert_equal "image/gif", Marcel::Magic.by_magic(path).type
+    assert_includes Marcel::Magic.all_by_magic(path).map(&:type), "image/gif"
+    assert_equal 2, path.opened_files.size
+    assert path.opened_files.all?(&:closed?)
   end
 
   test "complex nested structure with multiple levels" do
