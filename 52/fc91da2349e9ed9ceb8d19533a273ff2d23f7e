@@ -1,0 +1,40 @@
+test/zip_sniffing_test.rb
+  s_a61b5f7975e3f5::t_c6b1d20ea5ff00 142
+  s_a61b5f7975e3f5::t_788a73126bbc40 107-108
+  s_a61b5f7975e3f5::t_1675bb57189a73 75-76
+  s_a61b5f7975e3f5::t_859330a9e797b9 1-74,77-83,86-98,101-106,109-128,130-135,137-141,143-200
+  s_a61b5f7975e3f5::t_7eeca57a9773ab 84-85
+  s_a61b5f7975e3f5::t_23a4220a3ea769 136
+  s_a61b5f7975e3f5::t_50586319edf626 129
+  s_a61b5f7975e3f5::t_d5dd13fb10dfb2 99-100
+lib/marcel/magic.rb
+  s_a61b5f7975e3f5::t_48cd3b021213cd 255
+test/package_test.rb
+  s_a61b5f7975e3f5::t_6b44015c9b8cb9 18
+lib/marcel/magic/zip.rb
+  s_a61b5f7975e3f5::t_b65c929a0724d1 1-201
+lib/marcel/mime_type/definitions.rb
+  s_a61b5f7975e3f5::t_26508b1224ca85 14
+  s_a61b5f7975e3f5::t_957562a6688940 19-20
+  s_a61b5f7975e3f5::t_84e964ef8a9a37 26,28-29
+README.md
+  s_a61b5f7975e3f5::t_a7b239b911e358 20
+lib/marcel/mime_type.rb
+  s_a61b5f7975e3f5::t_9826758b36e7a0 50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "52fc91da2349e9ed9ceb8d19533a273ff2d23f7e",
+  "prompts": {},
+  "sessions": {
+    "s_a61b5f7975e3f5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17d21429-20ac-4604-b35b-91764e6820b9",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
