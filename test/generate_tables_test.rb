@@ -349,4 +349,39 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
     end
   end
 
+  test "keeps extensions but omits broad generated HTML magic" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="text/html">
+          <glob pattern="*.html" />
+          <magic><match type="string" value="&lt;html" offset="0:8192" /></magic>
+        </mime-type>
+        <mime-type type="application/xhtml+xml">
+          <glob pattern="*.xhtml" />
+          <magic><match type="string" value="&lt;html xmlns=" offset="0:8192" /></magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    Dir.mktmpdir("marcel-generator-test") do |directory|
+      xml_path = File.join(directory, "input.xml")
+      tables_path = File.join(directory, "tables.rb")
+      File.binwrite(xml_path, xml)
+
+      generated, errors, status = Open3.capture3(
+        RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+      )
+      assert status.success?, errors
+      File.binwrite(tables_path, generated)
+
+      verification = <<~'RUBY'
+        load ARGV.fetch(0)
+        abort unless Marcel::EXTENSIONS.fetch("html") == "text/html"
+        abort unless Marcel::EXTENSIONS.fetch("xhtml") == "application/xhtml+xml"
+        abort unless Marcel::MAGIC.none? { |type, _| type == "text/html" || type == "application/xhtml+xml" }
+      RUBY
+      _output, errors, status = Open3.capture3(RbConfig.ruby, "-e", verification, tables_path)
+      assert status.success?, errors
+    end
+  end
 end

@@ -166,3 +166,5 @@ module Marcel
     private_class_method :magic_match, :magic_match_io, :io_seek
   end
 end
+
+require "marcel/magic/definitions"

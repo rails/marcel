@@ -372,6 +372,13 @@ TYPE_RENAMES = {
   "image/bmp;format=compressed" => "image/bmp",
 }.freeze
 
+# Marcel registers stricter, bounded HTML and XHTML rules at runtime. Keeping Tika's broad
+# generated rules would make `require "marcel/magic"` alone retain the unsafe legacy matches.
+RUNTIME_DEFINED_MAGIC_TYPES = %w(
+  application/xhtml+xml
+  text/html
+).freeze
+
 extensions = {}
 types = {}
 magics = []
@@ -396,10 +403,12 @@ ARGV.each do |path|
         MimeData.extension($1, path)
       end
     end.compact
-    (mime/'magic').each do |magic|
-      priority = MimeData.priority(magic['priority'] || '50', type)
-      matches = get_matches(type, magic, unsupported_rules)
-      magics << [priority, type, matches]
+    unless RUNTIME_DEFINED_MAGIC_TYPES.include?(type)
+      (mime/'magic').each do |magic|
+        priority = MimeData.priority(magic['priority'] || '50', type)
+        matches = get_matches(type, magic, unsupported_rules)
+        magics << [priority, type, matches]
+      end
     end
     if !exts.empty?
       exts.each{|x|
