@@ -6,7 +6,11 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    minitest (5.26.1)
+    drb (2.2.3)
+    minitest (6.0.6)
+      drb (~> 2.0)
+      prism (~> 1.5)
+    prism (1.9.0)
     rack (3.2.7)
     rake (13.4.2)
 
@@ -17,7 +21,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (>= 1.7)
   marcel!
-  minitest (~> 5.11)
+  minitest (~> 6.0)
   rack (>= 2)
   rake (>= 13.0)
 
