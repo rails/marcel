@@ -1497,9 +1497,9 @@ module Marcel
     'application/vnd.geogebra.tool' => %w(ggt),
     'application/vnd.geometry-explorer' => %w(gex gre),
     'application/vnd.gmx' => %w(gmx),
+    'application/vnd.google-apps.spreadsheet' => %w(gsheet), # Google Sheets
     'application/vnd.google-earth.kml+xml' => %w(kml), # Keyhole Markup Language
     'application/vnd.google-earth.kmz' => %w(kmz),
-    'application/vnd.google-apps.spreadsheet' => %w(gsheet),
     'application/vnd.grafeq' => %w(gqf gqs),
     'application/vnd.groove-account' => %w(gac),
     'application/vnd.groove-help' => %w(ghf),
@@ -2275,6 +2275,7 @@ module Marcel
     'application/vnd.apple.pages' => %w(application/vnd.apple.iwork),
     'application/vnd.etsi.asic-e+zip' => %w(application/zip),
     'application/vnd.etsi.asic-s+zip' => %w(application/zip),
+    'application/vnd.google-apps.spreadsheet' => %w(application/json),
     'application/vnd.google-earth.kml+xml' => %w(application/xml),
     'application/vnd.google-earth.kmz' => %w(application/zip),
     'application/vnd.iptc.g2.newsmessage+xml' => %w(application/xml),
