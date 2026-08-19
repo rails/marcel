@@ -17,7 +17,7 @@ Declared types may include parameters and surrounding HTTP whitespace. As a deli
 
 Marcel is a best-effort file type labeler, not a file validator or a security boundary. The declared type and filename are caller-provided hints. A syntactically valid but unregistered declared type may be returned as-is when content magic does not conflict with it.
 
-When content magic identifies only a generic container such as ZIP, Marcel may refine that result from those hints without inspecting archive members. It does not verify format conformance, archive contents, or the presence or absence of macros. Likewise, `Marcel::Magic#text?` and `#image?` describe MIME taxonomy, not whether content is safe.
+When content magic identifies a ZIP-based container, Marcel reads the archive's central directory listing — a bounded read from the end of seekable content — to distinguish Office document families and their macro-enabled variants by catalogued part names such as `xl/vbaProject.bin`. It reads only member names, not member contents, and does not verify format conformance or archive contents. A non-macro label is not proof that macros are absent: unseekable or truncated content, malformed archives, and formats catalogued under other names skip this refinement, and hints may still refine the generic container type. Likewise, `Marcel::Magic#text?` and `#image?` describe MIME taxonomy, not whether content is safe.
 
 Do not use Marcel's result by itself to decide whether content is safe to execute, parse with privileged features, or render inline. Apply the controls required by the consuming parser or renderer independently of the detected label.
 
