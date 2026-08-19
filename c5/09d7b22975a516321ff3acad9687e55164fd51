@@ -1,0 +1,31 @@
+.github/workflows/ci.yml
+  s_a61b5f7975e3f5::t_323189385d7c1b 21,25-26
+  s_a61b5f7975e3f5::t_ebdc688491c54a 23
+  s_a61b5f7975e3f5::t_7ae164adb7ae56 53
+Gemfile
+  s_a61b5f7975e3f5::t_d8afedc7605461 3-4
+test/package_test.rb
+  s_a61b5f7975e3f5::t_e1e06c36622c5a 68,70-71,73-74,78-79
+marcel.gemspec
+  s_a61b5f7975e3f5::t_9ee45bbd96f680 20,22
+Gemfile.lock
+  s_a61b5f7975e3f5::t_d36a31fdf46081 12,21-23,76,83,89
+gemfiles/runtime/Gemfile.lock
+  s_a61b5f7975e3f5::t_81f3ceb9cf3608 9-13,18,24,28-35,37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c509d7b22975a516321ff3acad9687e55164fd51",
+  "prompts": {},
+  "sessions": {
+    "s_a61b5f7975e3f5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17d21429-20ac-4604-b35b-91764e6820b9",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
