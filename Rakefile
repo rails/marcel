@@ -1,7 +1,10 @@
 require 'bundler/gem_tasks'
+require 'fileutils'
 require 'rake/testtask'
+require 'rbconfig'
+require 'tempfile'
 
-task default: :test
+task default: [ :test, "tables:check" ]
 
 Rake::TestTask.new :test do |t|
   t.libs << "test"
@@ -38,17 +41,53 @@ task :types do
   end
 end
 
-desc "Download latest Tika data and update data tables"
+desc "Download pinned Tika data and update data tables"
 task update: [ "tika:download", "tables" ]
 
 desc "Generate data tables"
 task :tables do
-  sh "script/generate_tables.rb", "data/tika.xml", "data/custom.xml", out: "lib/marcel/tables.rb"
+  atomically_replace "lib/marcel/tables.rb" do |temporary_path|
+    generate_tables temporary_path
+  end
+end
+
+namespace :tables do
+  desc "Verify that committed data tables match their XML sources"
+  task :check do
+    Tempfile.create([ "marcel-tables", ".rb" ]) do |temporary|
+      temporary.close
+      generate_tables temporary.path
+
+      unless FileUtils.compare_file(temporary.path, "lib/marcel/tables.rb")
+        abort "lib/marcel/tables.rb is stale; run `bundle exec rake tables`"
+      end
+    end
+  end
 end
 
 namespace :tika do
-  desc "Download latest data/tika.xml"
+  desc "Download pinned data/tika.xml"
   task :download do
-    sh "script/download_tika_data.rb", out: "data/tika.xml"
+    atomically_replace "data/tika.xml" do |temporary_path|
+      sh "script/download_tika_data.rb", out: temporary_path
+    end
   end
+end
+
+def atomically_replace(destination)
+  mode = File.exist?(destination) ? File.stat(destination).mode & 0o777 : 0o644
+
+  Tempfile.create([ File.basename(destination), ".tmp" ], File.dirname(destination)) do |temporary|
+    temporary_path = temporary.path
+    temporary.close
+    yield temporary_path
+    File.chmod(mode, temporary_path)
+    File.rename(temporary_path, destination)
+  end
+end
+
+def generate_tables(destination)
+  sh "script/download_tika_data.rb", "--verify", "data/tika.xml"
+  sh "script/generate_tables.rb", "--output", destination, "data/tika.xml", "data/custom.xml"
+  sh RbConfig.ruby, "-c", destination
 end

@@ -57,7 +57,7 @@ Marcel was extracted from Basecamp's file detection heuristics. The aim is provi
 
 ## Contributing
 
-Marcel generates MIME lookup tables with `bundle exec rake update`. MIME types are seeded from data found in `data/*.xml`. Custom MIMEs may be added to `data/custom.xml`, while overrides to the standard MIME database may be added to `lib/marcel/mime_type/definitions.rb`.
+Marcel generates MIME lookup tables with `bundle exec rake update`. MIME types are seeded from data found in `data/*.xml`. The Apache Tika download and committed `data/tika.xml` are verified against the commit and checksum in `script/download_tika_data.rb`; review and update both values when refreshing it. Custom MIMEs may be added to `data/custom.xml`, while overrides to the standard MIME database may be added to `lib/marcel/mime_type/definitions.rb`.
 
 Marcel follows the same contributing guidelines as [rails/rails](https://github.com/rails/rails#contributing).
 
