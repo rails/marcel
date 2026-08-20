@@ -1,0 +1,86 @@
+data/custom.xml
+  s_a61b5f7975e3f5::t_f88a1d6c71eacb 178-187
+lib/marcel/tables.rb
+  s_a61b5f7975e3f5::t_039df067294ae7 773,1364,1623,2419
+  s_a61b5f7975e3f5::t_70979d8fd0f06a 2283
+  s_a61b5f7975e3f5::t_68aae634af7b2b 2244-2282,2284-2398
+  s_a61b5f7975e3f5::t_f4eba04ada97b6 2573
+test/mime_type_test.rb
+  s_a61b5f7975e3f5::t_99080ea3021df9 84-97
+script/generate_tables.rb
+  s_a61b5f7975e3f5::t_955e397fd1d691 385-392
+  s_a61b5f7975e3f5::t_876747c69d1752 378-379,382
+  s_a61b5f7975e3f5::t_13acbb3301d6fd 456-460
+  s_a61b5f7975e3f5::t_1941d6a054d5a2 521
+  s_a61b5f7975e3f5::t_b80fc94e520460 375-377,380-381,383-384
+  s_a61b5f7975e3f5::t_478ece68e7852f 420-422,426
+  s_a61b5f7975e3f5::t_50f2f68d76e96b 402-403
+  s_a61b5f7975e3f5::t_d2965e150fab2e 462,469-472
+  s_a61b5f7975e3f5::t_e26b475fefcd69 461,545-551
+  s_a61b5f7975e3f5::t_cf620241fea0f4 598
+  s_a61b5f7975e3f5::t_fc5c24e73083e2 404
+  s_a61b5f7975e3f5::t_08f4b411f60392 464-468
+  s_a61b5f7975e3f5::t_c663a1d14abf54 434-439
+  s_a61b5f7975e3f5::t_ddd21d32f0257f 423-425
+  s_a61b5f7975e3f5::t_6fac31b7ad8e01 463
+lib/marcel/mime_type/definitions.rb
+  s_a61b5f7975e3f5::t_eeb65fcc3279de 42
+  s_a61b5f7975e3f5::t_0cdac521c34d07 57,59
+  s_a61b5f7975e3f5::t_a3f1b4bcb1dccf 37-41
+  s_a61b5f7975e3f5::t_46296413b573d9 51-52
+  s_a61b5f7975e3f5::t_4946357bb2929e 55-56,58
+  s_a61b5f7975e3f5::t_e2da1784ebe953 84
+  s_a61b5f7975e3f5::t_3295fcf754fb25 30-32
+  s_a61b5f7975e3f5::t_329eac51813151 43-47
+lib/marcel/magic.rb
+  s_a61b5f7975e3f5::t_00f52913ec2878 28,43,51,54,58-91,93-94,100
+  s_a61b5f7975e3f5::t_7f6b2ec5d29dab 35-37
+  s_a61b5f7975e3f5::t_47e6bb91352105 205,208-209
+  s_a61b5f7975e3f5::t_6013938c1e2eba 187,192,203-204
+  s_a61b5f7975e3f5::t_3790bc4bab3488 206-207
+  s_a61b5f7975e3f5::t_a9497f8f8f41e0 121-129,135-136,138,210
+  s_a61b5f7975e3f5::t_157f65c29ae8f8 32-34,38-39,44,47-50
+  s_a61b5f7975e3f5::t_dc38bf8abc50cc 40-42
+  s_a61b5f7975e3f5::t_6fe4df87cc2193 137
+  s_a61b5f7975e3f5::t_1660667ba4b2c3 139
+  s_a61b5f7975e3f5::t_7b7d129a81abaa 211
+test/magic_test.rb
+  s_a61b5f7975e3f5::t_93a11761a7a4f7 106,108
+  s_a61b5f7975e3f5::t_e83fc2e7acfb8a 81-88,90,93-94,97,102-105,107,109-116
+  s_a61b5f7975e3f5::t_21b4cddea7695b 89,91-92,95-96,98-101
+  s_a61b5f7975e3f5::t_89a9638c2fca00 20-80
+  s_a61b5f7975e3f5::t_b833e1875191cc 127-136
+lib/marcel/mime_type.rb
+  s_a61b5f7975e3f5::t_55fecdecbce650 20-21
+  s_a61b5f7975e3f5::t_55dad2866dfe5f 80
+  s_a61b5f7975e3f5::t_524a0c4a49912f 103
+  s_a61b5f7975e3f5::t_1ef0c2a62da93b 89,97
+  s_a61b5f7975e3f5::t_5249a74f524097 17-18
+  s_a61b5f7975e3f5::t_6c64f11a429aff 43-44
+  s_a61b5f7975e3f5::t_3b73c6bb24af3e 12-16,19,22-42,45
+test/declared_type_test.rb
+  s_a61b5f7975e3f5::t_95bad5f3d1301a 56-60,65-68
+  s_a61b5f7975e3f5::t_b344cdef1ca4f6 44-53
+  s_a61b5f7975e3f5::t_6edd6254a4e878 23-43,54-55
+  s_a61b5f7975e3f5::t_5546c408cf5986 61-64
+test/magic_and_declared_type_test.rb
+  s_a61b5f7975e3f5::t_30625012fce2ed 9-14
+test/test_helper.rb
+  s_a61b5f7975e3f5::t_02355584dfaccb 10-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d3b7267ab6096b351a0f22b9d7d18a149f2fef80",
+  "prompts": {},
+  "sessions": {
+    "s_a61b5f7975e3f5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17d21429-20ac-4604-b35b-91764e6820b9",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}
