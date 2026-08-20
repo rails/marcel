@@ -372,6 +372,24 @@ TYPE_RENAMES = {
   "image/bmp;format=compressed" => "image/bmp",
 }.freeze
 
+# Tika aliases these, but Marcel deliberately keeps them as distinct types.
+# application/x-x509-ca-cert: reused as the PEM-format certificate type, a subtype of
+# application/x-x509-cert;format=pem registered in lib/marcel/mime_type/definitions.rb.
+# application/oxps: IANA registers OpenXPS as its own type and notes it is not directly
+# interoperable with Microsoft XPS, so it must not resolve to application/vnd.ms-xpsdocument.
+ALIAS_SKIPS = %w(
+  application/x-x509-ca-cert
+  application/oxps
+).freeze
+
+# Globs Tika files under a type other than Marcel's choice for that extension. The extension
+# is dropped from every other type's globs and must be claimed by its assigned type (declared
+# in data/custom.xml), which the generator verifies after parsing.
+# oxps: OpenXPS is its own IANA-registered type, not Microsoft XPS (see ALIAS_SKIPS above).
+GLOB_REASSIGNMENTS = {
+  "oxps" => "application/oxps",
+}.freeze
+
 # Marcel registers stricter, bounded HTML and XHTML rules at runtime. Keeping Tika's broad
 # generated rules would make `require "marcel/magic"` alone retain the unsafe legacy matches.
 RUNTIME_DEFINED_MAGIC_TYPES = %w(
@@ -381,6 +399,9 @@ RUNTIME_DEFINED_MAGIC_TYPES = %w(
 
 extensions = {}
 types = {}
+aliases = {}
+defined_types = {}
+reassigned_globs = {}
 magics = []
 unsupported_rules = UnsupportedRules.new
 
@@ -396,6 +417,13 @@ ARGV.each do |path|
     comments = Hash[*(mime/'_comment').map {|comment| [comment['xml:lang'], comment.inner_text] }.flatten]
     type = MimeData.type(mime['type'], path)
     type = TYPE_RENAMES[type] || type
+    defined_types[type] = path
+
+    (mime/'alias').each do |element|
+      # Downcased: lookups are lowercase-normalized, and Tika data has mixed-case aliases.
+      aliased = MimeData.type(element['type'], path).downcase
+      aliases[aliased] = type.downcase unless aliased == type.downcase || ALIAS_SKIPS.include?(aliased)
+    end
 
     subclass = (mime/'sub-class-of').map { |element| MimeData.type(element['type'], path) }
     exts = (mime/'glob').map do |element|
@@ -403,6 +431,12 @@ ARGV.each do |path|
         MimeData.extension($1, path)
       end
     end.compact
+    exts.reject! do |ext|
+      next false unless GLOB_REASSIGNMENTS.key?(ext)
+
+      reassigned_globs[ext] = true
+      GLOB_REASSIGNMENTS[ext] != type
+    end
     unless RUNTIME_DEFINED_MAGIC_TYPES.include?(type)
       (mime/'magic').each do |magic|
         priority = MimeData.priority(magic['priority'] || '50', type)
@@ -416,6 +450,23 @@ ARGV.each do |path|
       }
       types[type] = [exts,subclass,comments[nil]]
     end
+  end
+end
+
+# An alias that shadows a defined type would make the tables disagree with themselves:
+# lookups keyed on the type would answer while canonical resolution redirected elsewhere.
+aliases.each do |aliased, type|
+  if source = defined_types[aliased]
+    raise ArgumentError, "Alias #{aliased} (of #{type}) is also a MIME type defined in #{source}"
+  end
+end
+
+# A reassigned glob present in the data that its assigned type doesn't claim
+# would silently vanish from the tables.
+reassigned_globs.each_key do |ext|
+  unless extensions[ext] == GLOB_REASSIGNMENTS[ext]
+    raise ArgumentError, "Reassigned glob #{ext} must be declared under #{GLOB_REASSIGNMENTS[ext]}, " \
+      "but resolved to #{extensions[ext].inspect}"
   end
 end
 
@@ -467,7 +518,7 @@ end
 
 magics = (common_magics.compact + magics).uniq
 
-def emit_tables(output, extensions, types, magics)
+def emit_tables(output, extensions, types, aliases, magics)
   output.puts "# frozen_string_literal: true"
   output.puts ""
   output.puts "# This file is auto-generated. Instead of editing this file, please"
@@ -489,6 +540,13 @@ def emit_tables(output, extensions, types, magics)
     comment = types[key][2]
     comment = " # #{RubySource.comment(comment)}" if comment
     output.puts "    #{RubySource.string(key.strip)} => #{RubySource.words(exts)},#{comment}"
+  end
+  output.puts "  }"
+  output.puts "  # @private"
+  output.puts "  # :nodoc:"
+  output.puts "  TYPE_ALIASES = {"
+  aliases.keys.sort.each do |key|
+    output.puts "    #{RubySource.string(key.strip)} => #{RubySource.string(aliases[key])},"
   end
   output.puts "  }"
   output.puts "  TYPE_PARENTS = {"
@@ -537,6 +595,6 @@ end
 unsupported_rules.verify!
 
 buffer = StringIO.new
-emit_tables(buffer, extensions, types, magics)
+emit_tables(buffer, extensions, types, aliases, magics)
 write_tables(options[:output], buffer.string)
 warn "Skipped #{unsupported_rules.count} unsupported magic rules" if unsupported_rules.count > 0

@@ -20,6 +20,52 @@ class Marcel::MimeType::DeclaredTypeTest < Marcel::TestCase
     assert_equal "text/html", Marcel::MimeType.for(declared_type: "text/html; charset=utf-8")
   end
 
+  test "prefers IANA-registered types over deprecated or private-tree aliases" do
+    # RFC 9512 registers application/yaml; the x-/text spellings are historical
+    assert_equal "application/yaml", Marcel::MimeType.for(declared_type: "application/yaml")
+    assert_equal "application/yaml", Marcel::MimeType.for(declared_type: "text/x-yaml")
+    assert_equal "application/yaml", Marcel::MimeType.for(declared_type: "text/yaml")
+    assert_equal "application/yaml", Marcel::MimeType.for(extension: "yaml")
+
+    # IANA lists application/x-debian-package as the deprecated alias
+    assert_equal "application/vnd.debian.binary-package", Marcel::MimeType.for(declared_type: "application/x-debian-package")
+    assert_equal "application/vnd.debian.binary-package", Marcel::MimeType.for(extension: "deb")
+
+    # application/xliff+xml has been IANA-registered since 2018
+    assert_equal "application/xliff+xml", Marcel::MimeType.for(declared_type: "application/x-xliff+xml")
+    assert_equal "application/xliff+xml", Marcel::MimeType.for(extension: "xlf")
+  end
+
+  test "does not conflate OpenXPS with Microsoft XPS" do
+    # IANA notes the two formats are not directly interoperable
+    assert_equal "application/oxps", Marcel::MimeType.for(declared_type: "application/oxps")
+    assert_equal "application/oxps", Marcel::MimeType.for(extension: "oxps")
+    assert_equal "application/vnd.ms-xpsdocument", Marcel::MimeType.for(extension: "xps")
+
+    # Severed in the generated tables themselves, so magic-only loading agrees
+    assert_equal "application/oxps", Marcel::EXTENSIONS["oxps"]
+    assert_equal %w( xps ), Marcel::Magic.new("application/vnd.ms-xpsdocument").extensions
+
+    # And re-extending Microsoft XPS cannot reclaim the extension
+    capture_io do
+      Marcel::MimeType.extend "application/vnd.ms-xpsdocument", extensions: %w( xps )
+    end
+    assert_equal "application/oxps", Marcel::MimeType.for(extension: "oxps")
+  end
+
+  test "resolves declared type aliases to their canonical MIME type" do
+    assert_equal "text/javascript", Marcel::MimeType.for(declared_type: "application/javascript")
+    assert_equal "audio/aac", Marcel::MimeType.for(declared_type: "audio/x-aac")
+
+    Marcel::TYPE_ALIASES.each do |aliased, canonical|
+      # Declared types parse down to bare type/subtype, so parameterized aliases
+      # resolve through their base type rather than the alias table.
+      next if aliased.include?(";")
+
+      assert_equal canonical, Marcel::MimeType.for(declared_type: aliased)
+    end
+  end
+
   test "tolerates a single trailing semicolon" do
     assert_equal "image/jpeg", Marcel::MimeType.for(declared_type: "image/jpeg;")
     assert_equal "text/html", Marcel::MimeType.for(declared_type: "text/html; charset=utf-8; ")

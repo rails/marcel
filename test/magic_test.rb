@@ -17,6 +17,103 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     Marcel::Magic.remove('application/x-my-thing')
   end
 
+  test "switch canonical type" do
+    Marcel::Magic.add('canonical/type', aliases: 'alias/type', extensions: %w[ canonical ], parents: 'canonical/parent', magic: [[0, 'magic']])
+    assert Marcel::Magic.child?('canonical/type', 'canonical/parent')
+    assert_equal 'canonical/type', Marcel::Magic.canonical('alias/type')
+    assert_equal 'canonical/type', Marcel::Magic.by_extension('canonical').type
+    assert_equal 'canonical/type', Marcel::Magic.by_magic('magic').type
+    assert_equal %w[ canonical ], Marcel::Magic.new('canonical/type').extensions
+
+    Marcel::Magic.canonicalize('alias/type', instead_of: 'canonical/type')
+    assert Marcel::Magic.child?('alias/type', 'canonical/parent')
+    assert_equal 'alias/type', Marcel::Magic.canonical('alias/type')
+    assert_equal 'alias/type', Marcel::Magic.canonical('canonical/type')
+    assert_equal 'alias/type', Marcel::Magic.by_extension('canonical').type
+    assert_equal 'alias/type', Marcel::Magic.by_magic('magic').type
+    assert_equal %w[ canonical ], Marcel::Magic.new('alias/type').extensions
+  ensure
+    Marcel::Magic.remove('alias/type')
+    Marcel::Magic.remove('canonical/type')
+  end
+
+  test "canonicalizing instead of an alias is an error" do
+    Marcel::Magic.add('canonical/type', aliases: 'alias/type')
+
+    assert_raises ArgumentError do
+      Marcel::Magic.canonicalize('other/type', instead_of: 'alias/type')
+    end
+  ensure
+    Marcel::Magic.remove('canonical/type')
+  end
+
+  test "removing alias" do
+    Marcel::Magic.add('canonical/type', aliases: 'alias/type')
+    assert_equal 'canonical/type', Marcel::Magic.canonical('alias/type')
+
+    Marcel::Magic.remove('alias/type')
+    assert_equal 'alias/type', Marcel::Magic.canonical('alias/type')
+  ensure
+    Marcel::Magic.remove('canonical/type')
+  end
+
+  test "removing canonical removes aliases" do
+    Marcel::Magic.add('canonical/type', aliases: %w[ alias/one alias/two ])
+    assert_equal 'canonical/type', Marcel::Magic.canonical('alias/one')
+    assert_equal 'canonical/type', Marcel::Magic.canonical('alias/two')
+
+    Marcel::Magic.remove('canonical/type')
+    assert_equal 'alias/one', Marcel::Magic.canonical('alias/one')
+    assert_equal 'alias/two', Marcel::Magic.canonical('alias/two')
+  end
+
+  test "adding type removes existing alias" do
+    Marcel::Magic.add('canonical/type', aliases: 'alias/type')
+    assert_equal 'canonical/type', Marcel::Magic.canonical('alias/type')
+
+    Marcel::Magic.add('alias/type', comment: "overrides old alias")
+    assert_equal 'alias/type', Marcel::Magic.canonical('alias/type')
+  ensure
+    Marcel::Magic.remove('alias/type')
+    Marcel::Magic.remove('canonical/type')
+  end
+
+  test "aliases are normalized to lowercase" do
+    Marcel::Magic.add('canonical/type', aliases: 'Alias/Type')
+    assert_equal 'canonical/type', Marcel::Magic.canonical('alias/type')
+    assert_equal 'canonical/type', Marcel::Magic.canonical('Alias/Type')
+  ensure
+    Marcel::Magic.remove('canonical/type')
+  end
+
+  test "aliasing a registered type is an error and leaves every registry untouched" do
+    Marcel::Magic.add('registered/type', extensions: 'reg')
+    snapshots = [Marcel::EXTENSIONS, Marcel::TYPE_EXTS, Marcel::TYPE_PARENTS,
+                 Marcel::TYPE_ALIASES, Marcel::MAGIC].map(&:dup)
+
+    assert_raises ArgumentError do
+      Marcel::Magic.add('candidate/type', extensions: 'txt', parents: 'text/plain',
+        magic: [[0, 'candidate']], aliases: %w[ alias/fine registered/type ])
+    end
+
+    assert_equal snapshots,
+      [Marcel::EXTENSIONS, Marcel::TYPE_EXTS, Marcel::TYPE_PARENTS, Marcel::TYPE_ALIASES, Marcel::MAGIC]
+    assert_equal 'text/plain', Marcel::Magic.by_extension('txt').type
+  ensure
+    Marcel::Magic.remove('registered/type')
+  end
+
+  test "canonicalizing re-points existing aliases so resolution stays single-hop" do
+    Marcel::Magic.add('first/type', aliases: 'alias/type')
+    Marcel::Magic.canonicalize('second/type', instead_of: 'first/type')
+
+    assert_equal 'second/type', Marcel::Magic.canonical('first/type')
+    assert_equal 'second/type', Marcel::Magic.canonical('alias/type')
+  ensure
+    Marcel::Magic.remove('second/type')
+    Marcel::Magic.remove('first/type')
+  end
+
   test "#extensions" do
     json = Marcel::Magic.by_extension('json')
     assert_equal ['json'], json.extensions
@@ -25,6 +122,16 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
   test ".child?" do
     assert Marcel::Magic.child?('text/csv', 'text/plain')
     refute Marcel::Magic.child?('text/plain', 'text/csv')
+  end
+
+  test ".child? with aliases" do
+    Marcel::Magic.add('canonical/parent', aliases: 'alias/parent')
+    Marcel::Magic.add('canonical/child', aliases: 'alias/child', parents: 'canonical/parent')
+
+    assert Marcel::Magic.child?('alias/child', 'alias/parent')
+  ensure
+    Marcel::Magic.remove('canonical/child')
+    Marcel::Magic.remove('canonical/parent')
   end
 
   test "X bitmap resolves its C source alias to a canonical text parent" do

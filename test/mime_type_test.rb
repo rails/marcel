@@ -81,4 +81,18 @@ class Marcel::MimeTypeTest < Marcel::TestCase
 
     assert_equal original_encoding, io.external_encoding
   end
+
+  test "extending a mixed-case alias redirects to the canonical type" do
+    _output, errors = capture_io do
+      Marcel::MimeType.extend "Application/Javascript", extensions: %w( extendtestjs )
+    end
+
+    assert_match(/alias/, errors)
+    assert_equal "text/javascript", Marcel::MimeType.for(extension: "extendtestjs")
+    refute Marcel::TYPE_EXTS.key?("Application/Javascript")
+    refute Marcel::TYPE_EXTS.key?("application/javascript")
+  ensure
+    Marcel::EXTENSIONS.delete("extendtestjs")
+    Marcel::TYPE_EXTS["text/javascript"]&.delete("extendtestjs")
+  end
 end
