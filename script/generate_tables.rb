@@ -470,10 +470,10 @@ reassigned_globs.each_key do |ext|
   end
 end
 
-magics = magics.each_with_index.sort_by do |(priority, type), source_index|
-  [ -priority, type, source_index ]
-end.map(&:first)
-
+# The most commonly seen types are probed first — but only within their own priority band.
+# Moving them ahead of the whole list would preempt the higher-priority matchers Tika
+# explicitly ranks above them: image/x-canon-cr2 (priority 60) must probe before the
+# image/tiff (50) matcher that also matches every CR2 file's TIFF header.
 common_types = [
   "image/jpeg",                                                                # .jpg
   "image/png",                                                                 # .png
@@ -512,11 +512,11 @@ common_types = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",         # .xlsx
 ]
 
-common_magics = common_types.map do |common_type|
-  magics.find { |_, type, _| type == common_type }
-end
+common_rank = common_types.each_with_index.to_h
 
-magics = (common_magics.compact + magics).uniq
+magics = magics.each_with_index.sort_by do |(priority, type), source_index|
+  [ -priority, common_rank.fetch(type, common_types.size), type, source_index ]
+end.map(&:first)
 
 def emit_tables(output, extensions, types, aliases, magics)
   output.puts "# frozen_string_literal: true"
