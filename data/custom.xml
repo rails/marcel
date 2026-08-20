@@ -175,6 +175,16 @@
     <glob pattern="*.woff2" />
   </mime-type>
 
+  <!-- OpenXPS is IANA-registered as its own type and not directly interoperable with
+       Microsoft XPS, so the generator skips Tika's alias to application/vnd.ms-xpsdocument
+       (ALIAS_SKIPS) and reassigns the oxps glob here (GLOB_REASSIGNMENTS). -->
+  <mime-type type="application/oxps">
+    <_comment>Open XML Paper Specification (OpenXPS)</_comment>
+    <glob pattern="*.oxps" />
+
+    <sub-class-of type="application/x-tika-ooxml" />
+  </mime-type>
+
   <mime-type type="text/x-scss">
     <glob pattern="*.scss" />
 
@@ -185,13 +195,5 @@
     <glob pattern="*.sass" />
 
     <sub-class-of type="text/plain"/>
-  </mime-type>
-
-  <!-- Tika declares text/x-c as an alias of text/x-csrc, but Marcel's tables do not
-       otherwise model aliases. Keep the X bitmap parent graph on canonical types. -->
-  <mime-type type="image/x-xbitmap">
-    <glob pattern="*.xbm" />
-
-    <sub-class-of type="text/x-csrc"/>
   </mime-type>
 </mime-info>

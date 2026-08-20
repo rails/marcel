@@ -7,6 +7,12 @@ begin
 rescue StandardError, LoadError
 end
 
+# Reverse mapping from canonical type to its aliases. Only needed for testing.
+ALIASED = Hash.new { |hash, key| hash[key] = [] }
+Marcel::TYPE_ALIASES.each do |aliased, type|
+  ALIASED[type] << aliased
+end
+
 class Marcel::TestCase < Minitest::Test
   class << self
     def setup(&block)

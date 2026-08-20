@@ -25,25 +25,79 @@ module Marcel
     # Option keys:
     # * <i>:extensions</i>: String list or single string of file extensions
     # * <i>:parents</i>: String list or single string of parent mime types
+    # * <i>:aliases</i>: String list or single string of aliased mime types
     # * <i>:magic</i>: Mime magic specification
     # * <i>:comment</i>: Comment string
     def self.add(type, options)
+      # Validate the complete registration before mutating any table, so a rejected
+      # registration leaves every registry untouched.
+      #
+      # Alias keys are never registered types and alias values never alias keys, so
+      # resolution is single-hop by construction: aliasing a registered type is rejected
+      # here, and canonicalize (the sanctioned path) re-points existing aliases itself.
+      aliases = [options[:aliases]].flatten.compact.map(&:downcase) - [type.downcase]
+      aliases.each do |aliased|
+        if TYPE_EXTS.key?(aliased) || TYPE_PARENTS.key?(aliased) || MAGIC.any? { |t, _| t == aliased }
+          raise ArgumentError, "#{aliased} is a registered type; use canonicalize to alias it to #{type}"
+        end
+      end
+
       extensions = [options[:extensions]].flatten.compact
       TYPE_EXTS[type] = extensions
+      extensions.each {|ext| EXTENSIONS[ext] = type }
+
+      TYPE_ALIASES.delete(type)
+      aliases.each {|aliased| TYPE_ALIASES[aliased] = type }
+
       parents = [options[:parents]].flatten.compact
       TYPE_PARENTS[type] = parents unless parents.empty?
-      extensions.each {|ext| EXTENSIONS[ext] = type }
+
       MAGIC.unshift [type, options[:magic]] if options[:magic]
     end
 
-    # Removes a mime type from the dictionary.  You might want to do this if
+    # Renames a canonical type: the +instead_of+ type's extensions, magic matchers, parents,
+    # and aliases are re-registered under +type+, and the old name becomes an alias of the
+    # new. Useful when a historical or de facto type is preferable to the canonical type
+    # shipped in the generated tables, without giving up its matchers.
+    def self.canonicalize(type, instead_of:)
+      raise ArgumentError, "#{instead_of} is an alias, not canonical" if TYPE_ALIASES[instead_of]
+
+      # Displace whatever the new canonical type was registered as before.
+      remove(type)
+
+      # Re-register the old canonical type's dictionary under the new name.
+      EXTENSIONS.select { |_, existing| existing == instead_of }.each_key do |ext|
+        EXTENSIONS[ext] = type
+      end
+
+      if extensions = TYPE_EXTS.delete(instead_of)
+        TYPE_EXTS[type] = extensions
+      end
+
+      TYPE_ALIASES.select { |_, canonical| canonical == instead_of }.each_key do |aliased|
+        TYPE_ALIASES[aliased] = type
+      end
+
+      if parents = TYPE_PARENTS.delete(instead_of)
+        TYPE_PARENTS[type] = parents
+      end
+
+      MAGIC.each { |pair| pair[0] = type if pair[0] == instead_of }
+
+      # Alias the old canonical type to the new.
+      TYPE_ALIASES[instead_of] = type
+    end
+
+    # Removes a mime type from the dictionary. You might want to do this if
     # you're seeing impossible conflicts (for instance, application/x-gmc-link).
-    # * <i>type</i>: The mime type to remove.  All associated extensions and magic are removed too.
+    # * <i>type</i>: The mime type to remove. All associated extensions, magic,
+    #   and aliases are removed too.
     def self.remove(type)
       EXTENSIONS.delete_if {|ext, t| t == type }
       MAGIC.delete_if {|t, m| t == type }
       TYPE_EXTS.delete(type)
       TYPE_PARENTS.delete(type)
+      TYPE_ALIASES.delete_if {|aliased, canonical| aliased == type || canonical == type }
     end
 
     # Returns true if type is a text format
@@ -64,9 +118,23 @@ module Marcel
       TYPE_EXTS[type] || []
     end
 
+    # Resolve an aliased type to its canonical type; canonical types return themselves
+    def canonical
+      if canonical_type = TYPE_ALIASES[type]
+        self.class.new(canonical_type)
+      else
+        self
+      end
+    end
+
     # Get mime comment
     def comment
       nil # deprecated
+    end
+
+    # Lookup canonical mime type by mime type string, resolving aliases
+    def self.by_type(type)
+      new(canonical(type)) if type
     end
 
     # Lookup mime type by file extension
@@ -116,11 +184,12 @@ module Marcel
     alias == eql?
 
     def self.child?(child, parent)
+      parent = canonical(parent)
       pending = [child]
       visited = {}
 
       until pending.empty?
-        type = pending.pop
+        type = canonical(pending.pop)
         return true if type == parent
         next if visited[type]
 
@@ -129,6 +198,15 @@ module Marcel
       end
 
       false
+    end
+
+    # Resolve an aliased type string to its canonical type string
+    def self.canonical(type)
+      if type
+        # Allocation-free for already-lowercase input: child? resolves every node it visits.
+        type = type.downcase if /[A-Z]/.match?(type)
+        TYPE_ALIASES[type] || type
+      end
     end
 
     def self.magic_match(io, method)

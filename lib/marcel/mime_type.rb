@@ -9,10 +9,40 @@ module Marcel
     MEDIA_TYPE = %r{\A(#{TOKEN}/#{TOKEN})(?:[ \t]*;[ \t]*#{TOKEN}=(?:#{TOKEN}|#{QUOTED_STRING}))*(?:[ \t]*;[ \t]*)?\z}n
 
     class << self
-      def extend(type, extensions: [], parents: [], magic: nil)
-        extensions = (Array(extensions) + Array(Marcel::TYPE_EXTS[type])).uniq
-        parents = (Array(parents) + Array(Marcel::TYPE_PARENTS[type])).uniq
-        Magic.add(type, extensions: extensions, magic: magic, parents: parents)
+      def canonicalize(type, instead_of:)
+        Magic.canonicalize type, instead_of: instead_of
+      end
+
+      def extend(type, extensions: nil, aliases: nil, parents: nil, magic: nil)
+        type = type.downcase
+
+        if canonical = Marcel::TYPE_ALIASES[type]
+          warn "#{type} is an alias; extending its canonical type #{canonical} instead"
+          type = canonical
+        end
+
+        extensions = Array(extensions)
+        if extensions.any? && extensions.sort == Array(Marcel::TYPE_EXTS[type]).sort
+          warn "#{type} already has extensions #{extensions.inspect}"
+        end
+        extensions |= Array(Marcel::TYPE_EXTS[type])
+
+        aliases = Array(aliases)
+        existing_aliases = Marcel::TYPE_ALIASES.select { |_, existing| existing == type }.keys
+        if aliases.any? && aliases.sort == existing_aliases.sort
+          warn "#{type} already has aliases #{aliases.inspect}"
+        end
+        aliases |= existing_aliases
+
+        parents = Array(parents)
+        if parents.any? && parents.sort == Array(Marcel::TYPE_PARENTS[type]).sort
+          warn "#{type} already has parents #{parents.inspect}"
+        end
+        parents |= Array(Marcel::TYPE_PARENTS[type])
+
+        # No duplicate-magic warning: matcher order determines precedence, so re-registering
+        # an existing matcher legitimately promotes it ahead of the generated tables.
+        Magic.add(type, extensions: extensions, magic: magic, aliases: aliases, parents: parents)
       end
 
       # Returns the most appropriate content type for the given file.
@@ -47,7 +77,7 @@ module Marcel
           if pathname_or_io
             with_io(pathname_or_io) do |io|
               if magic = Marcel::Magic.by_magic(io)
-                Marcel::Magic::Zip.refine(io, magic.type.downcase)
+                Marcel::Magic::Zip.refine(io, magic.canonical.type.downcase)
               end
             end
           end
@@ -56,7 +86,7 @@ module Marcel
         def for_name(name)
           if name
             if magic = Marcel::Magic.by_path(name)
-              magic.type.downcase
+              magic.canonical.type.downcase
             end
           end
         end
@@ -64,13 +94,13 @@ module Marcel
         def for_extension(extension)
           if extension
             if magic = Marcel::Magic.by_extension(extension)
-              magic.type.downcase
+              magic.canonical.type.downcase
             end
           end
         end
 
         def for_declared_type(declared_type)
-          type = parse_media_type(declared_type)
+          type = Marcel::Magic.canonical(parse_media_type(declared_type))
 
           # application/octet-stream is treated as an undeclared/missing type,
           # allowing the type to be inferred from the filename. If there's no
