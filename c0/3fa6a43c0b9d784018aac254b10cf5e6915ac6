@@ -1,0 +1,24 @@
+script/generate_tables.rb
+  s_a61b5f7975e3f5::t_1dc26439787739 515,517-519
+  s_a61b5f7975e3f5::t_39cdd8ecafa5ad 473-476
+lib/marcel/tables.rb
+  s_a61b5f7975e3f5::t_28fd0ec27e81f5 2678,2682,2689-2692,2721,2794-2816,3066
+lib/marcel/mime_type/definitions.rb
+  s_a61b5f7975e3f5::t_d157b3d696ce0a 62-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c03fa6a43c0b9d784018aac254b10cf5e6915ac6",
+  "prompts": {},
+  "sessions": {
+    "s_a61b5f7975e3f5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17d21429-20ac-4604-b35b-91764e6820b9",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
