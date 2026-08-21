@@ -1,0 +1,27 @@
+script/generate_tables.rb
+  s_94a72cb7cffc8e::t_3a72a53f9705aa 401
+  s_94a72cb7cffc8e::t_73e4be0228e1ef 430,475-483,522-527,529-547
+test/magic_test.rb
+  s_94a72cb7cffc8e::t_e520e5d7e1c402 15-39
+lib/marcel/tables.rb
+  s_94a72cb7cffc8e::t_73e4be0228e1ef 2677-2684,2686-2710,2718,2784,2823,3016,3067
+test/generate_tables_test.rb
+  s_94a72cb7cffc8e::t_3a72a53f9705aa 388-432
+  s_94a72cb7cffc8e::t_73e4be0228e1ef 387
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ef1cbbd09facdc528bf8d984b970f0414527c163",
+  "prompts": {},
+  "sessions": {
+    "s_94a72cb7cffc8e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "16848c1f-72d1-46c8-8281-1c371bc0c709",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}
