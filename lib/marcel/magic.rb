@@ -330,4 +330,5 @@ module Marcel
 end
 
 require "marcel/magic/definitions"
+require "marcel/magic/xml"
 require "marcel/magic/zip"

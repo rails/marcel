@@ -1,26 +1,20 @@
 require "test_helper"
+require "open3"
+require "rbconfig"
 require "rubygems/package"
 require "stringio"
 require "tempfile"
 require "tmpdir"
 require "zlib"
+require_relative "../script/verify_gem"
 
 class Marcel::PackageTest < Marcel::TestCase
   PROJECT_ROOT = File.expand_path("..", __dir__)
-  PACKAGE_FILES = %w(
-    APACHE-LICENSE
-    MIT-LICENSE
-    README.md
-    SECURITY.md
-    lib/marcel.rb
-    lib/marcel/magic.rb
-    lib/marcel/magic/definitions.rb
-    lib/marcel/magic/zip.rb
-    lib/marcel/mime_type.rb
-    lib/marcel/mime_type/definitions.rb
-    lib/marcel/tables.rb
-    lib/marcel/version.rb
-  ).freeze
+  VERIFY_GEM = File.join(PROJECT_ROOT, "script/verify_gem.rb")
+
+  # The manifest lives in the release validator so CI and the release build hold the gem to
+  # the same file list.
+  PACKAGE_FILES = GemVerification::EXPECTED_FILES
 
   test "packages the exact regular-file manifest" do
     PACKAGE_FILES.each do |path|
@@ -28,9 +22,8 @@ class Marcel::PackageTest < Marcel::TestCase
       assert stat.file?, "expected #{path} to be a regular file"
     end
 
-    Tempfile.create([ "marcel", ".gem" ]) do |temporary|
-      gem_path = temporary.path
-      temporary.close
+    Dir.mktmpdir("marcel-package-test") do |directory|
+      gem_path = File.join(directory, "marcel-#{Marcel::VERSION}.gem")
 
       Dir.chdir(PROJECT_ROOT) do
         capture_io { Gem::Package.build(specification, false, false, gem_path) }
@@ -39,6 +32,15 @@ class Marcel::PackageTest < Marcel::TestCase
       package = Gem::Package.new(gem_path)
       assert_equal PACKAGE_FILES, package.contents.sort
       assert_equal PACKAGE_FILES, package.spec.files.sort
+      assert_equal "marcel", GemVerification.verify!(gem_path, Marcel::VERSION).name
+
+      output, errors, status = Open3.capture3(RbConfig.ruby, VERIFY_GEM, gem_path, Marcel::VERSION)
+      assert status.success?, errors
+      assert_includes output, "Verified marcel-#{Marcel::VERSION}"
+
+      _output, errors, status = Open3.capture3(RbConfig.ruby, VERIFY_GEM, gem_path, "0.0.0")
+      refute status.success?
+      assert_includes errors, "unexpected gem identity"
 
       data_archive = nil
       File.open(gem_path, "rb") do |gem|

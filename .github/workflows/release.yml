@@ -93,37 +93,9 @@ jobs:
           mkdir pkg
           gem build marcel.gemspec --output "pkg/$filename"
 
-          ruby -rrubygems/package -e '
-            path, expected_version = ARGV
-            expected_files = %w[
-              APACHE-LICENSE
-              MIT-LICENSE
-              README.md
-              SECURITY.md
-              lib/marcel.rb
-              lib/marcel/magic.rb
-              lib/marcel/magic/definitions.rb
-              lib/marcel/mime_type.rb
-              lib/marcel/mime_type/definitions.rb
-              lib/marcel/tables.rb
-              lib/marcel/version.rb
-            ].sort
-            package = Gem::Package.new(path)
-            package.verify
-            spec = package.spec
-            valid_identity = spec.name == "marcel" &&
-              spec.version == Gem::Version.new(expected_version) &&
-              spec.platform == Gem::Platform::RUBY &&
-              File.basename(path) == spec.full_name + ".gem"
-            abort "unexpected gem identity: #{spec.full_name}" unless valid_identity
-            abort "unexpected runtime dependencies" unless spec.runtime_dependencies.empty?
-            abort "unexpected gem executables" unless spec.executables.empty?
-            abort "unexpected gem extensions" unless spec.extensions.empty?
-            abort "unexpected gem manifest" unless spec.files.sort == expected_files && package.contents.sort == expected_files
-            expected_files.each do |entry|
-              abort "package source is missing or linked: #{entry}" unless File.file?(entry) && !File.symlink?(entry)
-            end
-          ' "pkg/$filename" "$version"
+          # The manifest and identity checks live in script/verify_gem.rb, which
+          # test/package_test.rb runs on every push against a freshly built gem.
+          ruby script/verify_gem.rb "pkg/$filename" "$version"
 
           sha256="$(sha256sum "pkg/$filename" | cut -d ' ' -f 1)"
           printf 'filename=%s\nsha256=%s\n' "$filename" "$sha256" >> "$GITHUB_OUTPUT"

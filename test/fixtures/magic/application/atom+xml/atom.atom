@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Marcel fixtures</title>
+  <id>urn:uuid:0d1ee4b4-3a6b-4c2a-9a53-4a3f0a6d9a11</id>
+  <updated>2026-08-21T00:00:00Z</updated>
+  <entry>
+    <title>Root element sniffing</title>
+    <id>urn:uuid:7e2a1c1e-9ad3-4d0c-8b46-1f2a3b4c5d6e</id>
+    <updated>2026-08-21T00:00:00Z</updated>
+    <summary>Minimal Atom feed used to exercise root element detection.</summary>
+  </entry>
+</feed>

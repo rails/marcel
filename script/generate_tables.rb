@@ -97,6 +97,10 @@ module MimeData
   EXTENSION = /\A[0-9A-Za-z][0-9A-Za-z.+_~-]*\z/.freeze
   OFFSET = /\A\d+(?::\d+)?\z/.freeze
   PRIORITY = /\A\d+\z/.freeze
+  # Root element names are matched by exact equality against ASCII table keys; restricting the
+  # data to the ASCII subset of XML Name keeps the generated keys plain string literals.
+  LOCAL_NAME = /\A[A-Za-z_][A-Za-z0-9._-]*\z/.freeze
+  NAMESPACE_URI = /\A[\x21-\x7E]+\z/.freeze
   MAX_MAGIC_OFFSET = 64 * 1024
   MAX_MAGIC_RANGE_BYTES = 64 * 1024
   MAX_MAGIC_PRIORITY = 100
@@ -154,13 +158,33 @@ module MimeData
 
     priority
   end
+
+  def self.local_name(value, source)
+    unless value&.match?(LOCAL_NAME)
+      raise ArgumentError, "Invalid root-XML localName in #{source}: #{value.inspect}"
+    end
+
+    value
+  end
+
+  # An absent or empty namespaceURI means the root element must be in no namespace.
+  def self.namespace_uri(value, source)
+    return nil if value.nil? || value.empty?
+
+    unless value.match?(NAMESPACE_URI)
+      raise ArgumentError, "Invalid root-XML namespaceURI in #{source}: #{value.inspect}"
+    end
+
+    value
+  end
 end
 
 class UnsupportedRules
-  # Tika currently contains 58 unsupported XML rules. Their pretty-printed warnings
-  # span 112 physical lines, so pin the canonical rule set rather than stderr layout.
-  EXPECTED_COUNT = 58
-  EXPECTED_SHA256 = "15d595d20bca116234fda6893b8fceb1533fcbd542d425a6d609d2efcb51b582"
+  # Tika currently contains 59 unsupported XML rules: 58 magic matches plus one root-XML
+  # rule. Their pretty-printed warnings span 113 physical lines, so pin the canonical rule
+  # set rather than stderr layout.
+  EXPECTED_COUNT = 59
+  EXPECTED_SHA256 = "f42a5b9b0462e1c467e068b114c33706f28394d52da76111ae3271cdc5e606ce"
 
   def initialize
     @signatures = []
@@ -404,6 +428,7 @@ aliases = {}
 defined_types = {}
 reassigned_globs = {}
 magics = []
+root_xml = {}
 unsupported_rules = UnsupportedRules.new
 
 ARGV.each do |path|
@@ -451,6 +476,21 @@ ARGV.each do |path|
         extensions[x] = type if !extensions.include?(x)
       }
       types[type] = [exts,subclass,comments[nil]]
+    end
+
+    # Root element rules refine an application/xml magic match by the root's [namespace, name].
+    # Tika matches them by exact two-way equality (MimeType.RootXML#matches), so a rule with no
+    # localName can never match a real root element and is skipped as unsupported. Where rules
+    # collide, Tika takes the first match over types sorted by name (MimeTypes#init), which a
+    # per-key minimum reproduces exactly since each document matches at most one key.
+    (mime/'root-XML').each do |element|
+      if element['localName'].to_s.empty?
+        unsupported_rules.skip "root-XML", type, element, "#{type}: unsupported root-XML rule without localName: #{element.to_s}"
+        next
+      end
+
+      key = [MimeData.namespace_uri(element['namespaceURI'], path), MimeData.local_name(element['localName'], path)]
+      root_xml[key] = type unless root_xml.key?(key) && root_xml[key] <= type
     end
   end
 end
@@ -546,7 +586,7 @@ end
 
 magics = (common_magics + magics).uniq
 
-def emit_tables(output, extensions, types, aliases, magics)
+def emit_tables(output, extensions, types, aliases, root_xml, magics)
   output.puts "# frozen_string_literal: true"
   output.puts ""
   output.puts "# This file is auto-generated. Instead of editing this file, please"
@@ -583,6 +623,16 @@ def emit_tables(output, extensions, types, aliases, magics)
     unless parents.empty?
       output.puts "    #{RubySource.string(key.strip)} => #{RubySource.words(parents)},"
     end
+  end
+  output.puts "  }"
+  output.puts "  # @private"
+  output.puts "  # :nodoc:"
+  output.puts "  ROOT_XML = {"
+  # Keys mix [nil, name] and [namespace, name]; nil is not comparable, so sort by an explicit key.
+  root_xml.keys.sort_by { |namespace, name| [namespace.to_s, name] }.each do |key|
+    namespace, name = key
+    namespace = namespace ? RubySource.string(namespace) : "nil"
+    output.puts "    [#{namespace}, #{RubySource.string(name)}] => #{RubySource.string(root_xml[key].strip)},"
   end
   output.puts "  }"
   output.puts "  b = Hash.new { |h, k| h[k] = k.b.freeze }"
@@ -623,6 +673,6 @@ end
 unsupported_rules.verify!
 
 buffer = StringIO.new
-emit_tables(buffer, extensions, types, aliases, magics)
+emit_tables(buffer, extensions, types, aliases, root_xml, magics)
 write_tables(options[:output], buffer.string)
 warn "Skipped #{unsupported_rules.count} unsupported magic rules" if unsupported_rules.count > 0

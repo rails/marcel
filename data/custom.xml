@@ -196,4 +196,51 @@
 
     <sub-class-of type="text/plain"/>
   </mime-type>
+
+  <!-- XML vocabularies Tika identifies by root element (root-XML rules, generated into
+       ROOT_XML) but leaves without a parent, so a filename or declared type could not refine
+       an application/xml magic match to them. The generator records parents only for types
+       with globs and overwrites the type wholesale, so each entry repeats Tika's globs and
+       comment; aliases and magic accumulate and need no repetition. -->
+  <mime-type type="application/atom+xml">
+    <glob pattern="*.atom" />
+
+    <sub-class-of type="application/xml" />
+  </mime-type>
+
+  <mime-type type="application/rss+xml">
+    <glob pattern="*.rss" />
+
+    <sub-class-of type="application/xml" />
+  </mime-type>
+
+  <mime-type type="application/xhtml+xml">
+    <glob pattern="*.xhtml" />
+    <glob pattern="*.xhtml2" />
+    <glob pattern="*.xht" />
+
+    <sub-class-of type="application/xml" />
+  </mime-type>
+
+  <mime-type type="application/xslfo+xml">
+    <_comment>XSL Format</_comment>
+    <glob pattern="*.xslfo" />
+    <glob pattern="*.fo" />
+
+    <sub-class-of type="application/xml" />
+  </mime-type>
+
+  <mime-type type="application/xslt+xml">
+    <_comment>XSL Transformations</_comment>
+    <glob pattern="*.xslt" />
+
+    <sub-class-of type="application/xml" />
+  </mime-type>
+
+  <mime-type type="application/xspf+xml">
+    <_comment>XML Shareable Playlist Format</_comment>
+    <glob pattern="*.xspf" />
+
+    <sub-class-of type="application/xml" />
+  </mime-type>
 </mime-info>

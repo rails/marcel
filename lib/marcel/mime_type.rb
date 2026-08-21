@@ -77,7 +77,8 @@ module Marcel
           if pathname_or_io
             with_io(pathname_or_io) do |io|
               if magic = Marcel::Magic.by_magic(io)
-                Marcel::Magic::Zip.refine(io, magic.canonical.type.downcase)
+                type = magic.canonical.type.downcase
+                Marcel::Magic::Xml.refine(io, Marcel::Magic::Zip.refine(io, type))
               end
             end
           end
