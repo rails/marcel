@@ -384,4 +384,50 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
       assert status.success?, errors
     end
   end
+
+  test "probes common types first, behind higher-priority matchers for their own subtypes" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="image/x-other">
+          <magic priority="50"><match type="string" value="OTHER" offset="0" /></magic>
+        </mime-type>
+        <mime-type type="application/x-unrelated">
+          <magic priority="60"><match type="string" value="UNREL" offset="0" /></magic>
+        </mime-type>
+        <mime-type type="image/x-tiff-flavour">
+          <sub-class-of type="image/x-tiff-family" />
+          <magic priority="60"><match type="string" value="II*\000CR" offset="0" /></magic>
+        </mime-type>
+        <mime-type type="image/x-tiff-family">
+          <sub-class-of type="image/tiff" />
+        </mime-type>
+        <mime-type type="image/tiff">
+          <magic priority="50"><match type="string" value="II*\000" offset="0" /></magic>
+        </mime-type>
+        <mime-type type="image/jpeg">
+          <magic priority="50"><match type="string" value="\377\330\377" offset="0" /></magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    Dir.mktmpdir("marcel-generator-test") do |directory|
+      xml_path = File.join(directory, "input.xml")
+      tables_path = File.join(directory, "tables.rb")
+      File.binwrite(xml_path, xml)
+
+      generated, errors, status = Open3.capture3(
+        RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+      )
+      assert status.success?, errors
+      File.binwrite(tables_path, generated)
+
+      verification = <<~'RUBY'
+        load ARGV.fetch(0)
+        expected = %w( image/jpeg image/x-tiff-flavour image/tiff application/x-unrelated image/x-other )
+        abort Marcel::MAGIC.map(&:first).inspect unless Marcel::MAGIC.map(&:first) == expected
+      RUBY
+      _output, errors, status = Open3.capture3(RbConfig.ruby, "-e", verification, tables_path)
+      assert status.success?, errors
+    end
+  end
 end

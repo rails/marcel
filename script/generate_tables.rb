@@ -398,6 +398,7 @@ RUNTIME_DEFINED_MAGIC_TYPES = %w(
 ).freeze
 
 extensions = {}
+type_parents = Hash.new { |hash, key| hash[key] = [] }
 types = {}
 aliases = {}
 defined_types = {}
@@ -426,6 +427,7 @@ ARGV.each do |path|
     end
 
     subclass = (mime/'sub-class-of').map { |element| MimeData.type(element['type'], path) }
+    type_parents[type] |= subclass
     exts = (mime/'glob').map do |element|
       if element['pattern'] =~ /^\*\.([^\[\]]+)$/
         MimeData.extension($1, path)
@@ -470,10 +472,15 @@ reassigned_globs.each_key do |ext|
   end
 end
 
-# The most commonly seen types are probed first — but only within their own priority band.
-# Moving them ahead of the whole list would preempt the higher-priority matchers Tika
-# explicitly ranks above them: image/x-canon-cr2 (priority 60) must probe before the
-# image/tiff (50) matcher that also matches every CR2 file's TIFF header.
+magics = magics.each_with_index.sort_by do |(priority, type), source_index|
+  [ -priority, type, source_index ]
+end.map(&:first)
+
+# The most commonly seen types are probed first, ahead of the priority order. A common type's
+# fast path carries along the matchers Tika ranks above it for that type's own subtypes, so
+# promoting it cannot preempt a more specific verdict for the same content: image/x-canon-cr2
+# (priority 60) still probes before the image/tiff (50) matcher that matches every CR2 file's
+# TIFF header, and the MP4 and HEIF family before video/quicktime's broad ftyp match.
 common_types = [
   "image/jpeg",                                                                # .jpg
   "image/png",                                                                 # .png
@@ -512,11 +519,32 @@ common_types = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",         # .xlsx
 ]
 
-common_rank = common_types.each_with_index.to_h
+def descendant?(type, ancestor, type_parents)
+  pending = [type]
+  visited = {}
+  until pending.empty?
+    candidate = pending.pop
+    next if visited[candidate]
 
-magics = magics.each_with_index.sort_by do |(priority, type), source_index|
-  [ -priority, common_rank.fetch(type, common_types.size), type, source_index ]
-end.map(&:first)
+    visited[candidate] = true
+    return true if candidate != type && candidate == ancestor
+
+    pending.concat(type_parents[candidate])
+  end
+  false
+end
+
+common_magics = common_types.flat_map do |common_type|
+  common_magic = magics.find { |_, type, _| type == common_type }
+  next [] unless common_magic
+
+  specific_magics = magics.select do |priority, type, _|
+    priority > common_magic[0] && descendant?(type, common_type, type_parents)
+  end
+  specific_magics + [common_magic]
+end
+
+magics = (common_magics + magics).uniq
 
 def emit_tables(output, extensions, types, aliases, magics)
   output.puts "# frozen_string_literal: true"
