@@ -230,6 +230,36 @@ class Marcel::MimeType::XmlSniffingTest < Marcel::TestCase
     assert_equal "application/xml", detect(%(<?xml version="1.0" encoding="UTF-16"?><rss/>))
   end
 
+  test "legacy multibyte encodings whose trail bytes look like ASCII are read as characters" do
+    # Shift_JIS ソ is 83 5C — its trail byte is an ASCII backslash — and ‐ is 81 5D,
+    # trailing in an ASCII ], so a raw byte scan would derail inside a name, a value,
+    # or a DOCTYPE internal subset.
+    sjis = ->(document) { document.encode(Encoding::Shift_JIS).b }
+
+    assert_equal "application/rss+xml", detect(sjis.(%(<?xml version="1.0" encoding="Shift_JIS"?><rss ソ="1"/>)))
+    assert_equal "application/rss+xml", detect(sjis.(%(<?xml version="1.0" encoding="Shift_JIS"?><rss note="ソ"/>)))
+    assert_equal "application/rss+xml", detect(sjis.(%(<?xml version="1.0" encoding="Shift_JIS"?><!DOCTYPE rss [<!-- ‐ -->]><rss/>)))
+    assert_equal "application/rss+xml", detect(sjis.(%(<?xml version="1.0" encoding="Shift_JIS"?><!-- ソ --><rss/>)))
+
+    # Bytes invalid in the declared encoding stay fatal before the root and harmless after.
+    assert_equal "application/xml", detect(%(<?xml version="1.0" encoding="Shift_JIS"?><rss note="\x82"/>).b)
+    assert_equal "application/rss+xml", detect(%(<?xml version="1.0" encoding="Shift_JIS"?><rss/>).b + "\x82".b)
+  end
+
+  test "declared US-ASCII rejects high bytes before the root and ignores them after" do
+    assert_equal "application/rss+xml", detect(%(<?xml version="1.0" encoding="US-ASCII"?><rss/>))
+    assert_equal "application/xml", detect(%(<?xml version="1.0" encoding="US-ASCII"?><!-- caf\xE9 --><rss/>).b)
+    assert_equal "application/rss+xml", detect(%(<?xml version="1.0" encoding="US-ASCII"?><rss/>).b + "\xE9".b)
+  end
+
+  test "a legacy multibyte character split by the scan limit is harmless after the root" do
+    document = %(<?xml version="1.0" encoding="Shift_JIS"?><rss/>).b
+    document << "x" * (Marcel::Magic::Xml::MAX_SCAN - document.bytesize - 1) << "ソ".encode(Encoding::Shift_JIS).b
+
+    assert_operator document.bytesize, :>, Marcel::Magic::Xml::MAX_SCAN
+    assert_equal "application/rss+xml", detect(document)
+  end
+
   test "encoding is validated only over the bytes consumed up to the root start-tag" do
     assert_equal "application/rss+xml", detect(xml("<rss version=\"2.0\"><!-- \xFF --></rss>".b))
 
@@ -337,6 +367,31 @@ class Marcel::MimeType::XmlSniffingTest < Marcel::TestCase
     # XML 1.1 admits as references the controls it forbids as literals.
     assert_equal "application/rss+xml", detect(%(<?xml version="1.1"?><rss note="&#1;"/>))
     assert_equal "application/rss+xml", detect(xml('<rss note="&#x10FFFF;"/>'))
+  end
+
+  test "character references admit unlimited leading zeros" do
+    # The CharRef grammar has no digit cap; only the significant digits are bounded, and
+    # the scalar they denote must still be one the XML version admits.
+    assert_equal "application/rss+xml", detect(xml('<rss note="&#00000009;"/>'))
+    assert_equal "application/rss+xml", detect(xml('<rss note="&#x000000041;"/>'))
+    assert_equal "application/rss+xml", detect(%(<?xml version="1.1"?><rss note="&#00000001;"/>))
+
+    assert_equal "application/xml", detect(xml('<rss note="&#00000001;"/>'))
+    assert_equal "application/xml", detect(xml('<rss note="&#00000000;"/>'))
+    assert_equal "application/xml", detect(%(<?xml version="1.1"?><rss note="&#x0000;"/>))
+    assert_equal "application/xml", detect(xml('<rss note="&#000000000000001114112;"/>'))
+    assert_equal "application/xml", detect(xml('<rss note="&#99999999999999999999;"/>'))
+    assert_equal "application/xml", detect(xml('<rss note="&#x00110000;"/>'))
+  end
+
+  test "PI targets and entity names admit the full XML Name grammar, colon included" do
+    # Namespace processing claims the colon in QNames and prefixes only; a namespace-aware
+    # SAX parser accepts it in a PI target or an entity name.
+    assert_equal "application/rss+xml", detect(xml("<?p:x?><rss/>"))
+    assert_equal "application/rss+xml",
+      detect(xml(%(<!DOCTYPE rss [<!ENTITY p:x "y">]>\n<rss note="&p:x;"/>)))
+
+    assert_equal "application/xml", detect(xml('<rss note="&p:x;"/>'))
   end
 
   test "entity references must be predefined unless a DTD could have declared them" do

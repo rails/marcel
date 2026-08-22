@@ -14,13 +14,16 @@ module Marcel
     #
     # Tika hands the prefix to a namespace-aware SAX parser and takes no root when parsing
     # fails before the first start element, so the scan holds the same line at the token
-    # level. The bytes consumed up to the end of the root start-tag must be valid in the
-    # document's encoding and free of characters the XML version forbids as literals. The
+    # level. Input is brought to UTF-8 before scanning — UTF-16 strictly, legacy encodings
+    # with invalid sequences replaced and the document refused if a replacement lands
+    # before the end of the root start-tag — so the bytes consumed to that point must be
+    # valid in the document's encoding and free of characters the XML version forbids. The
     # XML declaration may appear only first, parsed in full and limited to versions 1.0 and
     # 1.1; no other processing instruction may use the reserved xml target, and a PI's data
-    # must be separated from its target by whitespace; comments may not contain "--". Names
-    # — the root and attribute QNames, namespace prefixes, PI targets and reference names —
-    # are validated as Unicode NCNames. Attribute values may not contain "<"; their
+    # must be separated from its target by whitespace; comments may not contain "--". The
+    # root and attribute QNames and namespace prefixes are validated as Unicode NCNames,
+    # while PI targets and reference names admit the full XML Name, whose colon namespace
+    # processing leaves alone. Attribute values may not contain "<"; their
     # character references must denote characters the XML version admits, and their entity
     # references must be predefined unless a DTD that could declare them was seen.
     # References are validated, never resolved; nothing beyond the tokens is — no entities,
@@ -38,7 +41,7 @@ module Marcel
 
       # Byte-level scanner pattern for names: XML Name restricted to ASCII plus any
       # non-ASCII byte. It only locates tokens; every captured name is then validated
-      # against the real Unicode name grammar (NCNAME below) after decoding.
+      # against the real Unicode name grammar (NCNAME and XML_NAME below) after decoding.
       NAME = '[A-Za-z_:\x80-\xFF][A-Za-z0-9._:\-\x80-\xFF]*'
       SPACE = '[ \t\r\n]'
       ENCODING_NAME = '[A-Za-z][A-Za-z0-9._\-]*'
@@ -62,16 +65,25 @@ module Marcel
       /xn
 
       # Entity and character references; anything else after & in an attribute value is a
-      # well-formedness error. The digit bounds cover every code point through U+10FFFF.
-      REFERENCE = /&(?:(?<name>#{NAME})|\#(?<decimal>[0-9]{1,7})|\#x(?<hex>[0-9A-Fa-f]{1,6}));/n
+      # well-formedness error. The CharRef grammar puts no cap on digits — leading zeros
+      # are legal in any number — so digit runs are unbounded here and their magnitude is
+      # bounded lexically by valid_character_reference?.
+      REFERENCE = /&(?:(?<name>#{NAME})|\#(?<decimal>[0-9]+)|\#x(?<hex>[0-9A-Fa-f]+));/n
 
       # The five entities every XML document predefines; any other entity reference is only
       # potentially declared when the document carries a DTD.
       PREDEFINED_ENTITIES = %w( amp lt gt apos quot ).freeze
 
-      # NCName under the XML 1.0 (5th ed.) Unicode name grammar: NameStartChar and
-      # NameChar with the colon excluded, matched against decoded UTF-8 names.
-      NCNAME = /\A[A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}][A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]*\z/
+      # NameStartChar and NameChar under the XML 1.0 (5th ed.) Unicode name grammar,
+      # colon excluded, matched against decoded UTF-8 names.
+      NAME_START_CHARS = "A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}"
+      NAME_CHARS = "#{NAME_START_CHARS}\\-.0-9\u00B7\u0300-\u036F\u203F-\u2040"
+
+      # QName parts and namespace prefixes must be NCNames — namespace processing claims
+      # their colon — where PI targets and entity names keep the full Name grammar, in
+      # which the colon is an ordinary name character.
+      NCNAME = /\A[#{NAME_START_CHARS}][#{NAME_CHARS}]*\z/
+      XML_NAME = /\A[:#{NAME_START_CHARS}][:#{NAME_CHARS}]*\z/
 
       # Characters each XML version forbids as literals, matched against the decoded
       # UTF-8 text. XML 1.1 restricts the C0 and C1 controls (NEL excepted) to character
@@ -136,27 +148,34 @@ module Marcel
             prefix.byteslice(0, MAX_SCAN)
           end
 
-          # Returns [bytes to scan, encoding to validate them against, XML version], or nil
-          # when the prefix cannot be decoded. The magic gate guarantees a byte order mark on
-          # UTF-16 input, which is transcoded strictly to UTF-8 up front; other documents are
-          # scanned as bytes and validated against their declared encoding, UTF-8 by default.
+          # Returns [bytes to scan, text mode for valid_text?, XML version], or nil when
+          # the prefix cannot be decoded. Scanning always reads UTF-8 bytes: the magic gate
+          # guarantees a byte order mark on UTF-16 input, which is transcoded strictly up
+          # front; documents already in UTF-8 are scanned raw; and any other declared
+          # encoding is replace-transcoded, since its multibyte characters may carry ASCII
+          # trail bytes (Shift_JIS ソ ends in an ASCII backslash) that would derail a raw
+          # byte scan.
           def decode(prefix)
             if prefix.start_with?(UTF16LE_BOM)
               data = transcode(prefix.byteslice(2..), Encoding::UTF_16LE)
               if declaration = xml_declaration(data)
-                [data, Encoding::UTF_8, declaration[0]]
+                [data, :utf8, declaration[0]]
               end
             elsif prefix.start_with?(UTF16BE_BOM)
               data = transcode(prefix.byteslice(2..), Encoding::UTF_16BE)
               if declaration = xml_declaration(data)
-                [data, Encoding::UTF_8, declaration[0]]
+                [data, :utf8, declaration[0]]
               end
             else
               data = prefix.start_with?(UTF8_BOM) ? prefix.byteslice(3..) : prefix
               if declaration = xml_declaration(data)
                 version, name = declaration
                 encoding = name ? find_encoding(name) : Encoding::UTF_8
-                [data, encoding, version] if encoding
+                if encoding == Encoding::UTF_8
+                  [data, :utf8, version]
+                elsif encoding
+                  [reencode(data, encoding), :replaced, version]
+                end
               end
             end
           end
@@ -171,6 +190,18 @@ module Marcel
             rescue EncodingError
               bytes.byteslice(0, bytes.bytesize - 2).encode(Encoding::UTF_8).b
             end
+          end
+
+          # Replace-transcodes a legacy-encoded prefix to UTF-8. Invalid and unconvertible
+          # sequences become U+FFFD, which legacy charsets cannot themselves encode, so a
+          # replacement within the consumed prefix always marks input a SAX parser would
+          # reject — valid_text? refuses it — while replacements past the root, like bad
+          # bytes trailing the document or a character split by MAX_SCAN, are never
+          # examined. (The rare charset that can encode U+FFFD, like GB18030, only
+          # forfeits a refinement.)
+          def reencode(bytes, encoding)
+            bytes.dup.force_encoding(encoding) \
+              .encode(Encoding::UTF_8, invalid: :replace, undef: :replace).b
           end
 
           # Returns [version, declared encoding name or nil] when the document either has no
@@ -199,21 +230,21 @@ module Marcel
           # Skips the prolog — whitespace, processing instructions (including the XML
           # declaration), comments and the document type declaration — and returns the
           # root element's [namespace, local name], or nil if no root start-tag is found.
-          def root_element(data, encoding, version)
+          def root_element(data, mode, version)
             pos = 0
             doctype_seen = false
             while pos
               pos = WHITESPACE.match(data, pos).end(0)
 
               if data.byteslice(pos, 2) == PROCESSING_INSTRUCTION_OPEN
-                pos = skip_processing_instruction(data, pos, encoding)
+                pos = skip_processing_instruction(data, pos)
               elsif data.byteslice(pos, 4) == COMMENT_OPEN
                 pos = skip_comment(data, pos)
               elsif data.byteslice(pos, 9) == DOCTYPE_OPEN
                 doctype_seen = true
-                pos = skip_doctype(data, pos + 9, encoding)
+                pos = skip_doctype(data, pos + 9)
               else
-                return parse_start_tag(data, pos, encoding, version, doctype_seen)
+                return parse_start_tag(data, pos, mode, version, doctype_seen)
               end
             end
           end
@@ -221,10 +252,10 @@ module Marcel
           # The XML declaration is the one processing instruction allowed the xml target,
           # and only as the very first bytes of the document (checked by xml_declaration).
           # A PI's data, when present, must be separated from its target by whitespace.
-          def skip_processing_instruction(data, pos, encoding)
+          def skip_processing_instruction(data, pos)
             return nil unless target = PROCESSING_INSTRUCTION.match(data, pos)
             return nil if pos != 0 && target[1].match?(RESERVED_TARGET)
-            return nil unless pos == 0 && target[1].match?(RESERVED_TARGET) || valid_name?(target[1], encoding)
+            return nil unless pos == 0 && target[1].match?(RESERVED_TARGET) || valid_name?(target[1], XML_NAME)
 
             after = target.end(0)
             return nil unless data.byteslice(after, 2) == PROCESSING_INSTRUCTION_CLOSE ||
@@ -247,7 +278,7 @@ module Marcel
           # Advances past a document type declaration, honouring quoted literals and the
           # bracketed internal subset so that markup declarations like
           # <!ENTITY x "<foo>"> and comments within the subset cannot end the scan early.
-          def skip_doctype(data, pos, encoding)
+          def skip_doctype(data, pos)
             depth = 0
             while pos && (pos = data.index(DOCTYPE_DELIMITER, pos))
               case data.getbyte(pos)
@@ -263,7 +294,7 @@ module Marcel
                 if data.byteslice(pos, 4) == COMMENT_OPEN
                   pos = skip_comment(data, pos)
                 elsif data.byteslice(pos, 2) == PROCESSING_INSTRUCTION_OPEN
-                  pos = skip_processing_instruction(data, pos, encoding)
+                  pos = skip_processing_instruction(data, pos)
                 else
                   pos += 1
                 end
@@ -278,7 +309,7 @@ module Marcel
           # parsed as quoted literals so a > within one cannot truncate the tag; the tag must
           # close within the scanned prefix, and everything consumed up to that point must be
           # valid in the document's encoding and free of forbidden characters.
-          def parse_start_tag(data, pos, encoding, version, doctype_seen)
+          def parse_start_tag(data, pos, mode, version, doctype_seen)
             return nil unless tag = START_TAG.match(data, pos)
 
             qualified_name = tag[1]
@@ -293,32 +324,34 @@ module Marcel
               pos = attribute.end(0)
             end
             return nil unless tag_end = START_TAG_END.match(data, pos)
-            return nil unless valid_text?(data.byteslice(0, tag_end.end(0)), encoding, version)
+            return nil unless valid_text?(data.byteslice(0, tag_end.end(0)), mode, version)
 
             bindings = namespace_bindings(attributes, version)
             return nil unless bindings
-            return nil unless valid_attributes?(attributes, bindings, encoding, version, doctype_seen)
+            return nil unless valid_attributes?(attributes, bindings, version, doctype_seen)
 
-            resolve_name(qualified_name, bindings, encoding)
+            resolve_name(qualified_name, bindings)
           end
 
-          # The consumed prefix must be valid in the document's encoding and free of the
-          # characters its XML version forbids as literals, wherever they fall — comment,
-          # PI, DOCTYPE or attribute — since a SAX parser rejects them before the root.
-          def valid_text?(consumed, encoding, version)
-            consumed = consumed.force_encoding(encoding)
-            consumed.valid_encoding? &&
-              !consumed.encode(Encoding::UTF_8).match?(FORBIDDEN_CHARS.fetch(version))
+          # The consumed prefix must be free of the characters its XML version forbids as
+          # literals, wherever they fall — comment, PI, DOCTYPE or attribute — since a SAX
+          # parser rejects them before the root. Raw and strictly transcoded input must be
+          # valid UTF-8, in which a genuine U+FFFD literal is legal XML; replace-transcoded
+          # input must carry no U+FFFD, each one marking a sequence invalid in the declared
+          # encoding.
+          def valid_text?(consumed, mode, version)
+            consumed = consumed.force_encoding(Encoding::UTF_8)
+            sound = mode == :replaced ? !consumed.include?("\u{FFFD}") : consumed.valid_encoding?
+            sound && !consumed.match?(FORBIDDEN_CHARS.fetch(version))
           end
 
-          # Names — QName parts, prefixes, PI targets and entity names — must be NCNames
-          # under the Unicode name grammar once decoded; the byte-level scanner accepts a
-          # superset purely to locate them. Namespaces well-formedness leaves no room for
-          # colons in any of these, so NCName is the grammar throughout.
-          def valid_name?(name, encoding)
-            NCNAME.match?(name.dup.force_encoding(encoding).encode(Encoding::UTF_8))
-          rescue EncodingError
-            false
+          # Names must satisfy the Unicode name grammar once decoded — NCNAME unless the
+          # caller passes the laxer XML_NAME — with the byte-level scanner accepting a
+          # superset purely to locate them. Every name is UTF-8 by the time it gets here:
+          # decode leaves only raw UTF-8 documents untranscoded.
+          def valid_name?(name, grammar = NCNAME)
+            name = name.dup.force_encoding(Encoding::UTF_8)
+            name.valid_encoding? && grammar.match?(name)
           end
 
           # A character reference must denote a character the XML version admits: never a
@@ -336,17 +369,28 @@ module Marcel
             end
           end
 
+          # A character reference admits unlimited leading zeros, so the scalar's magnitude
+          # is bounded lexically — at most seven significant decimal digits or six hex
+          # cover every code point through U+10FFFF — before conversion, never by
+          # converting an unbounded digit run. All zeros denote #x0, rejected as a scalar.
+          def valid_character_reference?(digits, base, version)
+            digits = digits.sub(/\A0+/, "")
+            digits.length <= (base == 16 ? 6 : 7) && valid_character_scalar?(digits.to_i(base), version)
+          end
+
           # Every & in an attribute value must begin a well-formed reference: a character
           # reference to an admissible character, a predefined entity, or — only when a DTD
           # that could declare it was seen — any well-named entity. Never resolved.
-          def valid_references?(value, encoding, version, doctype_seen)
+          def valid_references?(value, version, doctype_seen)
             well_formed = true
             rest = value.gsub(REFERENCE) do
               reference = Regexp.last_match
-              well_formed &&= if scalar = reference[:decimal] || reference[:hex]
-                valid_character_scalar?(reference[:decimal] ? scalar.to_i : scalar.to_i(16), version)
+              well_formed &&= if digits = reference[:decimal]
+                valid_character_reference?(digits, 10, version)
+              elsif digits = reference[:hex]
+                valid_character_reference?(digits, 16, version)
               else
-                valid_name?(reference[:name], encoding) &&
+                valid_name?(reference[:name], XML_NAME) &&
                   (doctype_seen || PREDEFINED_ENTITIES.include?(reference[:name]))
               end
               ""
@@ -399,23 +443,23 @@ module Marcel
           # them: names must be valid NCNames, prefixes bound, [namespace, local name] pairs
           # unique (the default namespace does not apply to attributes), and values free of
           # malformed references.
-          def valid_attributes?(attributes, bindings, encoding, version, doctype_seen)
+          def valid_attributes?(attributes, bindings, version, doctype_seen)
             expanded = {}
             attributes.each do |name, value|
-              return false unless valid_references?(value, encoding, version, doctype_seen)
+              return false unless valid_references?(value, version, doctype_seen)
 
               if name == "xmlns"
                 next
               elsif name.start_with?("xmlns:")
-                return false unless valid_name?(name.byteslice(6..), encoding)
+                return false unless valid_name?(name.byteslice(6..))
                 next
               end
 
               return false unless split = split_qualified_name(name)
 
               prefix, local_name = split
-              return false unless valid_name?(local_name, encoding)
-              return false if prefix && !(valid_name?(prefix, encoding) && bindings.key?(prefix))
+              return false unless valid_name?(local_name)
+              return false if prefix && !(valid_name?(prefix) && bindings.key?(prefix))
 
               key = [prefix && bindings[prefix], local_name]
               return false if expanded.key?(key)
@@ -428,13 +472,13 @@ module Marcel
           # Resolves the root element's name against the tag's own bindings: the default
           # namespace for an unprefixed name, the prefix's binding otherwise. An unbound
           # prefix or invalid name is a namespace error.
-          def resolve_name(qualified_name, bindings, encoding)
+          def resolve_name(qualified_name, bindings)
             return nil unless split = split_qualified_name(qualified_name)
 
             prefix, local_name = split
-            return nil unless valid_name?(local_name, encoding)
+            return nil unless valid_name?(local_name)
             return nil if prefix == "xmlns"
-            return nil if prefix && !(valid_name?(prefix, encoding) && bindings.key?(prefix))
+            return nil if prefix && !(valid_name?(prefix) && bindings.key?(prefix))
 
             [prefix ? bindings[prefix] : bindings[nil], local_name]
           end
