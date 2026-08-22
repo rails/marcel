@@ -1,0 +1,23 @@
+lib/marcel/version.rb
+  s_dfcaaebd518e2d::t_2eba9761465abf 4
+Gemfile.lock
+  s_dfcaaebd518e2d::t_6a451f03bc7dec 4,88
+gemfiles/runtime/Gemfile.lock
+  s_dfcaaebd518e2d::t_e4f63412dc207e 4,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "e4f2e1be36b85ddc2d70dc55653fb9507e2ef27d",
+  "prompts": {},
+  "sessions": {
+    "s_dfcaaebd518e2d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9e781140-2fdd-4d9b-ab54-82e2cee419e8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
