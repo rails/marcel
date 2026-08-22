@@ -218,11 +218,15 @@ class Marcel::MimeType::HtmlMagicTest < Marcel::TestCase
   end
 
   test "does not treat a partial prefix as the end of a long HTML document" do
+    # Past the HTML magic window, the root element scan still finds <html> within its own
+    # 64KB bound; a prefix cut before the root element, or a root beyond that bound, is not HTML.
     html = "<!-- #{"x" * 5_000} -->\n<html><body></body></html>"
     chunk = html.byteslice(0, 4_096)
+    distant = "<!-- #{"x" * 70_000} -->\n<html><body></body></html>"
 
-    assert_equal "application/xml", Marcel::MimeType.for(StringIO.new(html))
+    assert_equal "text/html", Marcel::MimeType.for(StringIO.new(html))
     assert_equal "application/xml", Marcel::MimeType.for(StringIO.new(chunk))
+    assert_equal "application/xml", Marcel::MimeType.for(StringIO.new(distant))
   end
 
   private

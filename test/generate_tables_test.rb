@@ -16,6 +16,7 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
           <_comment>Generated comment&#10;raise "comment injection executed"</_comment>
           <glob pattern="*.safe" />
           <sub-class-of type="application/zip" />
+          <root-XML localName="generated" namespaceURI="urn:x#{raise(&quot;namespace-interpolation-executed&quot;)}" />
         </mime-type>
       </mime-info>
     XML
@@ -32,7 +33,8 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
       assert_includes generated, "Regexp.new("
       File.binwrite(tables_path, generated)
 
-      verification = "load ARGV.fetch(0); abort unless Marcel::EXTENSIONS.key?(ARGV.fetch(1))"
+      verification = "load ARGV.fetch(0); abort unless Marcel::EXTENSIONS.key?(ARGV.fetch(1)); " \
+        "abort unless Marcel::ROOT_XML.key?(['urn:x\#{raise(\"namespace-interpolation-executed\")}', 'generated'])"
       _output, errors, status = Open3.capture3(
         RbConfig.ruby, "-e", verification, tables_path, "safe"
       )
@@ -236,8 +238,8 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
 
       assert status.success?, errors
       warning_lines = errors.lines
-      assert_equal "Skipped 58 unsupported magic rules\n", warning_lines.pop
-      assert_equal 112, warning_lines.size
+      assert_equal "Skipped 59 unsupported magic rules\n", warning_lines.pop
+      assert_equal 113, warning_lines.size
       assert File.exist?(tables_path)
     end
   end
@@ -346,6 +348,75 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
       refute status.success?
       assert_empty generated
       assert_equal "existing artifact\n", File.binread(tables_path)
+    end
+  end
+
+  test "emits root element rules, resolving collisions by type name like Tika" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="application/onix-message-short+xml">
+          <root-XML localName="ONIXMessage" />
+          <root-XML localName="ONIXMessage" namespaceURI="http://ns.editeur.org/onix/3.0/reference" />
+        </mime-type>
+        <mime-type type="application/onix-message+xml">
+          <root-XML localName="ONIXMessage" />
+          <root-XML localName="ONIXmessage" namespaceURI="http://ns.editeur.org/onix/3.0/short" />
+        </mime-type>
+        <mime-type type="application/dita+xml;format=map">
+          <root-XML localName="map" namespaceURI="" />
+        </mime-type>
+        <mime-type type="application/x-globbed">
+          <glob pattern="*.globbed" />
+        </mime-type>
+      </mime-info>
+    XML
+
+    Dir.mktmpdir("marcel-generator-test") do |directory|
+      xml_path = File.join(directory, "input.xml")
+      tables_path = File.join(directory, "tables.rb")
+      File.binwrite(xml_path, xml)
+
+      generated, errors, status = Open3.capture3(
+        RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+      )
+      assert status.success?, errors
+      File.binwrite(tables_path, generated)
+
+      verification = <<~'RUBY'
+        load ARGV.fetch(0)
+        abort unless Marcel::ROOT_XML.size == 4
+        abort unless Marcel::ROOT_XML.fetch([nil, "ONIXMessage"]) == "application/onix-message+xml"
+        abort unless Marcel::ROOT_XML.fetch(["http://ns.editeur.org/onix/3.0/reference", "ONIXMessage"]) == "application/onix-message-short+xml"
+        abort unless Marcel::ROOT_XML.fetch(["http://ns.editeur.org/onix/3.0/short", "ONIXmessage"]) == "application/onix-message+xml"
+        abort unless Marcel::ROOT_XML.fetch([nil, "map"]) == "application/dita+xml;format=map"
+        abort unless Marcel::TYPE_EXTS.keys == ["application/x-globbed"]
+      RUBY
+      _output, errors, status = Open3.capture3(RbConfig.ruby, "-e", verification, tables_path)
+      assert status.success?, errors
+    end
+  end
+
+  test "rejects code-shaped root element names and namespaces" do
+    rules = {
+      '<root-XML localName="x&apos;]; raise(&quot;name interpolation executed&quot;); #" />' => "Invalid root-XML localName",
+      '<root-XML localName="x" namespaceURI="urn:x&apos;]; raise(&quot;namespace interpolation executed&quot;); #" />' => "Invalid root-XML namespaceURI",
+    }
+
+    rules.each do |rule, message|
+      xml = "<mime-info><mime-type type=\"application/x-pwn\">#{rule}</mime-type></mime-info>"
+
+      Dir.mktmpdir("marcel-generator-test") do |directory|
+        xml_path = File.join(directory, "input.xml")
+        File.binwrite(xml_path, xml)
+
+        generated, errors, status = Open3.capture3(
+          RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+        )
+
+        refute status.success?
+        assert_empty generated
+        assert_includes errors, message
+      end
     end
   end
 

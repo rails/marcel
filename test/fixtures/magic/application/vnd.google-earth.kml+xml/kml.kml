@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Placemark>
+    <name>Marcel fixture</name>
+    <description>Minimal KML document used to exercise root element detection.</description>
+    <Point>
+      <coordinates>-87.6298,41.8781,0</coordinates>
+    </Point>
+  </Placemark>
+</kml>

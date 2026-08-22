@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Marcel fixtures</title>
+    <link>https://github.com/rails/marcel</link>
+    <description>Minimal RSS 2.0 feed used to exercise root element detection.</description>
+    <item>
+      <title>Root element sniffing</title>
+      <link>https://github.com/rails/marcel/issues/48</link>
+      <guid>https://github.com/rails/marcel/issues/48</guid>
+    </item>
+  </channel>
+</rss>
