@@ -1,0 +1,32 @@
+script/download_tika_data.rb
+  s_8478f7139e53e5::t_71fb803e6d2692 7-8
+script/generate_tables.rb
+  s_8478f7139e53e5::t_0bb91837ac5e9e 183-184,186-187
+data/custom.xml
+  s_8478f7139e53e5::t_c848510aa555c0 246-261
+test/magic_test.rb
+  s_8478f7139e53e5::t_350789603af250 40-50
+test/generate_tables_test.rb
+  s_8478f7139e53e5::t_22ec4ed8f06908 241-242
+lib/marcel/tables.rb
+  s_8478f7139e53e5::t_c848510aa555c0 2803
+  s_8478f7139e53e5::t_0bb91837ac5e9e 2802,2912-2913,2919,3032
+data/tika.xml
+  s_8478f7139e53e5::t_3639bbaa471cf4 2,356-370,859-868,907-915,923-929,931,938-944,4884-4897
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "cee790c383549320ca652729783fd768c1f5617e",
+  "prompts": {},
+  "sessions": {
+    "s_8478f7139e53e5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b0f25700-c344-415b-857c-15fd26fe6ad9",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
