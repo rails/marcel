@@ -1,0 +1,64 @@
+script/generate_tables.rb
+  s_94a72cb7cffc8e::t_158ba920d0de8e 100-103,161-179,183,185-186,431,480-494,589,628-637,676
+  s_94a72cb7cffc8e::t_2f93fea8375791 184
+  s_94a72cb7cffc8e::t_3bf2426ba8de57 187
+lib/marcel/mime_type.rb
+  s_94a72cb7cffc8e::t_39a0757507b1fe 80-81
+test/fixtures/magic/application/atom+xml/atom.atom
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-12
+lib/marcel/magic/xml.rb
+  s_94a72cb7cffc8e::t_098c7654ed795b 54-55,58-60
+  s_94a72cb7cffc8e::t_393b01b625b5cd 238
+  s_94a72cb7cffc8e::t_d1edd06300a9a1 15-26,46,50-53,56-57,61-64,66-75,83,91-92,128-130,135-137,140-142,146-148,165-168,170,172,175,191,203,210,215-219,266-267,282-331,333-352,355-359,361-363,365
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-14,27-45,47-49,65,76-82,84-90,93-127,131-134,138-139,143-144,149-164,169,171,173-174,176-190,192-202,204-209,211-214,220-237,239-265,268-281,332,353-354,360,364,366-370
+  s_94a72cb7cffc8e::t_805aea76ca6ce2 145
+test/xml_sniffing_test.rb
+  s_94a72cb7cffc8e::t_d1b1d9fb6f423c 246
+  s_94a72cb7cffc8e::t_d1bc91264cac1a 253-263,265
+  s_94a72cb7cffc8e::t_1c8de401621bd9 273-326
+  s_94a72cb7cffc8e::t_478569ae22b3d9 1-210,264,271,327-383
+  s_94a72cb7cffc8e::t_100b67a4418605 266-270,272
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 211-245,247-252
+lib/marcel/tables.rb
+  s_94a72cb7cffc8e::t_3bf2426ba8de57 2400,2423,2553,2557-2559,2679-2750
+  s_94a72cb7cffc8e::t_3b42161817eb3c 2751
+script/verify_gem.rb
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 1-71
+test/generate_tables_test.rb
+  s_94a72cb7cffc8e::t_659b1fcab6a55b 36,241-242,354-398,404,407,411,420-421
+  s_94a72cb7cffc8e::t_1d20db44d1d07d 19,37,399-403,405-406,408-410,412-419
+  s_94a72cb7cffc8e::t_e960da90582ffc 422
+test/fixtures/magic/application/vnd.google-earth.kml+xml/kml.kml
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-10
+README.md
+  s_94a72cb7cffc8e::t_1c8de401621bd9 22
+  s_94a72cb7cffc8e::t_478569ae22b3d9 23
+.github/workflows/release.yml
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 96-98
+test/fixtures/magic/application/rss+xml/rss.rss
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-13
+test/package_test.rb
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 2-3,9,13-17,25-26,35-43
+lib/marcel/magic.rb
+  s_94a72cb7cffc8e::t_39a0757507b1fe 333
+data/custom.xml
+  s_94a72cb7cffc8e::t_3bf2426ba8de57 199-245
+test/html_magic_test.rb
+  s_94a72cb7cffc8e::t_659b1fcab6a55b 221-222,225,227,229
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "5c1866ff6ee130b72dd6f4a71b2084b9e7c173a3",
+  "prompts": {},
+  "sessions": {
+    "s_94a72cb7cffc8e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "16848c1f-72d1-46c8-8281-1c371bc0c709",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}
