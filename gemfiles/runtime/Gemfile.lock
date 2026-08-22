@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    marcel (1.2.1)
+    marcel (2.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -27,7 +27,7 @@ DEPENDENCIES
 
 CHECKSUMS
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
-  marcel (1.2.1)
+  marcel (2.0.0)
   minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
   rack (3.2.7) sha256=93e13e1c24f93556671d85d2d79fa228c3485815c50d7e2f265b5330c6528fb7
