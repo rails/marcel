@@ -1,0 +1,60 @@
+lib/marcel/tables.rb
+  s_94a72cb7cffc8e::t_3b42161817eb3c 2751
+  s_94a72cb7cffc8e::t_3bf2426ba8de57 2400,2423,2553,2557-2559,2679-2750
+lib/marcel/magic/xml.rb
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-110,114-196,198-258
+  s_94a72cb7cffc8e::t_805aea76ca6ce2 111-112
+  s_94a72cb7cffc8e::t_393b01b625b5cd 197
+  s_94a72cb7cffc8e::t_f5fb22509a6a8c 113
+test/xml_sniffing_test.rb
+  s_94a72cb7cffc8e::t_478569ae22b3d9 1-210,253-309
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 211-245,247-252
+  s_94a72cb7cffc8e::t_d1b1d9fb6f423c 246
+script/verify_gem.rb
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 1-71
+test/package_test.rb
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 2-3,9,13-17,25-26,35-43
+script/generate_tables.rb
+  s_94a72cb7cffc8e::t_2f93fea8375791 184
+  s_94a72cb7cffc8e::t_158ba920d0de8e 100-103,161-179,183,185-186,431,480-494,589,628-637,676
+  s_94a72cb7cffc8e::t_3bf2426ba8de57 187
+README.md
+  s_94a72cb7cffc8e::t_478569ae22b3d9 23
+  s_94a72cb7cffc8e::t_d1b1d9fb6f423c 22
+data/custom.xml
+  s_94a72cb7cffc8e::t_3bf2426ba8de57 199-245
+lib/marcel/magic.rb
+  s_94a72cb7cffc8e::t_39a0757507b1fe 333
+test/html_magic_test.rb
+  s_94a72cb7cffc8e::t_659b1fcab6a55b 221-222,225,227,229
+.github/workflows/release.yml
+  s_94a72cb7cffc8e::t_3754f1aef48ce9 96-98
+test/fixtures/magic/application/rss+xml/rss.rss
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-13
+test/fixtures/magic/application/atom+xml/atom.atom
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-12
+lib/marcel/mime_type.rb
+  s_94a72cb7cffc8e::t_39a0757507b1fe 80-81
+test/generate_tables_test.rb
+  s_94a72cb7cffc8e::t_659b1fcab6a55b 36,241-242,354-398,404,407,411,420-421
+  s_94a72cb7cffc8e::t_e960da90582ffc 422
+  s_94a72cb7cffc8e::t_1d20db44d1d07d 19,37,399-403,405-406,408-410,412-419
+test/fixtures/magic/application/vnd.google-earth.kml+xml/kml.kml
+  s_94a72cb7cffc8e::t_39a0757507b1fe 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "e9e76f221fb8b82a600557df581c763769438bfd",
+  "prompts": {},
+  "sessions": {
+    "s_94a72cb7cffc8e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "16848c1f-72d1-46c8-8281-1c371bc0c709",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}
