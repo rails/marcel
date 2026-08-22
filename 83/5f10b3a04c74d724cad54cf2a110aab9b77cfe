@@ -1,0 +1,38 @@
+test/xml_sniffing_test.rb
+  s_dfcaaebd518e2d::t_99a69fa365859b 249-262
+  s_dfcaaebd518e2d::t_2beb0164a87ca9 233-248
+  s_dfcaaebd518e2d::t_be2ae594601dbb 372-396
+lib/marcel/magic/xml.rb
+  s_dfcaaebd518e2d::t_4f9255bf082fae 195-206
+  s_dfcaaebd518e2d::t_e6630e3df854d6 77-81,84-86
+  s_dfcaaebd518e2d::t_5718e89f6803f1 255,258
+  s_dfcaaebd518e2d::t_318fc180a464d9 297
+  s_dfcaaebd518e2d::t_92a517ea1ea8b3 151-157,162,167,174-178
+  s_dfcaaebd518e2d::t_2f168ca7210367 327,331,333,336-345,348-354
+  s_dfcaaebd518e2d::t_c7416e6b902642 312
+  s_dfcaaebd518e2d::t_3a93d83b379bf4 281
+  s_dfcaaebd518e2d::t_54978239fd364a 475,479,481
+  s_dfcaaebd518e2d::t_1d5b84b139ff1f 44
+  s_dfcaaebd518e2d::t_f92cabdc6fc0c1 68-71
+  s_dfcaaebd518e2d::t_e9d86700094cc5 446,449,454,461-462
+  s_dfcaaebd518e2d::t_9060818bb68e40 17-20,23-26
+  s_dfcaaebd518e2d::t_3554221f27a54f 82-83
+  s_dfcaaebd518e2d::t_ef8525e1b60415 233,240,245,247
+  s_dfcaaebd518e2d::t_61e4de9b7d09d5 372-380,384,388-391,393
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "835f10b3a04c74d724cad54cf2a110aab9b77cfe",
+  "prompts": {},
+  "sessions": {
+    "s_dfcaaebd518e2d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9e781140-2fdd-4d9b-ab54-82e2cee419e8",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}
