@@ -4,8 +4,8 @@ require 'net/http'
 require 'uri'
 
 # To update the MIME database, review a new Tika commit and update both values.
-TIKA_COMMIT = "c29724782854bb5a319f4a1940d0828a58ace3f9".freeze
-TIKA_DATA_SHA256 = "b213c35123f215e11a9fa12d7907c9bb0a5b79214a89eeaf343984ba69143e6d".freeze
+TIKA_COMMIT = "514e1b3d8d29726d02ac6a12479d95f5db263379".freeze
+TIKA_DATA_SHA256 = "ae8d2e4c7d8b0eb7669323129c39e81c0dc89614c3aaffc67751172b46413889".freeze
 TIKA_URL = "https://raw.githubusercontent.com/apache/tika/#{TIKA_COMMIT}/tika-core/src/main/resources/org/apache/tika/mime/tika-mimetypes.xml".freeze
 TIKA_PROVENANCE = "<!-- Downloaded from #{TIKA_URL} -->\n".freeze
 TIKA_PREAMBLE = /\A(?:<\?xml[^\n]*\?>\n)?/.freeze

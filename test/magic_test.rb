@@ -37,6 +37,17 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     end
   end
 
+  # Before Tika 4.0.0, the timestamped-data magic matched any 11-byte OID under the
+  # 1.2.840.113549 arc, so sibling CMS content types (compressedData, authData, ...) in
+  # 1.2.840.113549.1.9.16.1.* were misdetected as application/timestamped-data. The 4.0.0
+  # rules (carried in data/custom.xml with explicit match types) require the full
+  # id-ct-timestampedData OID ending in .31.
+  test "other CMS content types are not misdetected as timestamped-data" do
+    compressed_data = "\x30\x80\x06\x0B\x2A\x86\x48\x86\xF7\x0D\x01\x09\x10\x01\x09\xA0\x80".b
+
+    assert_equal "application/octet-stream", Marcel::MimeType.for(compressed_data)
+  end
+
   test "add and remove type" do
     Marcel::Magic.add('application/x-my-thing', extensions: 'mtg', parents: 'application/json')
     Marcel::Magic.remove('application/x-my-thing')
