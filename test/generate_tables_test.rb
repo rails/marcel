@@ -238,8 +238,8 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
 
       assert status.success?, errors
       warning_lines = errors.lines
-      assert_equal "Skipped 59 unsupported magic rules\n", warning_lines.pop
-      assert_equal 113, warning_lines.size
+      assert_equal "Skipped 60 unsupported magic rules\n", warning_lines.pop
+      assert_equal 114, warning_lines.size
       assert File.exist?(tables_path)
     end
   end

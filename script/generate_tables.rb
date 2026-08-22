@@ -180,11 +180,11 @@ module MimeData
 end
 
 class UnsupportedRules
-  # Tika currently contains 59 unsupported XML rules: 58 magic matches plus one root-XML
-  # rule. Their pretty-printed warnings span 113 physical lines, so pin the canonical rule
+  # Tika currently contains 60 unsupported XML rules: 59 magic matches plus one root-XML
+  # rule. Their pretty-printed warnings span 114 physical lines, so pin the canonical rule
   # set rather than stderr layout.
-  EXPECTED_COUNT = 59
-  EXPECTED_SHA256 = "f42a5b9b0462e1c467e068b114c33706f28394d52da76111ae3271cdc5e606ce"
+  EXPECTED_COUNT = 60
+  EXPECTED_SHA256 = "61d54e5e5b543d3d3721e4d056e43e2f928fb08b36e94c8b1da88a416a18bb48"
 
   def initialize
     @signatures = []
