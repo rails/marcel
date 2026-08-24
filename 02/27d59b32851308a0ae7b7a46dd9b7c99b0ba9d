@@ -1,0 +1,38 @@
+test/generate_tables_test.rb
+  s_943849f3bd8fbb::t_ca970cf35b3135 241-242
+  s_943849f3bd8fbb::t_3ea9295c07968c 504-641
+script/generate_tables.rb
+  s_943849f3bd8fbb::t_10fb8e90369d2f 183-189
+  s_943849f3bd8fbb::t_a1bd1402e77219 303-312,320-323
+  s_943849f3bd8fbb::t_bcb83ce37e8600 351-354,358-372,376-380,382,384
+  s_dd92bfcb178af1::t_20ccd8928f52ed 324
+test/magic_test.rb
+  s_943849f3bd8fbb::t_9d8ecfa70fd785 93-95
+  s_943849f3bd8fbb::t_bbc254f22f29a3 43-44,48-92,96-98
+lib/marcel/tables.rb
+  s_943849f3bd8fbb::t_0c5663611837d5 2780,2889,2907-2908,2910-2911,2973,3017,3026,3058,3165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "0227d59b32851308a0ae7b7a46dd9b7c99b0ba9d",
+  "prompts": {},
+  "sessions": {
+    "s_943849f3bd8fbb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b184420a-8fa6-42dc-b706-8db3ce19d976",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    },
+    "s_dd92bfcb178af1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0345e-ea73-73b3-884d-79fb885b84d9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
