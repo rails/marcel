@@ -40,12 +40,73 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
   # Before Tika 4.0.0, the timestamped-data magic matched any 11-byte OID under the
   # 1.2.840.113549 arc, so sibling CMS content types (compressedData, authData, ...) in
   # 1.2.840.113549.1.9.16.1.* were misdetected as application/timestamped-data. The 4.0.0
-  # rules (carried in data/custom.xml with explicit match types) require the full
-  # id-ct-timestampedData OID ending in .31.
+  # rules require the full id-ct-timestampedData OID ending in .31; the sibling arc gets
+  # Tika's deliberately coarse pkcs7-mime family label instead.
   test "other CMS content types are not misdetected as timestamped-data" do
     compressed_data = "\x30\x80\x06\x0B\x2A\x86\x48\x86\xF7\x0D\x01\x09\x10\x01\x09\xA0\x80".b
 
-    assert_equal "application/octet-stream", Marcel::MimeType.for(compressed_data)
+    assert_equal "application/pkcs7-mime", Marcel::MimeType.for(compressed_data)
+  end
+
+  test "timestamped-data still beats the coarser pkcs7-mime family label" do
+    timestamped_data = "\x30\x80\x06\x0B\x2A\x86\x48\x86\xF7\x0D\x01\x09\x10\x01\x1F\xA0\x80".b
+
+    assert_equal "application/timestamped-data", Marcel::MimeType.for(timestamped_data)
+  end
+
+  # Tika's DER pkcs7-signature rule needs a mask marcel can't express, so it is skipped
+  # entirely rather than emitted as its bare SEQUENCE-tag parent, which would have
+  # classified nearly every DER structure (certificates, keys, ASN.1 blobs) as a signature.
+  test "unrelated DER structures are not misdetected as pkcs7-signature" do
+    bare_sequence = ("\x30\x80" + "\x00" * 30).b
+    der_certificate_shape = "\x30\x82\x03\x00\x30\x82\x02\x00\xA0\x03\x02\x01\x02\x02\x01\x01".b
+
+    assert_equal "application/octet-stream", Marcel::MimeType.for(bare_sequence)
+    assert_equal "application/octet-stream", Marcel::MimeType.for(der_certificate_shape)
+  end
+
+  test "typeless Tika magics are hex-decoded rather than matched as literal text" do
+    probes = {
+      "application/x-zim" => "ZIM\x04" + "\x00" * 12,
+      "application/x-ms-compress-szdd" => "SZDD\x88\xF0\x27\x33\x41\x00\x00\x00",
+      # OneNote section file: GUID {7B5C52E4-D88C-4DA7-AEB1-5378D02996D3} in its
+      # mixed-endian on-disk layout
+      "application/onenote;format=one" => "\xE4\x52\x5C\x7B\x8C\xD8\xA7\x4D\xAE\xB1\x53\x78\xD0\x29\x96\xD3",
+      "application/onenote;format=onetoc2" => "\xA1\x2F\xFF\x43\xD9\xEF\x76\x4C\x9E\xE2\x10\xEA\x57\x22\x76\x5F",
+      # 64-bit little-endian Mach-O with MH_OBJECT filetype
+      "application/x-mach-o-object" => "\xCF\xFA\xED\xFE\x07\x00\x00\x01\x03\x00\x00\x00\x01\x00\x00\x00",
+      # Atari ST floppy image: bootable checksum magic, executable flag, zeroed serial
+      "application/x-atari-floppy-disk-image" => "\x96\x02\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+      # PKCS#12: SEQUENCE, INTEGER version 3, nested SEQUENCE, then the id-data OID
+      "application/x-pkcs12" => "\x30\x82\x03\x50\x02\x01\x03\x30\x82\x03\x46\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x07\x01",
+      "text/vtt" => "\xEF\xBB\xBFWEBVTT\n\nsubtitles",
+    }
+
+    probes.each do |expected_type, content|
+      assert_equal expected_type, Marcel::MimeType.for(content.b)
+    end
+  end
+
+  # These formerly matched via parents whose discriminating children marcel can't express:
+  # the bare parents (2-4 literal bytes) matched far more than the format they named.
+  test "over-broad bare parents of unsupported rules are no longer emitted" do
+    assert_equal "application/octet-stream", Marcel::MimeType.for("t1 is not a Touhou replay")
+    # Truecolor-TGA-shaped header bytes at offset 1 previously matched image/x-tga at priority 90
+    assert_equal "application/octet-stream", Marcel::MimeType.for("\x00\x00\x02\x00\x00\x00\x00\x00\x01\x02".b)
+
+    # AC-3 detection survives via Tika's deliberate bare syncword fallback rule
+    assert_equal "audio/ac3", Marcel::MimeType.for("\x0B\x77\x10\x40\x2F\x84\x29\x00".b)
+  end
+
+  # Sereal's version lives in the low nibble of byte 4, which needs a mask marcel can't
+  # express; the bare magic mislabeled every v2 stream as version=1. The deliberate
+  # retirement of content detection is pinned here so it can't quietly return; extension
+  # lookup still resolves the unversioned type.
+  test "sereal streams are no longer identified by their over-broad bare magic" do
+    assert_equal "application/octet-stream", Marcel::MimeType.for("=srl\x01\x00\x00\x00".b)
+    assert_equal "application/octet-stream", Marcel::MimeType.for("=srl\x02\x00\x00\x00".b)
+    assert_equal "application/octet-stream", Marcel::MimeType.for("=\xF3rl\x03\x00\x00\x00".b)
+    assert_equal "application/sereal", Marcel::MimeType.for(name: "data.srl")
   end
 
   test "add and remove type" do

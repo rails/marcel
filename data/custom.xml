@@ -243,20 +243,4 @@
 
     <sub-class-of type="application/xml" />
   </mime-type>
-  <!-- Tika 4.0.0 rebuilt the CMS/DER magics (pkcs7, pkcs12, timestamped-data) on typeless
-       <match value="0x..."> elements. Tika defaults an absent type to "string" and
-       hex-decodes the value; the generator only decodes when type="string" is explicit, so
-       those upstream rules generate as inert literal-text matchers. That leaves
-       application/timestamped-data, whose pre-4.0 magic was a working byte match, without
-       content detection. Carry upstream's rule (same shape and priority, from
-       tika-mimetypes.xml @ 4.0.0) with the types spelled out: SEQUENCE tag, then the
-       id-ct-timestampedData OID (1.2.840.113549.1.9.16.1.31) scanned across the DER
-       length forms. Remove once the generator decodes typeless matches like Tika does. -->
-  <mime-type type="application/timestamped-data">
-    <magic priority="60">
-      <match value="0x30" type="string" offset="0">
-        <match value="0x060B2A864886F70D010910011F" type="string" offset="2:6" />
-      </match>
-    </magic>
-  </mime-type>
 </mime-info>
