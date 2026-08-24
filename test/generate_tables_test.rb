@@ -238,8 +238,8 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
 
       assert status.success?, errors
       warning_lines = errors.lines
-      assert_equal "Skipped 60 unsupported magic rules\n", warning_lines.pop
-      assert_equal 114, warning_lines.size
+      assert_equal "Skipped 77 unsupported magic rules\n", warning_lines.pop
+      assert_equal 189, warning_lines.size
       assert File.exist?(tables_path)
     end
   end
@@ -501,4 +501,142 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
       assert status.success?, errors
     end
   end
+
+  test "decodes typeless matches as Tika's default string type" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="application/x-typeless">
+          <magic>
+            <match value="0x5A494D04" offset="0"/>
+            <match value="\x90plain" offset="3"/>
+          </magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    verification = <<~'RUBY'
+      load ARGV.fetch(0)
+      matches = Marcel::MAGIC.to_h.fetch("application/x-typeless")
+      expected = [[0, "ZIM\x04".b], [3, "\x90plain".b]]
+      abort matches.inspect unless matches == expected
+    RUBY
+
+    assert_generates xml, verification
+  end
+
+  test "passes structural minShouldMatch containers through with no value" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="application/x-structural">
+          <magic>
+            <match minShouldMatch="2">
+              <match value="alpha" type="string" offset="0"/>
+              <match value="beta" type="string" offset="4"/>
+            </match>
+          </magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    verification = <<~'RUBY'
+      load ARGV.fetch(0)
+      matches = Marcel::MAGIC.to_h.fetch("application/x-structural")
+      expected = [[0, nil, [[0, "alpha".b], [4, "beta".b]]]]
+      abort matches.inspect unless matches == expected
+    RUBY
+
+    assert_generates xml, verification
+  end
+
+  test "anchors mask segments at the match's own offset" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="application/x-masked">
+          <magic>
+            <match value="ABCD1234WXYZ" type="string" mask="0xFFFFFFFF00000000FFFFFFFF" offset="16"/>
+            <match value="0x060B2A864886F70D0109100100" type="string" mask="0xFFFFFFFFFFFFFFFFFFFFFFFF00" offset="2:6"/>
+          </magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    verification = <<~'RUBY'
+      load ARGV.fetch(0)
+      matches = Marcel::MAGIC.to_h.fetch("application/x-masked")
+      expected = [
+        [16, "ABCD".b, [[24, "WXYZ".b]]],
+        [2..6, "\x06\x0B\x2A\x86\x48\x86\xF7\x0D\x01\x09\x10\x01".b],
+      ]
+      abort matches.inspect unless matches == expected
+    RUBY
+
+    assert_generates xml, verification
+  end
+
+  test "skips multi-segment masks at range offsets and their orphaned parents, recursively" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="application/x-unsupported-children">
+          <magic>
+            <match value="0x31" offset="0">
+              <match value="0x30" offset="1">
+                <match value="0x06092a864886f70d0107FFa0" type="string" mask="0xFFFFFFFFFFFFFFFFFFFF00FF" offset="2:6"/>
+              </match>
+            </match>
+          </magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    Dir.mktmpdir("marcel-generator-test") do |directory|
+      xml_path = File.join(directory, "input.xml")
+      File.binwrite(xml_path, xml)
+
+      generated, errors, status = Open3.capture3(
+        RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+      )
+
+      # The synthetic unsupported rules fail the pinned-manifest check, and by then the
+      # generator has warned about the whole skipped chain: the inexpressible masked leaf,
+      # its parent, and its grandparent in turn.
+      refute status.success?
+      assert_empty generated
+      assert_includes errors, "unsupported multi-segment mask at range offset"
+      assert_includes errors, %(match with no supported children: <match value="0x30" offset="1">)
+      assert_includes errors, %(match with no supported children: <match value="0x31" offset="0">)
+    end
+  end
+
+  test "retains supported siblings when a parent loses only some children" do
+    # From the shipped data: Tika's DER-encoded pkcs7-signature rule needs a two-segment
+    # mask at a range offset, which is inexpressible here, so the 0x30 parent is skipped.
+    # Its supported PEM sibling must survive alone.
+    signature_magics = Marcel::MAGIC.select { |type, _| type == "application/pkcs7-signature" }.map(&:last)
+    assert_equal [[[0, "-----BEGIN PKCS7".b]]], signature_magics
+
+    # audio/mpeg's priority-50 rule loses its ID3 parent (regex child) but keeps the frame
+    # sync siblings, while Tika's deliberate priority-10 bare ID3 fallback survives whole.
+    mpeg_magics = Marcel::MAGIC.select { |type, _| type == "audio/mpeg" }.map(&:last)
+    assert_includes mpeg_magics, [[0, "ID3".b]]
+    assert mpeg_magics.any? { |matches| matches.include?([0, "\xFF\xFB".b]) && matches.none? { |match| match[1] == "ID3".b } },
+      "expected audio/mpeg frame-sync rule without a bare ID3 alternative"
+  end
+
+  private
+    def assert_generates(xml, verification)
+      Dir.mktmpdir("marcel-generator-test") do |directory|
+        xml_path = File.join(directory, "input.xml")
+        tables_path = File.join(directory, "tables.rb")
+        File.binwrite(xml_path, xml)
+
+        generated, errors, status = Open3.capture3(
+          RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+        )
+        assert status.success?, errors
+        File.binwrite(tables_path, generated)
+
+        _output, errors, status = Open3.capture3(RbConfig.ruby, "-e", verification, tables_path)
+        assert status.success?, errors
+      end
+    end
 end

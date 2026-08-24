@@ -180,11 +180,13 @@ module MimeData
 end
 
 class UnsupportedRules
-  # Tika currently contains 60 unsupported XML rules: 59 magic matches plus one root-XML
-  # rule. Their pretty-printed warnings span 114 physical lines, so pin the canonical rule
-  # set rather than stderr layout.
-  EXPECTED_COUNT = 60
-  EXPECTED_SHA256 = "61d54e5e5b543d3d3721e4d056e43e2f928fb08b36e94c8b1da88a416a18bb48"
+  # Tika currently contains 77 unsupported XML rules: 76 magic matches plus one root-XML
+  # rule. The count includes parents skipped because every child was unsupported (12) and
+  # multi-segment masks at range offsets (2), alongside the regex, mask, and exotic-type
+  # skips. Pretty-printed warnings span multiple physical lines per rule, so pin the
+  # canonical rule set rather than stderr layout.
+  EXPECTED_COUNT = 77
+  EXPECTED_SHA256 = "146db7b1c0ccf9f095140912b6514c999528eb0b696403b7832d5e0182239c16"
 
   def initialize
     @signatures = []
@@ -298,12 +300,27 @@ def get_matches(mime_type, parent, unsupported_rules)
   parent.elements.map {|match|
     children = get_matches(mime_type, match, unsupported_rules)
 
+    # A match with children requires some child to match alongside it, so a parent that
+    # lost every child to an unsupported rule must be skipped too: emitting it alone would
+    # broaden the rule to the bare parent (e.g. classifying every DER SEQUENCE as
+    # application/pkcs7-signature). Surviving siblings elsewhere are unaffected.
+    if children.empty? && !match.elements.empty?
+      unsupported_rules.skip "children", mime_type, match,
+        "#{mime_type}: match with no supported children: #{match.to_s}"
+      next nil
+    end
+
     type = match['type']
     value = match['value']
     offset = match['offset'] || '0'
     offset = MimeData.offset(offset, mime_type)
 
     mask = match['mask']
+
+    # Tika defaults an absent type to string, hex-decoding 0x… values and unescaping
+    # backslash escapes. Structural containers (minShouldMatch) carry no value at all
+    # and keep their nil type: they pass through the nil branch below unchanged.
+    type = 'string' if type.nil? && value
 
     # We only support masks of whole bytes against a string type
     if mask && (!mask.match?(/\A0x(FF|00)*\z/) || type != 'string')
@@ -331,20 +348,40 @@ def get_matches(mime_type, parent, unsupported_rules)
       if mask
         segments = []
         mask.scan(/(?:FF)+/) do
-          match = $~
-          match_offset = match.offset(0)
-          mask_offset = (match_offset[0] - 2) / 2
-          mask_length = (match_offset[1] - match_offset[0]) / 2
+          scan = $~
+          scan_offset = scan.offset(0)
+          mask_offset = (scan_offset[0] - 2) / 2
+          mask_length = (scan_offset[1] - scan_offset[0]) / 2
           segments << [mask_offset, mask_length]
+        end
+
+        # An all-zero mask matches any content, which can't be a deliberate rule.
+        if segments.empty?
+          unsupported_rules.skip "mask", mime_type, match, "#{mime_type}: unsupported all-zero mask #{match.to_s}"
+          next nil
+        end
+
+        # A range offset slides the whole match, but each emitted segment anchors at an
+        # absolute offset, so segments can't stay mutually aligned while sliding. A single
+        # segment simply shifts the range; more than one is inexpressible.
+        if Range === offset && segments.size > 1
+          unsupported_rules.skip "mask", mime_type, match,
+            "#{mime_type}: unsupported multi-segment mask at range offset #{match.to_s}"
+          next nil
         end
 
         chain = children
         segments.reverse_each do |(mask_offset, mask_length)|
           masked_value = value[mask_offset, mask_length]
-          if chain.empty?
-            chain = [[mask_offset, masked_value]]
+          segment_offset = if Range === offset
+            (offset.begin + mask_offset)..(offset.end + mask_offset)
           else
-            chain = [[mask_offset, masked_value, chain]]
+            offset + mask_offset
+          end
+          if chain.empty?
+            chain = [[segment_offset, masked_value]]
+          else
+            chain = [[segment_offset, masked_value, chain]]
           end
         end
         next chain[0]
