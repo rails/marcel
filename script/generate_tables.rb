@@ -181,10 +181,11 @@ end
 
 class UnsupportedRules
   # Tika currently contains 77 unsupported XML rules: 76 magic matches plus one root-XML
-  # rule. The count includes parents skipped because every child was unsupported (12) and
-  # multi-segment masks at range offsets (2), alongside the regex, mask, and exotic-type
-  # skips. Pretty-printed warnings span multiple physical lines per rule, so pin the
-  # canonical rule set rather than stderr layout.
+  # rule. Relative to the pre-propagation set of 60: 15 newly recorded parents whose
+  # children were all unsupported, 2 multi-segment masks at range offsets, and 2 regex
+  # parents reclassified as no-supported-children (17 children-kind entries in all).
+  # Pretty-printed warnings span multiple physical lines per rule, so pin the canonical
+  # rule set rather than stderr layout.
   EXPECTED_COUNT = 77
   EXPECTED_SHA256 = "146db7b1c0ccf9f095140912b6514c999528eb0b696403b7832d5e0182239c16"
 
@@ -377,6 +378,14 @@ def get_matches(mime_type, parent, unsupported_rules)
             (offset.begin + mask_offset)..(offset.end + mask_offset)
           else
             offset + mask_offset
+          end
+
+          # The match's own offset was validated, but shifting by the mask position can
+          # push a segment past the bound the offset validation enforces.
+          segment_bound = Range === segment_offset ? segment_offset.end : segment_offset
+          if segment_bound > MimeData::MAX_MAGIC_OFFSET
+            raise ArgumentError,
+              "Masked segment offset exceeds #{MimeData::MAX_MAGIC_OFFSET} in #{mime_type}: #{match.to_s}"
           end
           if chain.empty?
             chain = [[segment_offset, masked_value]]

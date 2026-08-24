@@ -607,6 +607,71 @@ class Marcel::GenerateTablesTest < Marcel::TestCase
     end
   end
 
+  test "rejects mask segments shifted past the maximum magic offset" do
+    fixed = <<-'XML'
+      <mime-info>
+        <mime-type type="application/x-overflow">
+          <magic>
+            <match value="ABC" type="string" mask="0x00FFFF" offset="65536"/>
+          </magic>
+        </mime-type>
+      </mime-info>
+    XML
+    range = <<-'XML'
+      <mime-info>
+        <mime-type type="application/x-overflow">
+          <magic>
+            <match value="AB" type="string" mask="0x00FF" offset="65535:65536"/>
+          </magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    [fixed, range].each do |xml|
+      Dir.mktmpdir("marcel-generator-test") do |directory|
+        xml_path = File.join(directory, "input.xml")
+        File.binwrite(xml_path, xml)
+
+        generated, errors, status = Open3.capture3(
+          RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+        )
+
+        refute status.success?
+        assert_empty generated
+        assert_includes errors, "Masked segment offset exceeds 65536"
+      end
+    end
+  end
+
+  test "skips all-zero masks and their orphaned parents" do
+    xml = <<-'XML'
+      <mime-info>
+        <mime-type type="application/x-zero-mask">
+          <magic>
+            <match value="AB" type="string" offset="0">
+              <match value="CD" type="string" mask="0x0000" offset="2"/>
+            </match>
+          </magic>
+        </mime-type>
+      </mime-info>
+    XML
+
+    Dir.mktmpdir("marcel-generator-test") do |directory|
+      xml_path = File.join(directory, "input.xml")
+      File.binwrite(xml_path, xml)
+
+      generated, errors, status = Open3.capture3(
+        RbConfig.ruby, File.expand_path("../script/generate_tables.rb", __dir__), xml_path
+      )
+
+      # Fails the pinned-manifest check after warning about the whole skipped chain.
+      refute status.success?
+      assert_empty generated
+      assert_includes errors, "unsupported all-zero mask"
+      assert_includes errors, %(match with no supported children: <match value="AB" type="string" offset="0">)
+    end
+  end
+
   test "retains supported siblings when a parent loses only some children" do
     # From the shipped data: Tika's DER-encoded pkcs7-signature rule needs a two-segment
     # mask at a range offset, which is inexpressible here, so the 0x30 parent is skipped.

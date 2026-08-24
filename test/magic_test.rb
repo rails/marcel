@@ -77,7 +77,7 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
       "application/x-mach-o-object" => "\xCF\xFA\xED\xFE\x07\x00\x00\x01\x03\x00\x00\x00\x01\x00\x00\x00",
       # Atari ST floppy image: bootable checksum magic, executable flag, zeroed serial
       "application/x-atari-floppy-disk-image" => "\x96\x02\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-      # PKCS#12: SEQUENCE, INTEGER version 3, nested SEQUENCE, then the SignedData OID
+      # PKCS#12: SEQUENCE, INTEGER version 3, nested SEQUENCE, then the id-data OID
       "application/x-pkcs12" => "\x30\x82\x03\x50\x02\x01\x03\x30\x82\x03\x46\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x07\x01",
       "text/vtt" => "\xEF\xBB\xBFWEBVTT\n\nsubtitles",
     }
@@ -96,6 +96,17 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
 
     # AC-3 detection survives via Tika's deliberate bare syncword fallback rule
     assert_equal "audio/ac3", Marcel::MimeType.for("\x0B\x77\x10\x40\x2F\x84\x29\x00".b)
+  end
+
+  # Sereal's version lives in the low nibble of byte 4, which needs a mask marcel can't
+  # express; the bare magic mislabeled every v2 stream as version=1. The deliberate
+  # retirement of content detection is pinned here so it can't quietly return; extension
+  # lookup still resolves the unversioned type.
+  test "sereal streams are no longer identified by their over-broad bare magic" do
+    assert_equal "application/octet-stream", Marcel::MimeType.for("=srl\x01\x00\x00\x00".b)
+    assert_equal "application/octet-stream", Marcel::MimeType.for("=srl\x02\x00\x00\x00".b)
+    assert_equal "application/octet-stream", Marcel::MimeType.for("=\xF3rl\x03\x00\x00\x00".b)
+    assert_equal "application/sereal", Marcel::MimeType.for(name: "data.srl")
   end
 
   test "add and remove type" do
