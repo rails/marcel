@@ -317,9 +317,10 @@ module Marcel
     end
 
     def self.read_mode(io)
-      return :native if io.is_a?(IO) || io.is_a?(StringIO)
+      reader = io.method(:read)
+      return :native if reader.owner == IO || reader.owner == StringIO
 
-      parameters = io.method(:read).parameters
+      parameters = reader.parameters
       supports_buffer = parameters.any? { |kind,| kind == :rest } ||
         parameters.count { |kind,| kind == :req || kind == :opt } >= 2
       supports_buffer ? :buffer : :single
