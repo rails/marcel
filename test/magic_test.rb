@@ -37,6 +37,20 @@ class Marcel::MimeType::MagicTest < Marcel::TestCase
     end
   end
 
+  test "StringIO subclasses can override read without accepting a buffer" do
+    io_class = Class.new(StringIO) do
+      def read(length)
+        super(length)
+      end
+    end
+    io = io_class.new("abcdef")
+    buffer = String.new(encoding: Encoding::BINARY)
+    mode = Marcel::Magic.send(:read_mode, io)
+
+    assert_equal :single, mode
+    assert_equal "abc", Marcel::Magic.send(:io_read, io, 3, buffer, mode)
+  end
+
   # Before Tika 4.0.0, the timestamped-data magic matched any 11-byte OID under the
   # 1.2.840.113549 arc, so sibling CMS content types (compressedData, authData, ...) in
   # 1.2.840.113549.1.9.16.1.* were misdetected as application/timestamped-data. The 4.0.0
