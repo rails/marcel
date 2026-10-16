@@ -45,14 +45,15 @@ module Marcel
 
       # Standardised OPC part names identifying each OOXML document family:
       # main part, macro part, and the types each implies.
+      # Part names are stored lowercase: OPC comparison is case-insensitive (ECMA-376).
       DOCUMENT_FAMILIES = [
-        [ "word/document.xml", "word/vbaProject.bin",
+        [ "word/document.xml", "word/vbaproject.bin",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           "application/vnd.ms-word.document.macroenabled.12" ],
-        [ "xl/workbook.xml", "xl/vbaProject.bin",
+        [ "xl/workbook.xml", "xl/vbaproject.bin",
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           "application/vnd.ms-excel.sheet.macroenabled.12" ],
-        [ "ppt/presentation.xml", "ppt/vbaProject.bin",
+        [ "ppt/presentation.xml", "ppt/vbaproject.bin",
           "application/vnd.openxmlformats-officedocument.presentationml.presentation",
           "application/vnd.ms-powerpoint.presentation.macroenabled.12" ]
       ].freeze
@@ -181,6 +182,9 @@ module Marcel
               name = directory[pos + CENTRAL_DIRECTORY_HEADER_SIZE, name_size]
               break unless name && name.bytesize == name_size
 
+              # OPC part names are case-insensitive (ECMA-376). Normalize so archives
+              # with e.g. Word/Document.xml still refine to the document family.
+              name = name.downcase
               parts << name if DISCRIMINATING_PARTS.include?(name)
               break if complete?(parts)
 
