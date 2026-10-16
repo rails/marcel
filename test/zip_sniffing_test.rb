@@ -125,6 +125,23 @@ class Marcel::MimeType::ZipSniffingTest < Marcel::TestCase
       Marcel::MimeType.for(StringIO.new(data), name: "innocent.xlsx")
   end
 
+  test "OOXML part names are matched case-insensitively" do
+    data = zip_archive({ "[Content_Types].xml" => OOXML_CONTENT_TYPES,
+                         "Word/Document.xml" => "<document/>" })
+
+    assert_equal "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      Marcel::MimeType.for(StringIO.new(data))
+  end
+
+  test "macro-enabled parts are matched case-insensitively" do
+    data = zip_archive({ "[Content_Types].xml" => OOXML_CONTENT_TYPES,
+                         "xl/workbook.xml" => "<workbook/>",
+                         "XL/VBAProject.bin" => "\x01\x02" })
+
+    assert_equal "application/vnd.ms-excel.sheet.macroenabled.12",
+      Marcel::MimeType.for(StringIO.new(data))
+  end
+
   test "zip64 archives are refined via the zip64 end-of-central-directory record" do
     data = zip_archive({ "docProps/padding.bin" => "\0" * 80_000 }.merge(xlsx_parts), zip64: true)
 
