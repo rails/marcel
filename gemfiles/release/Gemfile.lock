@@ -2,47 +2,58 @@ GEM
   remote: https://rubygems.org/
   specs:
     logger (1.7.0)
-    net-http (0.9.1)
+    net-http (0.10.0)
+      net-protocol (>= 0.3.0)
       uri (>= 0.11.1)
-    protobug (0.1.0)
-    protobug_googleapis_field_behavior_protos (0.1.0)
-      protobug (= 0.1.0)
-      protobug_well_known_protos (= 0.1.0)
-    protobug_sigstore_protos (0.1.0)
-      protobug (= 0.1.0)
-      protobug_googleapis_field_behavior_protos (= 0.1.0)
-      protobug_well_known_protos (= 0.1.0)
-    protobug_well_known_protos (0.1.0)
-      protobug (= 0.1.0)
-    sigstore (0.2.3)
+    net-protocol (0.4.0)
+      timeout
+    protobug (0.2.0)
+    protobug_googleapis_field_behavior_protos (0.2.0)
+      protobug (= 0.2.0)
+      protobug_well_known_protos (= 0.2.0)
+    protobug_in_toto_attestation_protos (0.2.0)
+      protobug (= 0.2.0)
+      protobug_well_known_protos (= 0.2.0)
+    protobug_sigstore_protos (0.2.0)
+      protobug (= 0.2.0)
+      protobug_googleapis_field_behavior_protos (= 0.2.0)
+      protobug_well_known_protos (= 0.2.0)
+    protobug_well_known_protos (0.2.0)
+      protobug (= 0.2.0)
+    sigstore (0.3.0)
       logger
       net-http
-      protobug_sigstore_protos (~> 0.1.0)
+      protobug_in_toto_attestation_protos (~> 0.2.0)
+      protobug_sigstore_protos (~> 0.2.0)
       uri
-    sigstore-cli (0.2.3)
-      sigstore (= 0.2.3)
+    sigstore-cli (0.3.0)
+      sigstore (= 0.3.0)
       thor
     thor (1.5.0)
-    uri (1.1.1)
+    timeout (0.6.1)
+    uri (1.1.2)
 
 PLATFORMS
   arm64-darwin
   ruby
 
 DEPENDENCIES
-  sigstore-cli (= 0.2.3)
+  sigstore-cli (= 0.3.0)
 
 CHECKSUMS
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
-  net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
-  protobug (0.1.0) sha256=5bf1356cedf99dcf311890743b78f5e602f62ca703e574764337f1996b746bf2
-  protobug_googleapis_field_behavior_protos (0.1.0) sha256=db48ef6a5913b2355b4a6931ab400a9e3e995fb48499977a3ad0be6365f9e265
-  protobug_sigstore_protos (0.1.0) sha256=4ad1eebaf6454131b6f432dda50ad0e513773613474b92470847614a5acacce1
-  protobug_well_known_protos (0.1.0) sha256=356757f562453bb34a28f12e8e9fa357346cca35a6807a549837c3fe256bb5b3
-  sigstore (0.2.3) sha256=fe60a7b15254eaec765388fc7ad54ee6298f48a36bcea06173e91ecd7ce52c7f
-  sigstore-cli (0.2.3) sha256=0d0449461797460a4c31de6f57e9f0bf2df6b0e9faec2e88e52268ec7a1a39c9
+  net-http (0.10.0) sha256=1a2ff6e37a05724973c43f2bf7bf105f59c36a4cd0a7e9b1c021a0a566987c27
+  net-protocol (0.4.0) sha256=f9f90c8c6f64794a45160bf422177a336db12809de3beeeaa26b88fcd2e8c853
+  protobug (0.2.0) sha256=eb154bdbe2a3afe796711e0c16e89b2ed59efee0f172a10b634400471299b3f2
+  protobug_googleapis_field_behavior_protos (0.2.0) sha256=5d4ddcdcfd8616a74ac100de893e3768feee631579a777e23498d3a0ba45b893
+  protobug_in_toto_attestation_protos (0.2.0) sha256=64317c2bb5efe8494ecd0da6990f3c027e7af58bf12c34d6dbd1aa43fd87f731
+  protobug_sigstore_protos (0.2.0) sha256=b094cbb2ceadc9ffe6e34ec217613dd7a8e78b6411bf4404bd686f7343514e25
+  protobug_well_known_protos (0.2.0) sha256=89dd4965ed80ed9355b575e9243e7762487de581a8e2b34a97af6bef60fe3b3f
+  sigstore (0.3.0) sha256=a6a25add5220283ed583011392f2952abc2125505ef08a52178fdb86ea67ca56
+  sigstore-cli (0.3.0) sha256=8dd883d7e036bcb51e1a63ead5479c29a818442f5d2b39289033f433401a301c
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
-  uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
+  timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
+  uri (1.1.2) sha256=89292e98eabbef6248b0a0ed5e7e398e152f83f17560023a6d94a7f492b169fb
 
 BUNDLED WITH
   4.0.6

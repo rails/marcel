@@ -1,3 +1,3 @@
 source "https://rubygems.org"
 
-gem "sigstore-cli", "= 0.2.3"
+gem "sigstore-cli", "0.3.0"
