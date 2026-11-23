@@ -107,14 +107,18 @@
 
   <!-- Bytes may precede a PDF header (ISO 32000-2 7.5.2), and when they are % comment lines,
        Tika's lenient header rule (priority 20) loses to text/x-matlab's rule for two %
-       comment lines (priority 25). Repeat the lenient rule just above MATLAB's, only for
-       content starting with %, which is all the MATLAB rule can match. Tika does the same
-       for %% prefixes (TIKA-3328). -->
+       comment lines (priority 25). Rank a header that starts a line just above MATLAB's
+       rule, only for content starting with %, which is all the MATLAB rule can match. The
+       line start keeps MATLAB code that merely quotes a header, and \n also covers CRLF.
+       Offsets end at 511 so the header itself stays within Tika's 512-byte window. Tika
+       does the same for %% prefixes (TIKA-3328). -->
   <mime-type type="application/pdf">
     <magic priority="26">
       <match value="%" type="string" offset="0">
-        <match value="%PDF-1." type="string" offset="1:512" />
-        <match value="%PDF-2." type="string" offset="1:512" />
+        <match value="\n%PDF-1." type="string" offset="1:511" />
+        <match value="\r%PDF-1." type="string" offset="1:511" />
+        <match value="\n%PDF-2." type="string" offset="1:511" />
+        <match value="\r%PDF-2." type="string" offset="1:511" />
       </match>
     </magic>
   </mime-type>

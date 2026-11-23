@@ -3169,7 +3169,7 @@ module Marcel
     ['text/vtt', [[0, b['WEBVTT '], [[10..50, b["\n\n"]]]], [0, b['WEBVTT '], [[10..50, b["\r\r"]]]], [0, b['WEBVTT '], [[10..50, b["\r\n\r\n"]]]]]],
     ['text/x-chdr', [[0, b['#ifndef ']]]],
     ['text/x-csrc', [[0, b['#include ']]]],
-    ['application/pdf', [[0, b['%'], [[1..512, b['%PDF-1.']], [1..512, b['%PDF-2.']]]]]],
+    ['application/pdf', [[0, b['%'], [[1..511, b["\n%PDF-1."]], [1..511, b["\r%PDF-1."]], [1..511, b["\n%PDF-2."]], [1..511, b["\r%PDF-2."]]]]]],
     ['image/x-jp2-codestream', [[0, b["\377O\377Q"]]]],
     ['text/x-matlab', [[0, b['%'], [[2..120, b["\n%"]]]], [0, b['%'], [[2..120, b["\r%"]]]], [0, b['%%']]]],
     ['application/pdf', [[1..512, b['%PDF-1.']], [1..512, b['%PDF-2.']]]],
