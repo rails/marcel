@@ -105,6 +105,20 @@
     </magic>
   </mime-type>
 
+  <!-- Bytes may precede a PDF header (ISO 32000-2 7.5.2), and when they are % comment lines,
+       Tika's lenient header rule (priority 20) loses to text/x-matlab's rule for two %
+       comment lines (priority 25). Repeat the lenient rule just above MATLAB's, only for
+       content starting with %, which is all the MATLAB rule can match. Tika does the same
+       for %% prefixes (TIKA-3328). -->
+  <mime-type type="application/pdf">
+    <magic priority="26">
+      <match value="%" type="string" offset="0">
+        <match value="%PDF-1." type="string" offset="1:512" />
+        <match value="%PDF-2." type="string" offset="1:512" />
+      </match>
+    </magic>
+  </mime-type>
+
   <mime-type type="application/gpx+xml">
     <_comment>GPS Exchange Format (GPX)</_comment>
     <sub-class-of type="application/xml" />
